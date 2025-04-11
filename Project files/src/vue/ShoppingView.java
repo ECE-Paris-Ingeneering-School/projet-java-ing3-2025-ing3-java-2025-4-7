@@ -177,8 +177,36 @@ public class ShoppingView {
         JPasswordField confirmPasswordField = new JPasswordField(20);
         panel.add(confirmPasswordField, gbc);
 
+        // Label d'erreur
+        JLabel errorLabel = new JLabel(" ");
+        errorLabel.setForeground(Color.RED);
+        panel.add(errorLabel, gbc);
+
         // Bouton inscription
         JButton registerButton = createStyledButton("S'inscrire");
+        registerButton.addActionListener(e -> {
+            String nom = nomField.getText().trim();
+            String prenom = prenomField.getText().trim();
+            String email = emailField.getText().trim();
+            String password = new String(passwordField.getPassword());
+            String confirmPassword = new String(confirmPasswordField.getPassword());
+
+            if (!nom.matches("[a-zA-Z\\-]+")) {
+                errorLabel.setText("Le nom ne doit contenir que des lettres ou des tirets.");
+            } else if (!prenom.matches("[a-zA-Z\\-]+")) {
+                errorLabel.setText("Le prénom ne doit contenir que des lettres ou des tirets.");
+            } else if (!email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$")) {
+                errorLabel.setText("Adresse email invalide.");
+            } else if (password.length() < 8) {
+                errorLabel.setText("Le mot de passe doit contenir au moins 8 caractères.");
+            } else if (!password.equals(confirmPassword)) {
+                errorLabel.setText("Les mots de passe ne correspondent pas.");
+            } else {
+                errorLabel.setText("Inscription réussie !");
+                errorLabel.setForeground(new Color(0, 128, 0)); // vert
+                // -> ici tu peux appeler ton modèle pour stocker l'utilisateur
+            }
+        });
         panel.add(registerButton, gbc);
 
         // Bouton retour accueil
@@ -188,6 +216,7 @@ public class ShoppingView {
 
         return panel;
     }
+
 
 
     private JButton createStyledButton(String text) {
