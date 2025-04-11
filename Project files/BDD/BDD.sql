@@ -22,7 +22,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de données : `achats`
+-- Base de données : `projetShoppingJava`
 --
 
 -- --------------------------------------------------------
@@ -34,13 +34,13 @@ SET time_zone = "+00:00";
 DROP TABLE IF EXISTS `clients`;
 CREATE TABLE IF NOT EXISTS `clients` (
   `clientID` int NOT NULL AUTO_INCREMENT,
+  `clientPrenom` varchar(20) NOT NULL,
   `clientNom` varchar(20) NOT NULL,
   `clientMail` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `clientMDP` varchar(12) NOT NULL,
   PRIMARY KEY (`clientID`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-
--- --------------------------------------------------------
 
 --
 -- Structure de la table `articles`
@@ -48,28 +48,45 @@ CREATE TABLE IF NOT EXISTS `clients` (
 
 DROP TABLE IF EXISTS `articles`;
 CREATE TABLE IF NOT EXISTS `articles` (
-  `clientID` int NOT NULL,
-  `produitID` int NOT NULL,
-  `quantité` int NOT NULL,
-  KEY `clientID` (`clientID`),
-  KEY `clientID_2` (`clientID`),
-  KEY `produitID` (`produitID`)
+  `articleID` int NOT NULL,
+  `articleNom` varchar(20) NOT NULL,
+  `articleMarque` varchar(20) NOT NULL,
+  `articlePrix_unitaire` double NOT NULL,
+  `articlePrix_vrac` double NOT NULL,
+  `articleSeuil_vrac` int NOT NULL,
+  `articleStock` int NOT NULL,
+  PRIMARY KEY (`articleID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
--- --------------------------------------------------------
-
 --
--- Structure de la table `produits`
+-- Structure de la table `admin`
 --
 
-DROP TABLE IF EXISTS `produits`;
-CREATE TABLE IF NOT EXISTS `produits` (
-  `produitID` int NOT NULL AUTO_INCREMENT,
-  `produitNom` varchar(30) NOT NULL,
-  `produitPrix` double NOT NULL,
-  PRIMARY KEY (`produitID`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+DROP TABLE IF EXISTS `admin`;
+CREATE TABLE IF NOT EXISTS `admin` (
+   `adminID` int NOT NULL AUTO_INCREMENT,
+   `adminPrenom` varchar(20) NOT NULL,
+   `adminNom` varchar(20) NOT NULL,
+   `adminMail` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+   `adminMDP` varchar(12) NOT NULL,
+   PRIMARY KEY (`adminID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+--
+-- Structure de la table `commande_totale`
+--
+
+DROP TABLE IF EXISTS `commande_totale`;
+CREATE TABLE IF NOT EXISTS `commande_totale` (
+   `commandeID` int NOT NULL AUTO_INCREMENT,
+   `adminPrenom` varchar(20) NOT NULL,
+   `commandeDate` varchar(20) NOT NULL,
+   `commandeCout_total` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+   `adminMDP` varchar(12) NOT NULL,
+   PRIMARY KEY (`commandeID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
 COMMIT;
