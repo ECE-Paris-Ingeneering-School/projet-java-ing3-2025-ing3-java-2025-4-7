@@ -11,26 +11,21 @@ public class ShoppingView {
     private JFrame frame;
     private JDialog gifDialog;
     private JPanel mainPanel;
-    private JPanel homePanel;
+    private JPanel entryPanel;
     private JPanel loginPanel;
+    private JPanel registerPanel;
     private CardLayout cardLayout;
-    private JButton loginButton;
-    private JButton registerButton;
-    private JButton toggleButton;
-    private JLabel gifLabel;
-    private Image icon; // Make icon a class member
+    private Image icon;
     private int currentFrame = 1;
     private static final int TOTAL_FRAMES = 49;
     private Timer timer;
 
     public ShoppingView() {
-        // Create a dialog for the image sequence animation
         gifDialog = new JDialog();
         gifDialog.setUndecorated(true);
         gifDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         gifDialog.setResizable(false);
 
-        // Set the window icon
         try {
             icon = ImageIO.read(Objects.requireNonNull(getClass().getResource("/image/logo.jpg")));
         } catch (IOException e) {
@@ -40,36 +35,34 @@ public class ShoppingView {
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
 
-        homePanel = createHomePanel();
+        entryPanel = createEntryPanel();
         loginPanel = createLoginPanel();
+        registerPanel = createRegisterPanel();
 
-        mainPanel.add(homePanel, "Home");
+        mainPanel.add(entryPanel, "Entry");
         mainPanel.add(loginPanel, "Login");
+        mainPanel.add(registerPanel, "Register");
 
-        // Add label for image sequence animation
-        gifLabel = new JLabel();
+        JLabel gifLabel = new JLabel();
         gifDialog.add(gifLabel, BorderLayout.CENTER);
-
-        // Resize dialog to match the first image size
-        updateGifLabel();
+        updateGifLabel(gifLabel);
         gifDialog.pack();
-        gifDialog.setLocationRelativeTo(null); // Center the dialog
+        gifDialog.setLocationRelativeTo(null);
 
-        // Set a timer to update the image and show the main panel after the last frame
         timer = new Timer(100, e -> {
             if (currentFrame <= TOTAL_FRAMES) {
-                updateGifLabel();
+                updateGifLabel(gifLabel);
                 currentFrame++;
             } else {
-                timer.stop(); // Stop the timer
-                gifDialog.dispose(); // Dispose the dialog
-                createMainFrame(); // Create and show the main frame
+                timer.stop();
+                gifDialog.dispose();
+                createMainFrame();
             }
         });
         timer.start();
     }
 
-    private void updateGifLabel() {
+    private void updateGifLabel(JLabel gifLabel) {
         String framePath = String.format("/gif/blog/frame-%03d.gif", currentFrame);
         gifLabel.setIcon(new ImageIcon(Objects.requireNonNull(getClass().getResource(framePath))));
     }
@@ -78,33 +71,45 @@ public class ShoppingView {
         frame = new JFrame("Shopping App");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(true);
-        frame.setSize(800, 600); // Set the desired size for the decorated frame
-        frame.setIconImage(icon); // Set the window icon again
-        frame.add(mainPanel); // Add the main panel
-        frame.setVisible(true); // Make the frame visible
+        frame.setSize(800, 600);
+        frame.setIconImage(icon);
+        frame.add(mainPanel);
+        frame.setVisible(true);
+        showPage("Entry");
     }
 
-    private JPanel createHomePanel() {
-        JPanel panel = new BackgroundPanel();
-        panel.setLayout(new GridBagLayout());
+    private JPanel createEntryPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
+
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.gridx = 0;
-        gbc.gridy = GridBagConstraints.RELATIVE;
-        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        JLabel titleLabel = new JLabel("Bienvenue !");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        panel.add(titleLabel, gbc);
 
-        JLabel welcomeLabel = new JLabel("Bienvenue dans l'application de shopping!");
-        welcomeLabel.setForeground(Color.BLACK);
-        panel.add(welcomeLabel, gbc);
+        gbc.gridy = 1;
+        gbc.gridwidth = 1;
 
-        loginButton = createStyledButton("Connexion");
+        JButton loginButton = createStyledButton("Connexion");
+        gbc.gridx = 0;
         panel.add(loginButton, gbc);
 
-        registerButton = createStyledButton("Inscription");
+        JButton registerButton = createStyledButton("Inscription");
+        gbc.gridx = 1;
         panel.add(registerButton, gbc);
 
-        toggleButton = createStyledButton("Enlever l'écran plein");
-        panel.add(toggleButton, gbc);
+        JButton quitButton = createStyledButton("Quitter");
+        quitButton.addActionListener(e -> System.exit(0));
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 2;
+        panel.add(quitButton, gbc);
+
+        loginButton.addActionListener(e -> showPage("Login"));
+        registerButton.addActionListener(e -> showPage("Register"));
 
         return panel;
     }
@@ -115,126 +120,53 @@ public class ShoppingView {
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.gridx = 0;
         gbc.gridy = GridBagConstraints.RELATIVE;
-        gbc.anchor = GridBagConstraints.CENTER;
 
-        // Add resized logo at the top right
-//        JLabel logoLabel = new JLabel();
-//        try {
-//            Image logoImage = ImageIO.read(Objects.requireNonNull(getClass().getResource("/image/logo.jpg")));
-//            Image scaledLogoImage = logoImage.getScaledInstance(50, 50, Image.SCALE_SMOOTH); // Resize the logo
-//            logoLabel.setIcon(new ImageIcon(scaledLogoImage));
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        gbc.anchor = GridBagConstraints.NORTHEAST;
-//        gbc.gridx = 1;
-//        gbc.gridy = 0;
-//        panel.add(logoLabel, gbc);
-
-        // Add email field
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        JLabel emailLabel = new JLabel("Email:");
-        panel.add(emailLabel, gbc);
-
-        gbc.gridx = 1;
+        panel.add(new JLabel("Email:"), gbc);
         JTextField emailField = new JTextField(20);
         panel.add(emailField, gbc);
 
-        // Add password field
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        JLabel passwordLabel = new JLabel("Mot de passe:");
-        panel.add(passwordLabel, gbc);
-
-        gbc.gridx = 1;
+        panel.add(new JLabel("Mot de passe:"), gbc);
         JPasswordField passwordField = new JPasswordField(20);
         panel.add(passwordField, gbc);
 
-        // Add login button
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.gridwidth = 2;
         JButton loginButton = createStyledButton("Connexion");
         panel.add(loginButton, gbc);
 
-        //Add return home button
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        gbc.gridwidth = 2;
-        JButton returnHomeButton = createStyledButton("Retour à l'accueil");
-        returnHomeButton.addActionListener(e -> showPage("Home"));
-        panel.add(returnHomeButton, gbc);
-
-        //Add register button
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        gbc.gridwidth = 2;
-        JButton registerButton = createStyledButton("Inscription");
-        panel.add(registerButton, gbc);
+        JButton returnButton = createStyledButton("Retour");
+        returnButton.addActionListener(e -> showPage("Entry"));
+        panel.add(returnButton, gbc);
 
         return panel;
     }
 
-    private JPanel createInscriptionPanel()
-    {
+    private JPanel createRegisterPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.gridx = 0;
         gbc.gridy = GridBagConstraints.RELATIVE;
-        gbc.anchor = GridBagConstraints.CENTER;
 
-        // Add email field
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        JLabel emailLabel = new JLabel("Email:");
-        panel.add(emailLabel, gbc);
-
-        gbc.gridx = 1;
+        panel.add(new JLabel("Email:"), gbc);
         JTextField emailField = new JTextField(20);
         panel.add(emailField, gbc);
 
-        // Add password field
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        JLabel passwordLabel = new JLabel("Mot de passe:");
-        panel.add(passwordLabel, gbc);
-
-        gbc.gridx = 1;
+        panel.add(new JLabel("Mot de passe:"), gbc);
         JPasswordField passwordField = new JPasswordField(20);
         panel.add(passwordField, gbc);
 
-        // Add login button
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.gridwidth = 2;
-        JButton loginButton = createStyledButton("Connexion");
-        panel.add(loginButton, gbc);
-
-        //Add return home button
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        gbc.gridwidth = 2;
-        JButton returnHomeButton = createStyledButton("Retour à l'accueil");
-        returnHomeButton.addActionListener(e -> showPage("Home"));
-        panel.add(returnHomeButton, gbc);
-
-        //Add register button
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        gbc.gridwidth = 2;
         JButton registerButton = createStyledButton("Inscription");
         panel.add(registerButton, gbc);
+
+        JButton returnButton = createStyledButton("Retour");
+        returnButton.addActionListener(e -> showPage("Entry"));
+        panel.add(returnButton, gbc);
 
         return panel;
     }
 
     private JButton createStyledButton(String text) {
         JButton button = new JButton(text);
-        button.setBackground(new Color(245, 245, 220)); // Beige color
+        button.setBackground(new Color(245, 245, 220));
         button.setForeground(Color.BLACK);
         button.setFocusPainted(false);
         button.setFont(new Font("Arial", Font.BOLD, 14));
@@ -252,18 +184,6 @@ public class ShoppingView {
 
     public void showPage(String pageName) {
         cardLayout.show(mainPanel, pageName);
-    }
-
-    public JButton getLoginButton() {
-        return loginButton;
-    }
-
-    public JButton getToggleButton() {
-        return toggleButton;
-    }
-
-    public JButton getRegisterButton() {
-        return registerButton;
     }
 
     public class BackgroundPanel extends JPanel {
