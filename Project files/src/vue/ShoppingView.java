@@ -145,24 +145,50 @@ public class ShoppingView {
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.gridx = 0;
         gbc.gridy = GridBagConstraints.RELATIVE;
+        gbc.anchor = GridBagConstraints.CENTER;
 
-        panel.add(new JLabel("Email:"), gbc);
+        // Champ nom
+        JLabel nomLabel = new JLabel("Nom:");
+        panel.add(nomLabel, gbc);
+        JTextField nomField = new JTextField(20);
+        panel.add(nomField, gbc);
+
+        // Champ prénom
+        JLabel prenomLabel = new JLabel("Prénom:");
+        panel.add(prenomLabel, gbc);
+        JTextField prenomField = new JTextField(20);
+        panel.add(prenomField, gbc);
+
+        // Champ email
+        JLabel emailLabel = new JLabel("Email:");
+        panel.add(emailLabel, gbc);
         JTextField emailField = new JTextField(20);
         panel.add(emailField, gbc);
 
-        panel.add(new JLabel("Mot de passe:"), gbc);
+        // Champ mot de passe
+        JLabel passwordLabel = new JLabel("Mot de passe:");
+        panel.add(passwordLabel, gbc);
         JPasswordField passwordField = new JPasswordField(20);
         panel.add(passwordField, gbc);
 
-        JButton registerButton = createStyledButton("Inscription");
+        // Champ confirmation mot de passe
+        JLabel confirmPasswordLabel = new JLabel("Confirmer le mot de passe:");
+        panel.add(confirmPasswordLabel, gbc);
+        JPasswordField confirmPasswordField = new JPasswordField(20);
+        panel.add(confirmPasswordField, gbc);
+
+        // Bouton inscription
+        JButton registerButton = createStyledButton("S'inscrire");
         panel.add(registerButton, gbc);
 
-        JButton returnButton = createStyledButton("Retour");
+        // Bouton retour accueil
+        JButton returnButton = createStyledButton("Retour à l'accueil");
         returnButton.addActionListener(e -> showPage("Entry"));
         panel.add(returnButton, gbc);
 
         return panel;
     }
+
 
     private JButton createStyledButton(String text) {
         JButton button = new JButton(text);
