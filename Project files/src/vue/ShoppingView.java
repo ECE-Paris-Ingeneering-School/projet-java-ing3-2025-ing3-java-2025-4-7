@@ -16,7 +16,7 @@ public class ShoppingView {
     private JButton quitButton;
     private JPanel loginPanel;
     private JPanel registerPanel;
-    private JPanel homePagePanel; // Ajouter un panneau pour la HomePage
+    private JPanel homePagePanel; // Panel de la page d'accueil
     private JTextField nomField, prenomField, mailField;
     private JPasswordField passwordField, confirmPasswordField;
     private JLabel registerMessageLabel;
@@ -78,11 +78,35 @@ public class ShoppingView {
         return panel;
     }
 
+    // Page d'accueil
     private JPanel createHomePagePanel() {
-        JPanel panel = new JPanel(new BorderLayout());
-        JLabel welcomeLabel = new JLabel("Bienvenue sur la page d'accueil", SwingConstants.CENTER);
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+
+        // HEADER : Contenant le bouton "Mon compte"
+        JPanel headerPanel = new JPanel();
+        headerPanel.setBackground(Color.CYAN); // Couleur différente pour le header
+        headerPanel.setLayout(new FlowLayout(FlowLayout.RIGHT)); // Alignement à droite
+        JButton accountButton = new JButton("Mon compte");
+        headerPanel.add(accountButton);
+
+        // BODY : Contenant le texte "Bienvenue"
+        JPanel bodyPanel = new JPanel();
+        bodyPanel.setBackground(Color.LIGHT_GRAY); // Couleur différente pour le body
+        JLabel welcomeLabel = new JLabel("Bienvenue", SwingConstants.CENTER);
         welcomeLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        panel.add(welcomeLabel, BorderLayout.CENTER);
+        bodyPanel.add(welcomeLabel);
+
+        // FOOTER : Contenant un espace vide
+        JPanel footerPanel = new JPanel();
+        footerPanel.setBackground(Color.GREEN); // Couleur différente pour le footer
+        footerPanel.setPreferredSize(new Dimension(800, 50)); // Hauteur du footer
+
+        // Ajout des panels au panneau principal
+        panel.add(headerPanel, BorderLayout.NORTH);
+        panel.add(bodyPanel, BorderLayout.CENTER);
+        panel.add(footerPanel, BorderLayout.SOUTH);
+
         return panel;
     }
 
