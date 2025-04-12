@@ -16,10 +16,12 @@ public class ShoppingView {
     private JButton quitButton;
     private JPanel loginPanel;
     private JPanel registerPanel;
+    private JPanel homePagePanel; // Ajouter un panneau pour la HomePage
     private JTextField nomField, prenomField, mailField;
     private JPasswordField passwordField, confirmPasswordField;
     private JLabel registerMessageLabel;
     private JButton submitRegisterButton;
+    private JButton submitLoginButton;
 
     public ShoppingView() {
         frame = new JFrame("Shopping App");
@@ -39,17 +41,16 @@ public class ShoppingView {
         JPanel homePanel = createHomePanel();
         loginPanel = createLoginPanel();
         registerPanel = createRegisterPanel();
+        homePagePanel = createHomePagePanel(); // Créer la page d'accueil
 
-        // Ajouter les panneaux
-        mainPanel.add(registerPanel, "Register");
-        mainPanel.add(homePanel, "Accueil");
+        // Ajouter les pages au CardLayout
+        mainPanel.add(homePanel, "Home");
         mainPanel.add(loginPanel, "Login");
+        mainPanel.add(registerPanel, "Register");
+        mainPanel.add(homePagePanel, "HomePage"); // Ajouter la page d'accueil
 
         frame.add(mainPanel);
-        frame.setLocationRelativeTo(null);
-
-        // Affiche la page d'accueil au démarrage
-        showPage("Accueil");
+        frame.setLocationRelativeTo(null); // Centrer la fenêtre
     }
 
     private JPanel createHomePanel() {
@@ -74,6 +75,14 @@ public class ShoppingView {
 
         quitButton.addActionListener(e -> System.exit(0));
 
+        return panel;
+    }
+
+    private JPanel createHomePagePanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        JLabel welcomeLabel = new JLabel("Bienvenue sur la page d'accueil", SwingConstants.CENTER);
+        welcomeLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        panel.add(welcomeLabel, BorderLayout.CENTER);
         return panel;
     }
 
@@ -108,14 +117,14 @@ public class ShoppingView {
         submitRegisterButton = createStyledButton("S'inscrire");
         panel.add(submitRegisterButton, gbc);
 
-        // Message d’erreur ou de succès
+        // Label pour afficher les messages d'erreur
         registerMessageLabel = new JLabel("");
         registerMessageLabel.setForeground(Color.RED);
         panel.add(registerMessageLabel, gbc);
 
         // Bouton retour
         JButton returnButton = createStyledButton("Retour");
-        returnButton.addActionListener(e -> showPage("Accueil"));
+        returnButton.addActionListener(e -> showPage("Home"));
         panel.add(returnButton, gbc);
 
         return panel;
@@ -139,11 +148,11 @@ public class ShoppingView {
         panel.add(passwordLabel, gbc);
         panel.add(passwordField, gbc);
 
-        JButton submitButton = createStyledButton("Se connecter");
-        panel.add(submitButton, gbc);
+        submitLoginButton = createStyledButton("Se connecter");
+        panel.add(submitLoginButton, gbc);
 
         JButton returnButton = createStyledButton("Retour");
-        returnButton.addActionListener(e -> showPage("Accueil"));
+        returnButton.addActionListener(e -> showPage("Home"));
         panel.add(returnButton, gbc);
 
         return panel;
@@ -189,6 +198,10 @@ public class ShoppingView {
         return submitRegisterButton;
     }
 
+    public JButton getSubmitLoginButton() {
+        return submitLoginButton;
+    }
+
     public String getNom() {
         return nomField.getText();
     }
@@ -209,8 +222,15 @@ public class ShoppingView {
         return new String(confirmPasswordField.getPassword());
     }
 
-    public void setRegisterMessage(String message, boolean isSuccess) {
+    public void showHomePage() {
+        showPage("HomePage"); // Affiche la page d'accueil
+    }
+
+    public void setRegisterMessage(String message) {
         registerMessageLabel.setText(message);
-        registerMessageLabel.setForeground(isSuccess ? Color.GREEN : Color.RED);
+    }
+
+    public void clearRegisterMessage() {
+        registerMessageLabel.setText(""); // Effacer le message d'erreur
     }
 }
