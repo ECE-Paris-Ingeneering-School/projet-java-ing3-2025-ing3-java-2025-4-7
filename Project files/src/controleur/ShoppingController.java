@@ -1,10 +1,8 @@
+// ShoppingController.java
 package controleur;
 
-import javax.swing.*;
 import modele.ShoppingModel;
 import vue.ShoppingView;
-
-import java.awt.*;
 
 public class ShoppingController {
     private ShoppingModel model;
@@ -14,68 +12,33 @@ public class ShoppingController {
         this.model = model;
         this.view = view;
 
-        // Bouton "Connexion" depuis la page d'entrée
-        view.getLoginButtonOnEntryPanel().addActionListener(e -> view.showPage("Login"));
-
-        // Bouton "Inscription" depuis la page d'entrée
-        view.getRegisterButtonOnEntryPanel().addActionListener(e -> view.showPage("Register"));
-
-        // Bouton "Quitter" depuis la page d'entrée
-        view.getQuitButtonOnEntryPanel().addActionListener(e -> {
-            int confirm = JOptionPane.showConfirmDialog(null,
-                    "Voulez-vous vraiment quitter l'application ?",
-                    "Confirmation",
-                    JOptionPane.YES_NO_OPTION);
-            if (confirm == JOptionPane.YES_OPTION) {
-                System.exit(0);
-            }
-        });
-
-        // Gestion du bouton de connexion sur la page Login
-        view.getLoginButtonOnLoginPanel().addActionListener(e -> {
-            String email = view.getEmailField().getText().trim();
-            String password = new String(view.getPasswordField().getPassword()).trim();
-
-            if (model.loginUtilisateur(email, password)) {
-                JOptionPane.showMessageDialog(view.getFrame(), "Connexion réussie !");
-                view.showPage("ShopMain");
-            } else {
-                JOptionPane.showMessageDialog(view.getFrame(), "Erreur de connexion. Vérifiez vos identifiants.");
-            }
-        });
-
-        // Gestion du bouton d'inscription sur la page Register
-        view.getRegisterButtonOnRegisterPanel().addActionListener(e -> {
-            String nom = view.getNomField().getText().trim();
-            String prenom = view.getPrenomField().getText().trim();
-            String email = view.getEmailField().getText().trim();
-            String password = new String(view.getPasswordField().getPassword()).trim();
-            String confirmPassword = new String(view.getConfirmPasswordField().getPassword()).trim();
-
-            // Validation des champs
-            if (!nom.matches("[a-zA-Z\\-]+")) {
-                view.getFeedbackLabel().setText("Le nom ne doit contenir que des lettres ou des tirets.");
-            } else if (!prenom.matches("[a-zA-Z\\-]+")) {
-                view.getFeedbackLabel().setText("Le prénom ne doit contenir que des lettres ou des tirets.");
-            } else if (!email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$")) {
-                view.getFeedbackLabel().setText("Adresse email invalide.");
-            } else if (password.length() < 8) {
-                view.getFeedbackLabel().setText("Le mot de passe doit contenir au moins 8 caractères.");
-            } else if (!password.equals(confirmPassword)) {
-                view.getFeedbackLabel().setText("Les mots de passe ne correspondent pas.");
-            } else {
-                // Inscription réussie
-                view.getFeedbackLabel().setForeground(Color.white);
-                view.getFeedbackLabel().setText("Inscription réussie ! Redirection...");
-
-                // TODO: Enregistrer dans la base de données ici
-                Timer redirectTimer = new Timer(1500, evt -> view.showPage("ShopMain"));
-                redirectTimer.setRepeats(false);
-                redirectTimer.start();
-            }
-        });
-
-        // Gestion du bouton retour depuis la page d'inscription
-        view.getReturnButtonOnRegisterPanel().addActionListener(e -> view.showPage("Entry"));
+        view.getLoginButton().addActionListener(e -> view.setRegisterError("Connexion non implémentée.", false));
+        view.getRegisterButton().addActionListener(e -> view.showPage("Register"));
+        view.getQuitButton().addActionListener(e -> System.exit(0));
     }
-}
+
+    public void handleRegister() {
+        String nom = view.getNom();
+        String prenom = view.getPrenom();
+        String email = view.getEmail();
+        String pass = view.getPassword();
+        String confirm = view.getConfirmPassword();
+
+        String message = validateInput(nom, prenom, email, pass, confirm);
+        if (message != null) {
+            view.setRegisterError(message, false);
+        } else {
+            // model.saveUser(nom, prenom, email, pass); // à implémenter dans ShoppingModel
+            view.setRegisterError("Inscription réussie !", true);
+        }
+    }
+
+    private String validateInput(String nom, String prenom, String email, String pass, String confirm) {
+        if (!nom.matches("[a-zA-Z\\-]+")) return "Nom invalide.";
+        if (!prenom.matches("[a-zA-Z\\-]+")) return "Prénom invalide.";
+        if (!email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$")) return "Email invalide.";
+        if (pass.length() < 8) return "Mot de passe trop court.";
+        if (!pass.equals(confirm)) return "Les mots de passe ne correspondent pas.";
+        return null;
+    }
+} // Fin

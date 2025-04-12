@@ -1,106 +1,59 @@
+// ShoppingView.java
 package vue;
 
 import javax.swing.*;
 import java.awt.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.Objects;
+import javax.imageio.ImageIO;
 
 public class ShoppingView {
     private JFrame frame;
     private JPanel mainPanel;
-    private JPanel entryPanel;
-    private JPanel loginPanel;
-    private JPanel registerPanel;
     private CardLayout cardLayout;
+
+    private JButton loginButton;
+    private JButton registerButton;
+    private JButton quitButton;
+
     private JTextField nomField, prenomField, emailField;
     private JPasswordField passwordField, confirmPasswordField;
-    private JLabel feedbackLabel;
-
-    private JButton loginButtonOnEntryPanel;
-    private JButton registerButtonOnEntryPanel;
-    private JButton quitButtonOnEntryPanel;
-
-    private JButton loginButtonOnLoginPanel;
-    private JButton returnButtonOnLoginPanel;
-
-    private JButton registerButtonOnRegisterPanel;
-    private JButton returnButtonOnRegisterPanel;
+    private JLabel registerErrorLabel;
 
     public ShoppingView() {
+        frame = new JFrame("Shopping App");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(800, 600);
+
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
 
-        entryPanel = createEntryPanel();
-        loginPanel = createLoginPanel();
-        registerPanel = createRegisterPanel();
+        mainPanel.add(createEntryPanel(), "Entry");
+        mainPanel.add(createRegisterPanel(), "Register");
 
-        mainPanel.add(entryPanel, "Entry");
-        mainPanel.add(loginPanel, "Login");
-        mainPanel.add(registerPanel, "Register");
-
-        createMainFrame();
-    }
-
-    private void createMainFrame() {
-        frame = new JFrame("Shopping App");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setResizable(true);
-        frame.setSize(800, 600);
         frame.add(mainPanel);
         frame.setVisible(true);
-        showPage("Entry");
     }
 
     private JPanel createEntryPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
-        gbc.gridx = 0;
+
+        loginButton = new JButton("Connexion");
+        registerButton = new JButton("Inscription");
+        quitButton = new JButton("Quitter");
+
+        JPanel rowPanel = new JPanel(new FlowLayout());
+        rowPanel.add(loginButton);
+        rowPanel.add(registerButton);
+
         gbc.gridy = 0;
-        gbc.gridwidth = 2;
+        panel.add(rowPanel, gbc);
 
-        loginButtonOnEntryPanel = new JButton("Connexion");
-        registerButtonOnEntryPanel = new JButton("Inscription");
-        quitButtonOnEntryPanel = new JButton("Quitter");
-
-        quitButtonOnEntryPanel.addActionListener(e -> System.exit(0));
-
-        loginButtonOnEntryPanel.addActionListener(e -> showPage("Login"));
-        registerButtonOnEntryPanel.addActionListener(e -> showPage("Register"));
-
-        panel.add(loginButtonOnEntryPanel, gbc);
-        panel.add(registerButtonOnEntryPanel, gbc);
-        panel.add(quitButtonOnEntryPanel, gbc);
-
-        return panel;
-    }
-
-    private JPanel createLoginPanel() {
-        JPanel panel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
-        gbc.gridx = 0;
-        gbc.gridy = GridBagConstraints.RELATIVE;
-
-        emailField = new JTextField(20);
-        passwordField = new JPasswordField(20);
-
-        panel.add(new JLabel("Email:"), gbc);
-        panel.add(emailField, gbc);
-
-        panel.add(new JLabel("Mot de passe:"), gbc);
-        panel.add(passwordField, gbc);
-
-        loginButtonOnLoginPanel = new JButton("Connexion");
-        returnButtonOnLoginPanel = new JButton("Retour");
-
-        returnButtonOnLoginPanel.addActionListener(e -> showPage("Entry"));
-        loginButtonOnLoginPanel.addActionListener(e -> {
-            // Contrôleur doit valider ici
-        });
-
-        panel.add(loginButtonOnLoginPanel, gbc);
-        panel.add(returnButtonOnLoginPanel, gbc);
+        gbc.gridy = 1;
+        panel.add(quitButton, gbc);
 
         return panel;
     }
@@ -109,100 +62,67 @@ public class ShoppingView {
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
-        gbc.gridx = 0;
-        gbc.gridy = GridBagConstraints.RELATIVE;
 
-        nomField = new JTextField(20);
-        prenomField = new JTextField(20);
-        emailField = new JTextField(20);
-        passwordField = new JPasswordField(20);
-        confirmPasswordField = new JPasswordField(20);
-        feedbackLabel = new JLabel(" ");
+        gbc.gridx = 0; gbc.gridy = 0; panel.add(new JLabel("Nom:"), gbc);
+        gbc.gridx = 1; nomField = new JTextField(20); panel.add(nomField, gbc);
 
-        panel.add(new JLabel("Nom:"), gbc);
-        panel.add(nomField, gbc);
-        panel.add(new JLabel("Prénom:"), gbc);
-        panel.add(prenomField, gbc);
-        panel.add(new JLabel("Email:"), gbc);
-        panel.add(emailField, gbc);
-        panel.add(new JLabel("Mot de passe:"), gbc);
-        panel.add(passwordField, gbc);
-        panel.add(new JLabel("Confirmer mot de passe:"), gbc);
-        panel.add(confirmPasswordField, gbc);
+        gbc.gridx = 0; gbc.gridy++; panel.add(new JLabel("Prénom:"), gbc);
+        gbc.gridx = 1; prenomField = new JTextField(20); panel.add(prenomField, gbc);
 
-        panel.add(feedbackLabel, gbc);
+        gbc.gridx = 0; gbc.gridy++; panel.add(new JLabel("Email:"), gbc);
+        gbc.gridx = 1; emailField = new JTextField(20); panel.add(emailField, gbc);
 
-        registerButtonOnRegisterPanel = new JButton("S'inscrire");
-        registerButtonOnRegisterPanel.addActionListener(e -> {
-            // Contrôleur doit valider ici
-        });
+        gbc.gridx = 0; gbc.gridy++; panel.add(new JLabel("Mot de passe:"), gbc);
+        gbc.gridx = 1; passwordField = new JPasswordField(20); panel.add(passwordField, gbc);
 
-        returnButtonOnRegisterPanel = new JButton("Retour à l'accueil");
-        returnButtonOnRegisterPanel.addActionListener(e -> showPage("Entry"));
+        gbc.gridx = 0; gbc.gridy++; panel.add(new JLabel("Confirmer le mot de passe:"), gbc);
+        gbc.gridx = 1; confirmPasswordField = new JPasswordField(20); panel.add(confirmPasswordField, gbc);
 
-        panel.add(registerButtonOnRegisterPanel, gbc);
-        panel.add(returnButtonOnRegisterPanel, gbc);
+        gbc.gridx = 0; gbc.gridy++; gbc.gridwidth = 2;
+        registerErrorLabel = new JLabel(" ");
+        registerErrorLabel.setForeground(Color.RED);
+        panel.add(registerErrorLabel, gbc);
+
+        gbc.gridy++;
+        JButton registerBtn = new JButton("S'inscrire");
+        panel.add(registerBtn, gbc);
+        registerBtn.addActionListener(e -> fireRegisterEvent());
+
+        gbc.gridy++;
+        JButton backBtn = new JButton("Retour à l'accueil");
+        backBtn.addActionListener(e -> showPage("Entry"));
+        panel.add(backBtn, gbc);
 
         return panel;
     }
 
-    public void showPage(String pageName) {
-        cardLayout.show(mainPanel, pageName);
+    private void fireRegisterEvent() {
+        // Placeholder, actual logic handled in controller
     }
 
-    public JTextField getNomField() {
-        return nomField;
+    public void setRegisterError(String message, boolean success) {
+        registerErrorLabel.setText(message);
+        registerErrorLabel.setForeground(success ? new Color(0, 128, 0) : Color.RED);
     }
 
-    public JTextField getPrenomField() {
-        return prenomField;
+    public void showPage(String name) {
+        cardLayout.show(mainPanel, name);
     }
 
-    public JTextField getEmailField() {
-        return emailField;
+    public void setVisible(boolean visible) {
+        if (frame != null) {
+            frame.setVisible(visible);
+        }
     }
 
-    public JPasswordField getPasswordField() {
-        return passwordField;
-    }
+    public JFrame getFrame() { return frame; }
+    public JButton getLoginButton() { return loginButton; }
+    public JButton getRegisterButton() { return registerButton; }
+    public JButton getQuitButton() { return quitButton; }
 
-    public JPasswordField getConfirmPasswordField() {
-        return confirmPasswordField;
-    }
-
-    public JLabel getFeedbackLabel() {
-        return feedbackLabel;
-    }
-
-    public JButton getLoginButtonOnEntryPanel() {
-        return loginButtonOnEntryPanel;
-    }
-
-    public JButton getRegisterButtonOnEntryPanel() {
-        return registerButtonOnEntryPanel;
-    }
-
-    public JButton getQuitButtonOnEntryPanel() {
-        return quitButtonOnEntryPanel;
-    }
-
-    public JButton getLoginButtonOnLoginPanel() {
-        return loginButtonOnLoginPanel;
-    }
-
-    public JButton getReturnButtonOnLoginPanel() {
-        return returnButtonOnLoginPanel;
-    }
-
-    public JButton getRegisterButtonOnRegisterPanel() {
-        return registerButtonOnRegisterPanel;
-    }
-
-    public JButton getReturnButtonOnRegisterPanel() {
-        return returnButtonOnRegisterPanel;
-    }
-
-    public JFrame getFrame() {
-        return frame;
-    }
+    public String getNom() { return nomField.getText().trim(); }
+    public String getPrenom() { return prenomField.getText().trim(); }
+    public String getEmail() { return emailField.getText().trim(); }
+    public String getPassword() { return new String(passwordField.getPassword()); }
+    public String getConfirmPassword() { return new String(confirmPasswordField.getPassword()); }
 }
