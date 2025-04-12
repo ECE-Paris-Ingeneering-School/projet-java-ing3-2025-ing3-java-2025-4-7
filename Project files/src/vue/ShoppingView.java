@@ -83,12 +83,36 @@ public class ShoppingView {
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
 
-        // HEADER : Contenant le bouton "Mon compte"
-        JPanel headerPanel = new JPanel();
-        headerPanel.setBackground(Color.CYAN); // Couleur différente pour le header
-        headerPanel.setLayout(new FlowLayout(FlowLayout.RIGHT)); // Alignement à droite
+        // HEADER : Contenant les éléments demandés
+
+        // Panier et Mon compte à droite
+        JPanel rightPanel = new JPanel();
+        rightPanel.setLayout(new FlowLayout(FlowLayout.RIGHT)); // Alignement à droite
+        JButton panierButton = new JButton("Panier");
         JButton accountButton = new JButton("Mon compte");
-        headerPanel.add(accountButton);
+        rightPanel.add(panierButton);
+        rightPanel.add(accountButton);
+
+        // Recherche au centre
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new FlowLayout(FlowLayout.CENTER)); // Alignement au centre
+        JTextField searchField = new JTextField(20); // Un champ de texte pour la recherche
+        JButton searchButton = new JButton("Rechercher");
+        centerPanel.add(searchField);
+        centerPanel.add(searchButton);
+
+        // Home à gauche
+        JPanel leftPanel = new JPanel();
+        leftPanel.setLayout(new FlowLayout(FlowLayout.LEFT)); // Alignement à gauche
+        JButton homeButton = new JButton("Home");
+        leftPanel.add(homeButton);
+
+        // HEADER : Contenant le bouton "Home" à gauche, la recherche au centre, et les boutons à droite
+        JPanel headerPanel = new JPanel();
+        headerPanel.setLayout(new BorderLayout());
+        headerPanel.add(leftPanel, BorderLayout.WEST);   // Home à gauche
+        headerPanel.add(centerPanel, BorderLayout.CENTER); // Recherche au centre
+        headerPanel.add(rightPanel, BorderLayout.EAST);  // Panier et Mon compte à droite
 
         // BODY : Contenant le texte "Bienvenue"
         JPanel bodyPanel = new JPanel();
@@ -103,12 +127,13 @@ public class ShoppingView {
         footerPanel.setPreferredSize(new Dimension(800, 50)); // Hauteur du footer
 
         // Ajout des panels au panneau principal
-        panel.add(headerPanel, BorderLayout.NORTH);
-        panel.add(bodyPanel, BorderLayout.CENTER);
-        panel.add(footerPanel, BorderLayout.SOUTH);
+        panel.add(headerPanel, BorderLayout.NORTH); // Ajouter le header
+        panel.add(bodyPanel, BorderLayout.CENTER); // Ajouter le body
+        panel.add(footerPanel, BorderLayout.SOUTH); // Ajouter le footer
 
         return panel;
     }
+
 
     private JPanel createRegisterPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
