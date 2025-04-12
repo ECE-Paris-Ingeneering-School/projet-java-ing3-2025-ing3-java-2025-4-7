@@ -1,44 +1,66 @@
-// ShoppingController.java
 package controleur;
 
 import modele.ShoppingModel;
 import vue.ShoppingView;
 
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 public class ShoppingController {
-    private ShoppingModel model;
-    private ShoppingView view;
+    private final ShoppingModel model;
+    private final ShoppingView view;
 
     public ShoppingController(ShoppingModel model, ShoppingView view) {
         this.model = model;
         this.view = view;
 
-        view.getLoginButton().addActionListener(e -> view.setRegisterError("Connexion non implémentée.", false));
-        view.getRegisterButton().addActionListener(e -> view.showPage("Register"));
-        view.getQuitButton().addActionListener(e -> System.exit(0));
-    }
+        // Bouton Connexion -> Page Login
+        view.getLoginButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                view.showPage("Login");
+            }
+        });
 
-    public void handleRegister() {
-        String nom = view.getNom();
-        String prenom = view.getPrenom();
-        String email = view.getEmail();
-        String pass = view.getPassword();
-        String confirm = view.getConfirmPassword();
+        // Bouton Inscription -> Page Register
+        view.getRegisterButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                view.showPage("Register");
+            }
+        });
 
-        String message = validateInput(nom, prenom, email, pass, confirm);
-        if (message != null) {
-            view.setRegisterError(message, false);
-        } else {
-            // model.saveUser(nom, prenom, email, pass); // à implémenter dans ShoppingModel
-            view.setRegisterError("Inscription réussie !", true);
-        }
-    }
+        // Bouton Soumettre Inscription
+        view.getSubmitRegisterButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String nom = view.getNom().trim();
+                String prenom = view.getPrenom().trim();
+                String email = view.getEmail().trim();
+                String password = view.getPassword();
+                String confirmPassword = view.getConfirmPassword();
 
-    private String validateInput(String nom, String prenom, String email, String pass, String confirm) {
-        if (!nom.matches("[a-zA-Z\\-]+")) return "Nom invalide.";
-        if (!prenom.matches("[a-zA-Z\\-]+")) return "Prénom invalide.";
-        if (!email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$")) return "Email invalide.";
-        if (pass.length() < 8) return "Mot de passe trop court.";
-        if (!pass.equals(confirm)) return "Les mots de passe ne correspondent pas.";
-        return null;
+                // Validation des champs
+                if (!nom.matches("^[a-zA-ZÀ-ÿ\\-]+$")) {
+                    view.setRegisterMessage("Nom invalide (lettres et tirets uniquement).", false);
+                } else if (!prenom.matches("^[a-zA-ZÀ-ÿ\\-]+$")) {
+                    view.setRegisterMessage("Prénom invalide (lettres et tirets uniquement).", false);
+                } else if (!email.matches("^[\\w.-]+@[\\w.-]+\\.\\w+$")) {
+                    view.setRegisterMessage("Adresse email invalide.", false);
+                } else if (password.length() < 8) {
+                    view.setRegisterMessage("Mot de passe trop court (8 caractères minimum).", false);
+                } else if (!password.equals(confirmPassword)) {
+                    view.setRegisterMessage("Les mots de passe ne correspondent pas.", false);
+                } else {
+                    view.setRegisterMessage("Inscription réussie !", true);
+                    // Appel éventuel au modèle ici
+                    // model.registerUser(nom, prenom, email, password);
+                }
+            }
+        });
+
+        // Aucun accès aux composants de login dans la vue actuelle (pas de getteurs)
+        // Si tu veux gérer le login, il faut exposer les champs et le bouton du loginPanel aussi
     }
-} // Fin
+}
