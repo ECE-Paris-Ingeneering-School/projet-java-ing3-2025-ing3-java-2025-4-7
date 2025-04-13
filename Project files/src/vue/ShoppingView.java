@@ -2,219 +2,182 @@ package vue;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.Objects;
-import javax.imageio.ImageIO;
 
 public class ShoppingView {
     private JFrame frame;
     private JPanel mainPanel;
     private CardLayout cardLayout;
-    private JButton loginButton;
-    private JButton registerButton;
-    private JButton quitButton;
-    private JPanel loginPanel;
-    private JPanel registerPanel;
-    private JPanel homePagePanel; // Panel de la page d'accueil
-    private JTextField nomField, prenomField, mailField;
-    private JPasswordField passwordField, confirmPasswordField;
-    private JLabel registerMessageLabel;
-    private JButton submitRegisterButton;
-    private JButton submitLoginButton;
+    private JButton homeButton, accountButton, panierButton, loginButton, registerButton, searchButton;
+    private JTextField searchField;
+    private JPanel homePagePanel, accountPagePanel, panierPagePanel, loginPagePanel, registerPagePanel;
+    private JLabel welcomeLabel, accountLabel, panierLabel, loginLabel, registerLabel;
+    private JPanel headerPanel;
 
     public ShoppingView() {
         frame = new JFrame("Shopping App");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 600);
 
-        try {
-            Image icon = ImageIO.read(Objects.requireNonNull(getClass().getResource("/image/logo.jpg")));
-            frame.setIconImage(icon);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
 
-        JPanel homePanel = createHomePanel();
-        loginPanel = createLoginPanel();
-        registerPanel = createRegisterPanel();
-        homePagePanel = createHomePagePanel(); // Créer la page d'accueil
+        // Créer les pages
+        homePagePanel = createHomePagePanel();
+        accountPagePanel = createAccountPagePanel();
+        panierPagePanel = createPanierPagePanel();
+        loginPagePanel = createLoginPagePanel();
+        registerPagePanel = createRegisterPagePanel();
 
         // Ajouter les pages au CardLayout
-        mainPanel.add(homePanel, "Home");
-        mainPanel.add(loginPanel, "Login");
-        mainPanel.add(registerPanel, "Register");
-        mainPanel.add(homePagePanel, "HomePage"); // Ajouter la page d'accueil
+        mainPanel.add(homePagePanel, "HomePage");
+        mainPanel.add(accountPagePanel, "Account");
+        mainPanel.add(panierPagePanel, "Panier");
+        mainPanel.add(loginPagePanel, "Login");
+        mainPanel.add(registerPagePanel, "Register");
 
-        frame.add(mainPanel);
+        // Créer un seul header réutilisable
+        headerPanel = createHeaderPanel();
+
+        // Panel global avec header en haut + mainPanel au centre
+        JPanel globalPanel = new JPanel(new BorderLayout());
+        globalPanel.add(headerPanel, BorderLayout.NORTH);
+        globalPanel.add(mainPanel, BorderLayout.CENTER);
+
+        frame.add(globalPanel);
         frame.setLocationRelativeTo(null); // Centrer la fenêtre
     }
 
-    private JPanel createHomePanel() {
-        JPanel panel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
+    private JPanel createHeaderPanel() {
+        JPanel headerPanel = new JPanel();
+        headerPanel.setBackground(Color.CYAN);
+        headerPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
-        loginButton = createStyledButton("Connexion");
-        registerButton = createStyledButton("Inscription");
-        quitButton = createStyledButton("Quitter");
+        homeButton = new JButton("Home");
+        searchField = new JTextField(15);
+        searchButton = new JButton("Rechercher");
+        accountButton = new JButton("Mon compte");
+        panierButton = new JButton("Panier");
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(loginButton);
-        buttonPanel.add(registerButton);
+        headerPanel.add(homeButton);
+        headerPanel.add(searchField);
+        headerPanel.add(searchButton);
+        headerPanel.add(accountButton);
+        headerPanel.add(panierButton);
 
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        panel.add(buttonPanel, gbc);
-
-        gbc.gridy = 1;
-        panel.add(quitButton, gbc);
-
-        quitButton.addActionListener(e -> System.exit(0));
-
-        return panel;
+        return headerPanel;
     }
 
-    // Page d'accueil
     private JPanel createHomePagePanel() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
+        JPanel panel = new JPanel(new BorderLayout());
 
-        // HEADER : Contenant les éléments demandés
-
-        // Panier et Mon compte à droite
-        JPanel rightPanel = new JPanel();
-        rightPanel.setLayout(new FlowLayout(FlowLayout.RIGHT)); // Alignement à droite
-        JButton panierButton = new JButton("Panier");
-        JButton accountButton = new JButton("Mon compte");
-        rightPanel.add(panierButton);
-        rightPanel.add(accountButton);
-
-        // Recherche au centre
-        JPanel centerPanel = new JPanel();
-        centerPanel.setLayout(new FlowLayout(FlowLayout.CENTER)); // Alignement au centre
-        JTextField searchField = new JTextField(20); // Un champ de texte pour la recherche
-        JButton searchButton = new JButton("Rechercher");
-        centerPanel.add(searchField);
-        centerPanel.add(searchButton);
-
-        // Home à gauche
-        JPanel leftPanel = new JPanel();
-        leftPanel.setLayout(new FlowLayout(FlowLayout.LEFT)); // Alignement à gauche
-        JButton homeButton = new JButton("Home");
-        leftPanel.add(homeButton);
-
-        // HEADER : Contenant le bouton "Home" à gauche, la recherche au centre, et les boutons à droite
-        JPanel headerPanel = new JPanel();
-        headerPanel.setLayout(new BorderLayout());
-        headerPanel.add(leftPanel, BorderLayout.WEST);   // Home à gauche
-        headerPanel.add(centerPanel, BorderLayout.CENTER); // Recherche au centre
-        headerPanel.add(rightPanel, BorderLayout.EAST);  // Panier et Mon compte à droite
-
-        // BODY : Contenant le texte "Bienvenue"
         JPanel bodyPanel = new JPanel();
-        bodyPanel.setBackground(Color.LIGHT_GRAY); // Couleur différente pour le body
-        JLabel welcomeLabel = new JLabel("Bienvenue", SwingConstants.CENTER);
+        bodyPanel.setBackground(Color.LIGHT_GRAY);
+        welcomeLabel = new JLabel("Bienvenue sur notre site de Shopping", SwingConstants.CENTER);
         welcomeLabel.setFont(new Font("Arial", Font.BOLD, 24));
         bodyPanel.add(welcomeLabel);
 
-        // FOOTER : Contenant un espace vide
         JPanel footerPanel = new JPanel();
-        footerPanel.setBackground(Color.GREEN); // Couleur différente pour le footer
-        footerPanel.setPreferredSize(new Dimension(800, 50)); // Hauteur du footer
+        footerPanel.setBackground(Color.GREEN);
+        footerPanel.setPreferredSize(new Dimension(800, 50));
 
-        // Ajout des panels au panneau principal
-        panel.add(headerPanel, BorderLayout.NORTH); // Ajouter le header
-        panel.add(bodyPanel, BorderLayout.CENTER); // Ajouter le body
-        panel.add(footerPanel, BorderLayout.SOUTH); // Ajouter le footer
+        panel.add(bodyPanel, BorderLayout.CENTER);
+        panel.add(footerPanel, BorderLayout.SOUTH);
 
         return panel;
     }
 
+    private JPanel createAccountPagePanel() {
+        JPanel panel = new JPanel(new BorderLayout());
 
-    private JPanel createRegisterPanel() {
-        JPanel panel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
-        gbc.gridx = 0;
-        gbc.gridy = GridBagConstraints.RELATIVE;
-        gbc.anchor = GridBagConstraints.CENTER;
+        JPanel bodyPanel = new JPanel();
+        bodyPanel.setBackground(Color.LIGHT_GRAY);
+        accountLabel = new JLabel("Mon Compte", SwingConstants.CENTER);
+        accountLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        bodyPanel.add(accountLabel);
 
-        panel.add(new JLabel("Nom:"), gbc);
-        nomField = new JTextField(20);
-        panel.add(nomField, gbc);
+        loginButton = new JButton("Login");
+        registerButton = new JButton("Register");
 
-        panel.add(new JLabel("Prénom:"), gbc);
-        prenomField = new JTextField(20);
-        panel.add(prenomField, gbc);
+        JPanel buttonsPanel = new JPanel();
+        buttonsPanel.add(loginButton);
+        buttonsPanel.add(registerButton);
 
-        panel.add(new JLabel("Email:"), gbc);
-        mailField = new JTextField(20);
-        panel.add(mailField, gbc);
+        bodyPanel.add(buttonsPanel);
 
-        panel.add(new JLabel("Mot de passe:"), gbc);
-        passwordField = new JPasswordField(20);
-        panel.add(passwordField, gbc);
+        JPanel footerPanel = new JPanel();
+        footerPanel.setBackground(Color.GREEN);
+        footerPanel.setPreferredSize(new Dimension(800, 50));
 
-        panel.add(new JLabel("Confirmer mot de passe:"), gbc);
-        confirmPasswordField = new JPasswordField(20);
-        panel.add(confirmPasswordField, gbc);
-
-        submitRegisterButton = createStyledButton("S'inscrire");
-        panel.add(submitRegisterButton, gbc);
-
-        // Label pour afficher les messages d'erreur
-        registerMessageLabel = new JLabel("");
-        registerMessageLabel.setForeground(Color.RED);
-        panel.add(registerMessageLabel, gbc);
-
-        // Bouton retour
-        JButton returnButton = createStyledButton("Retour");
-        returnButton.addActionListener(e -> showPage("Home"));
-        panel.add(returnButton, gbc);
+        panel.add(bodyPanel, BorderLayout.CENTER);
+        panel.add(footerPanel, BorderLayout.SOUTH);
 
         return panel;
     }
 
-    private JPanel createLoginPanel() {
-        JPanel panel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
-        gbc.gridx = 0;
-        gbc.gridy = GridBagConstraints.RELATIVE;
-        gbc.anchor = GridBagConstraints.CENTER;
+    private JPanel createPanierPagePanel() {
+        JPanel panel = new JPanel(new BorderLayout());
 
-        JLabel emailLabel = new JLabel("Email :");
-        JTextField emailField = new JTextField(20);
-        panel.add(emailLabel, gbc);
-        panel.add(emailField, gbc);
+        JPanel bodyPanel = new JPanel();
+        bodyPanel.setBackground(Color.LIGHT_GRAY);
+        panierLabel = new JLabel("Panier", SwingConstants.CENTER);
+        panierLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        bodyPanel.add(panierLabel);
 
-        JLabel passwordLabel = new JLabel("Mot de passe :");
-        JPasswordField passwordField = new JPasswordField(20);
-        panel.add(passwordLabel, gbc);
-        panel.add(passwordField, gbc);
+        JPanel footerPanel = new JPanel();
+        footerPanel.setBackground(Color.GREEN);
+        footerPanel.setPreferredSize(new Dimension(800, 50));
 
-        submitLoginButton = createStyledButton("Se connecter");
-        panel.add(submitLoginButton, gbc);
-
-        JButton returnButton = createStyledButton("Retour");
-        returnButton.addActionListener(e -> showPage("Home"));
-        panel.add(returnButton, gbc);
+        panel.add(bodyPanel, BorderLayout.CENTER);
+        panel.add(footerPanel, BorderLayout.SOUTH);
 
         return panel;
     }
 
-    private JButton createStyledButton(String text) {
-        JButton button = new JButton(text);
-        button.setBackground(new Color(245, 245, 220));
-        button.setForeground(Color.BLACK);
-        button.setFocusPainted(false);
-        button.setFont(new Font("Arial", Font.BOLD, 14));
-        button.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-        return button;
+    private JPanel createLoginPagePanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+
+        JPanel bodyPanel = new JPanel();
+        bodyPanel.setBackground(Color.LIGHT_GRAY);
+        loginLabel = new JLabel("Page Login", SwingConstants.CENTER);
+        loginLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        bodyPanel.add(loginLabel);
+
+        JPanel footerPanel = new JPanel();
+        footerPanel.setBackground(Color.GREEN);
+        footerPanel.setPreferredSize(new Dimension(800, 50));
+
+        panel.add(bodyPanel, BorderLayout.CENTER);
+        panel.add(footerPanel, BorderLayout.SOUTH);
+
+        return panel;
+    }
+
+    private JPanel createRegisterPagePanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+
+        JPanel bodyPanel = new JPanel();
+        bodyPanel.setBackground(Color.LIGHT_GRAY);
+        registerLabel = new JLabel("Page Register", SwingConstants.CENTER);
+        registerLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        bodyPanel.add(registerLabel);
+
+        JPanel footerPanel = new JPanel();
+        footerPanel.setBackground(Color.GREEN);
+        footerPanel.setPreferredSize(new Dimension(800, 50));
+
+        panel.add(bodyPanel, BorderLayout.CENTER);
+        panel.add(footerPanel, BorderLayout.SOUTH);
+
+        return panel;
+    }
+
+    public void showPage(String pageName) {
+        System.out.println("Affichage de la page : " + pageName);
+        cardLayout.show(mainPanel, pageName);
+    }
+
+    public JFrame getFrame() {
+        return frame;
     }
 
     public void setVisible(boolean visible) {
@@ -223,12 +186,24 @@ public class ShoppingView {
         }
     }
 
-    public void showPage(String pageName) {
-        cardLayout.show(mainPanel, pageName);
+    public JButton getHomeButton() {
+        return homeButton;
     }
 
-    public JFrame getFrame() {
-        return frame;
+    public JTextField getSearchField() {
+        return searchField;
+    }
+
+    public JButton getSearchButton() {
+        return searchButton;
+    }
+
+    public JButton getAccountButton() {
+        return accountButton;
+    }
+
+    public JButton getPanierButton() {
+        return panierButton;
     }
 
     public JButton getLoginButton() {
@@ -237,49 +212,5 @@ public class ShoppingView {
 
     public JButton getRegisterButton() {
         return registerButton;
-    }
-
-    public JButton getQuitButton() {
-        return quitButton;
-    }
-
-    public JButton getSubmitRegisterButton() {
-        return submitRegisterButton;
-    }
-
-    public JButton getSubmitLoginButton() {
-        return submitLoginButton;
-    }
-
-    public String getNom() {
-        return nomField.getText();
-    }
-
-    public String getPrenom() {
-        return prenomField.getText();
-    }
-
-    public String getEmail() {
-        return mailField.getText();
-    }
-
-    public String getPassword() {
-        return new String(passwordField.getPassword());
-    }
-
-    public String getConfirmPassword() {
-        return new String(confirmPasswordField.getPassword());
-    }
-
-    public void showHomePage() {
-        showPage("HomePage"); // Affiche la page d'accueil
-    }
-
-    public void setRegisterMessage(String message) {
-        registerMessageLabel.setText(message);
-    }
-
-    public void clearRegisterMessage() {
-        registerMessageLabel.setText(""); // Effacer le message d'erreur
     }
 }

@@ -9,25 +9,21 @@ public class ShoppingModel {
     private Map<String, String> users;
 
     public ShoppingModel() {
-        // Exemple d'utilisateurs avec des emails et des mots de passe
         users = new HashMap<>();
-        users.put("test@example.com", "password123");  // Utilisateur de test
+        users.put("test@example.com", "password123");
     }
 
     // Méthode pour vérifier la connexion avec un email et un mot de passe
     public boolean checkLogin(String email, String password) {
-        // Vérifie si l'email existe et si le mot de passe correspond
         return users.containsKey(email) && users.get(email).equals(password);
     }
 
-    // Méthode pour inscrire un utilisateur (simulée ici, mais à adapter pour une vraie base de données)
+    // Méthode d'inscription
     public boolean registerUser(String nom, String prenom, String email, String password) {
-        // Vérifie si l'email est déjà utilisé
-        if (users.containsKey(email)) {
-            return false;  // L'email existe déjà
+        if (!users.containsKey(email)) {
+            users.put(email, password);
+            return true;
         }
-        // Sinon, on ajoute l'utilisateur
-        users.put(email, password);
-        return true;
+        return false;
     }
 }

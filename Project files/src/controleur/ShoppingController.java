@@ -1,66 +1,39 @@
 package controleur;
 
+import vue.ShoppingView;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import modele.ShoppingModel;
-import vue.ShoppingView;
 
 public class ShoppingController {
-    private ShoppingModel model;
+
     private ShoppingView view;
 
-    public ShoppingController(ShoppingModel model, ShoppingView view) {
-        this.model = model;
+    public ShoppingController(ShoppingView view) {
         this.view = view;
 
-        // ActionListener pour le bouton d'inscription
-        view.getSubmitRegisterButton().addActionListener(new ActionListener() {
+        // Actions pour les boutons dans le header
+        view.getHomeButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String nom = view.getNom();
-                String prenom = view.getPrenom();
-                String email = view.getEmail();
-                String password = view.getPassword();
-                String confirmPassword = view.getConfirmPassword();
-
-                // Vérification des champs
-                if (nom.isEmpty() || prenom.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-                    view.setRegisterMessage("Tous les champs doivent être remplis !");
-                } else if (!password.equals(confirmPassword)) {
-                    view.setRegisterMessage("Les mots de passe ne correspondent pas !");
-                } else {
-                    boolean success = model.registerUser(nom, prenom, email, password);
-                    if (success) {
-                        view.clearRegisterMessage(); // Effacer le message
-                        view.showHomePage(); // Redirection vers la HomePage
-                    } else {
-                        view.setRegisterMessage("Cet email est déjà utilisé.");
-                    }
-                }
+                view.showPage("HomePage");
             }
         });
 
-        // ActionListener pour le bouton de connexion
-        view.getSubmitLoginButton().addActionListener(new ActionListener() {
+        view.getAccountButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String email = view.getEmail();
-                String password = view.getPassword();
-
-                // Vérification des champs
-                if (email.isEmpty() || password.isEmpty()) {
-                    view.setRegisterMessage("Tous les champs doivent être remplis !");
-                } else {
-                    if (model.checkLogin(email, password)) {
-                        view.showHomePage(); // Redirection vers la HomePage
-                    } else {
-                        view.setRegisterMessage("Email ou mot de passe incorrect.");
-                    }
-                }
+                view.showPage("Account");
             }
         });
 
-        // Actions pour les boutons de navigation
+        view.getPanierButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                view.showPage("Panier");
+            }
+        });
+
+        // Actions pour les boutons de la page "Mon compte"
         view.getLoginButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -72,6 +45,15 @@ public class ShoppingController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 view.showPage("Register");
+            }
+        });
+
+        // Actions pour la recherche dans le header
+        view.getSearchButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String searchQuery = view.getSearchField().getText();
+                System.out.println("Recherche effectuée : " + searchQuery);
             }
         });
     }
