@@ -61,6 +61,7 @@ public class ShoppingView {
         JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         centerPanel.setOpaque(false);
         searchField = new JTextField(15);
+        //TODO: faire un select de bdd pour rechercher un article
         searchButton = new JButton("Rechercher");
         centerPanel.add(searchField);
         centerPanel.add(searchButton);
@@ -84,7 +85,8 @@ public class ShoppingView {
 
     private JPanel createHomePagePanel() {
         JPanel panel = new JPanel(new BorderLayout());
-        JLabel label = new JLabel("Bienvenue sur notre site de Shopping", SwingConstants.CENTER);
+        //TODO : Afficher les articles disponibles depuis bdd
+        JLabel label = new JLabel("Bienvenue sur notre site de Shopping, afficher articles depuis bdd, pouvoir add au panier", SwingConstants.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 24));
         panel.add(label, BorderLayout.CENTER);
         return panel;
@@ -92,7 +94,8 @@ public class ShoppingView {
 
     private JPanel createAccountPagePanel() {
         JPanel panel = new JPanel(new GridLayout(2, 1));
-        JLabel label = new JLabel("Mon Compte", SwingConstants.CENTER);
+        //TODO : Afficher hisotrique commande
+        JLabel label = new JLabel("Mon Compte, historique commande, infos client, bonus: mise a jour infos", SwingConstants.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 24));
 
         JPanel buttonsPanel = new JPanel();
@@ -108,7 +111,8 @@ public class ShoppingView {
 
     private JPanel createPanierPagePanel() {
         JPanel panel = new JPanel(new BorderLayout());
-        JLabel label = new JLabel("Votre Panier", SwingConstants.CENTER);
+        //TODO : Afficher la liste d'articles sélectionnés récupérés à la BDD
+        JLabel label = new JLabel("Votre Panier, Afficher la liste d'articles sélectionnés recupérés a la bdd, ajouter bouton +- et delete, ajouter commander qui renvoie vers nouvelle page", SwingConstants.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 24));
         panel.add(label, BorderLayout.CENTER);
         return panel;
