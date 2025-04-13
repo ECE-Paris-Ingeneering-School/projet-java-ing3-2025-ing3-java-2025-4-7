@@ -16,6 +16,8 @@ public class ShoppingView {
     private JTextField emailField, registerEmailField;
     private JPasswordField passwordField, registerPasswordField;
     private JButton submitLoginButton, submitRegisterButton;
+    private JTextField registerPrenomField, registerNomField;
+    private JPasswordField registerConfirmPasswordField;
 
     public ShoppingView() {
         frame = new JFrame("Shopping App");
@@ -46,23 +48,39 @@ public class ShoppingView {
     }
 
     private JPanel createHeaderPanel() {
-        JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel header = new JPanel(new BorderLayout());
         header.setBackground(Color.CYAN);
 
+        // Panel gauche : bouton Home
+        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        leftPanel.setOpaque(false);
         homeButton = new JButton("Home");
+        leftPanel.add(homeButton);
+
+        // Panel centre : barre de recherche + bouton Rechercher
+        JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        centerPanel.setOpaque(false);
         searchField = new JTextField(15);
         searchButton = new JButton("Rechercher");
+        centerPanel.add(searchField);
+        centerPanel.add(searchButton);
+
+        // Panel droite : bouton compte + panier
+        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        rightPanel.setOpaque(false);
         accountButton = new JButton("Mon compte");
         panierButton = new JButton("Panier");
+        rightPanel.add(accountButton);
+        rightPanel.add(panierButton);
 
-        header.add(homeButton);
-        header.add(searchField);
-        header.add(searchButton);
-        header.add(accountButton);
-        header.add(panierButton);
+        // Ajout des panels au header
+        header.add(leftPanel, BorderLayout.WEST);
+        header.add(centerPanel, BorderLayout.CENTER);
+        header.add(rightPanel, BorderLayout.EAST);
 
         return header;
     }
+
 
     private JPanel createHomePagePanel() {
         JPanel panel = new JPanel(new BorderLayout());
@@ -113,20 +131,32 @@ public class ShoppingView {
     }
 
     private JPanel createRegisterPagePanel() {
-        JPanel panel = new JPanel(new GridLayout(4, 1));
+        JPanel panel = new JPanel(new GridLayout(7, 1));
         JLabel label = new JLabel("Inscription", SwingConstants.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 24));
 
+        registerPrenomField = new JTextField();
+        registerNomField = new JTextField();
         registerEmailField = new JTextField();
         registerPasswordField = new JPasswordField();
+        registerConfirmPasswordField = new JPasswordField();
         submitRegisterButton = new JButton("S'inscrire");
 
         panel.add(label);
+        panel.add(new JLabel("Prénom :"));
+        panel.add(registerPrenomField);
+        panel.add(new JLabel("Nom :"));
+        panel.add(registerNomField);
+        panel.add(new JLabel("Email :"));
         panel.add(registerEmailField);
+        panel.add(new JLabel("Mot de passe :"));
         panel.add(registerPasswordField);
+        panel.add(new JLabel("Confirmer le mot de passe :"));
+        panel.add(registerConfirmPasswordField);
         panel.add(submitRegisterButton);
         return panel;
     }
+
 
     public void showPage(String name) {
         cardLayout.show(mainPanel, name);
@@ -148,4 +178,15 @@ public class ShoppingView {
 
     public String getRegisterEmail() { return registerEmailField.getText(); }
     public String getRegisterPassword() { return new String(registerPasswordField.getPassword()); }
+    public String getRegisterPrenom() {
+        return registerPrenomField.getText();
+    }
+
+    public String getRegisterNom() {
+        return registerNomField.getText();
+    }
+
+    public String getRegisterConfirmPassword() {
+        return new String(registerConfirmPasswordField.getPassword());
+    }
 }

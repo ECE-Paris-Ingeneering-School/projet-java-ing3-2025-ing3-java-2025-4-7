@@ -1,5 +1,5 @@
-import vue.ShoppingView;
-import controleur.ShoppingController;
+import vue.*;
+import controleur.*;
 
 public class Main {
     public static void main(String[] args) {

@@ -1,7 +1,7 @@
 package controleur;
 
-import vue.ShoppingView;
-import modele.Utilisateur;
+import vue.*;
+import modele.*;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -38,16 +38,38 @@ public class ShoppingController {
         view.getSubmitRegisterButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String email = view.getRegisterEmail();
-                String password = view.getRegisterPassword();
-                if (email.isEmpty() || password.isEmpty()) {
+                String prenom = view.getRegisterPrenom().trim();
+                String nom = view.getRegisterNom().trim();
+                String email = view.getRegisterEmail().trim();
+                String mdp = view.getRegisterPassword();
+                String confirmMdp = view.getRegisterConfirmPassword();
+
+                // Vérifications
+                if (prenom.isEmpty() || nom.isEmpty() || email.isEmpty() || mdp.isEmpty() || confirmMdp.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Tous les champs sont obligatoires.");
-                } else {
-                    Utilisateur utilisateur = new Utilisateur(email, password);
-                    JOptionPane.showMessageDialog(null, "Inscription réussie pour : " + utilisateur.getEmail());
-                    view.showPage("HomePage");
+                    return;
                 }
+
+                if (!email.matches("^[\\w.-]+@[\\w.-]+\\.\\w+$")) {
+                    JOptionPane.showMessageDialog(null, "Adresse email invalide.");
+                    return;
+                }
+
+                if (!mdp.equals(confirmMdp)) {
+                    JOptionPane.showMessageDialog(null, "Les mots de passe ne correspondent pas.");
+                    return;
+                }
+
+                if (mdp.length() < 6) {
+                    JOptionPane.showMessageDialog(null, "Le mot de passe doit contenir au moins 6 caractères.");
+                    return;
+                }
+
+                // Si tout est bon
+                JOptionPane.showMessageDialog(null, "Inscription réussie ! Bienvenue " + prenom + " " + nom + " !");
+                view.showPage("HomePage");
             }
         });
+
     }
 }
