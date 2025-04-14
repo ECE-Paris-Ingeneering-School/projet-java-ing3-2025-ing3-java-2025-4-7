@@ -2,7 +2,7 @@ package DAO;
 
 // import des packages
 
-import Modele.Produit;
+import modele.Article;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,12 +11,12 @@ import java.util.ArrayList;
  * implémentation MySQL du stockage dans la base de données des méthodes définies dans l'interface
  * ProduitDao.
  */
-public class ProduitDAOImpl implements ProduitDAO {
+public class ArticleDAOImpl implements ArticleDAO {
     // attribut privé pour l'objet du DaoFactoru
     private DaoFactory daoFactory;
 
     // constructeur dépendant de la classe DaoFactory
-    public ProduitDAOImpl(DaoFactory daoFactory) {
+    public ArticleDAOImpl(DaoFactory daoFactory) {
         this.daoFactory = daoFactory;
     }
 
@@ -25,8 +25,8 @@ public class ProduitDAOImpl implements ProduitDAO {
      * Récupérer de la base de données tous les objets des produits dans une liste
      * @return : liste retournée des objets des produits récupérés
      */
-    public ArrayList<Produit> getAll() {
-        ArrayList<Produit> listeProduits = new  ArrayList<Produit>();
+    public ArrayList<Article> getAll() {
+        ArrayList<Article> listeProduits = new  ArrayList<Article>();
 
         /*
             Récupérer la liste des produits de la base de données dans listeProduits
@@ -47,10 +47,10 @@ public class ProduitDAOImpl implements ProduitDAO {
                 double produitPrix = resultats.getDouble(3);
 
                 // instancier un objet de Produit avec ces 3 champs en paramètres
-                Produit product = new Produit(produitId,produitNom,produitPrix);
+                //Article product = new Article(produitId,produitNom,produitPrix);
 
                 // ajouter ce produit à listeProduits
-                listeProduits.add(product);
+                //listeProduits.add(Article);
             }
         }
         catch (SQLException e) {
@@ -67,18 +67,18 @@ public class ProduitDAOImpl implements ProduitDAO {
      Ajouter un nouveau produit en paramètre dans la base de données
      @params : product = objet du Produit en paramètre à insérer dans la base de données
      */
-    public void ajouter(Produit product) {
+    public void ajouter(Article product) {
         try {
             // connexion
             Connection connexion = daoFactory.getConnection();
 
             // récupération du nom et prix de l'objet product en paramètre
-            String nom = product.getProduitNom();
-            double prix = product.getProduitPrix();
+            //String nom = product.getProduitNom();
+            //double prix = product.getProduitPrix();
 
             // Exécution de la requête INSERT INTO de l'objet product en paramètre
-            PreparedStatement preparedStatement = connexion.prepareStatement("INSERT INTO produits(produitNom, produitPrix) VALUES ('"+nom+"',"+prix+")");
-            preparedStatement.executeUpdate();
+            //PreparedStatement preparedStatement = connexion.prepareStatement("INSERT INTO produits(produitNom, produitPrix) VALUES ('"+nom+"',"+prix+")");
+            //preparedStatement.executeUpdate();
         }
         catch (SQLException e) {
             e.printStackTrace();
@@ -92,8 +92,8 @@ public class ProduitDAOImpl implements ProduitDAO {
      * @param : id
      * @return : objet de Produit cherché et retourné
      */
-    public Produit chercher(int id){
-        Produit product = null;
+    public Article chercher(int id){
+        Article product = null;
 
         try {
             // connexion
@@ -114,7 +114,7 @@ public class ProduitDAOImpl implements ProduitDAO {
                 // Si l'id du produit est trouvé, l'instancier et sortir de la boucle
                 if (id == produitId) {
                     // instanciation de l'objet de Produit avec ces 3 champs
-                    product = new Produit(produitId,produitNom,produitPrix);
+                    //product = new Produit(produitId,produitNom,produitPrix);
                     break;
                 }
             }
@@ -134,22 +134,22 @@ public class ProduitDAOImpl implements ProduitDAO {
      * @param : product = objet en paramètre de la classe Produit à mettre à jour
      * @return : objet product en paramètre mis à jour  dans la base de données à retourner
       */
-    public Produit modifier(Produit product) {
+    public Article modifier(Article product) {
         try{
             // connexion
             Connection connexion = daoFactory.getConnection();
 
             // récupération du nom et prix de l'objet product en paramètre
-            String nom = product.getProduitNom();
-            double prix = product.getProduitPrix();
-            int id = product.getProduitId();
+            //String nom = product.getProduitNom();
+            //double prix = product.getProduitPrix();
+            //int id = product.getProduitId();
 
             // Exécution de la requête UPDATE pour modifier le produit dans la base de données
             PreparedStatement preparedStatement = connexion.prepareStatement("UPDATE produits SET produitNom = ?, produitPrix = ? WHERE produitID = ?");
-            preparedStatement.setString(1, nom);
+            /*preparedStatement.setString(1, nom);
             preparedStatement.setDouble(2, prix);
             preparedStatement.setInt(3, id);
-            preparedStatement.executeUpdate();
+            preparedStatement.executeUpdate();*/
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("Modification du produit impossible");
@@ -164,22 +164,22 @@ public class ProduitDAOImpl implements ProduitDAO {
      * table commander qui ont l'id du produit supprimé.
      * @params : product = objet de Produit en paramètre à supprimer de la base de données
      */
-    public void supprimer(Produit product) {
+    public void supprimer(Article product) {
         try {
             // connexion
             Connection connexion = daoFactory.getConnection();
 
             // récupération de l'id de l'objet product en paramètre
-            int id = product.getProduitId();
+            //int id = product.getProduitId();
 
             // Exécution de la requête DELETE pour supprimer les commandes associées au produit
             PreparedStatement preparedStatement = connexion.prepareStatement("DELETE FROM commander WHERE produitID = ?");
-            preparedStatement.setInt(1, id);
+            //preparedStatement.setInt(1, id);
             preparedStatement.executeUpdate();
 
             // Exécution de la requête DELETE pour supprimer le produit de la base de données
             preparedStatement = connexion.prepareStatement("DELETE FROM produits WHERE produitID = ?");
-            preparedStatement.setInt(1, id);
+            //preparedStatement.setInt(1, id);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

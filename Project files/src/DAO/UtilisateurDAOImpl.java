@@ -2,7 +2,7 @@ package DAO;
 
 // import des packages
 
-import Modele.Client;
+import modele.Utilisateur;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -14,12 +14,12 @@ import java.util.ArrayList;
  * implémentation MySQL du stockage dans la base de données des méthodes définies dans l'interface
  * ClientDao.
  */
-public class ClientDAOImpl implements ClientDAO {
+public class UtilisateurDAOImpl implements UtilisateurDAO {
     // attribut privé pour l'objet du DaoFactoru
     private DaoFactory daoFactory;
 
     // constructeur dépendant de la classe DaoFactory
-    public ClientDAOImpl(DaoFactory daoFactory) {
+    public UtilisateurDAOImpl(DaoFactory daoFactory) {
         this.daoFactory = daoFactory;
     }
 
@@ -28,8 +28,8 @@ public class ClientDAOImpl implements ClientDAO {
      * Récupérer de la base de données tous les objets des clients dans une liste
      * @return : liste retournée des objets des clients récupérés
      */
-    public ArrayList<Client> getAll() {
-        ArrayList<Client> listeClients = new ArrayList<Client>();
+    public ArrayList<Utilisateur> getAll() {
+        ArrayList<Utilisateur> listeClients = new ArrayList<Utilisateur>();
 
         /*
             Récupérer la liste des clients de la base de données dans listeClients
@@ -46,15 +46,15 @@ public class ClientDAOImpl implements ClientDAO {
             // 	Se déplacer sur le prochain enregistrement : retourne false si la fin est atteinte
             while (resultats.next()) {
                 // récupérer les 3 champs de la table produits dans la base de données
-                int clientId = resultats.getInt(1);
-                String clientNom = resultats.getString(2);
-                String clientMail = resultats.getString(3);
+                int id = resultats.getInt(1);
+                String nom = resultats.getString(2);
+                String mail = resultats.getString(3);
 
                 // instancier un objet de Produit avec ces 3 champs en paramètres
-                Client client = new Client(clientId, clientNom, clientMail);
+                //Utilisateur client = new Utilisateur(id, nom, mail);
 
                 // ajouter ce produit à listeProduits
-                listeClients.add(client);
+                //listeClients.add(client);
             }
         } catch (SQLException e) {
             //traitement de l'exception
@@ -71,22 +71,22 @@ public class ClientDAOImpl implements ClientDAO {
      * @params : client = objet de Client à insérer dans la base de données
      */
     @Override
-    public void ajouter(Client client) {
+    public void ajouter(Utilisateur client) {
         try {
             // Connexion à la base de données
             Connection connexion = daoFactory.getConnection();
             Statement statement = connexion.createStatement();
 
-            int vClientId = client.getClientId();
-            String vClientMail = client.getclientMail();
-            String vClientNom = client.getclientNom();
+            //int vClientId = client.getClientId();
+            //String vClientMail = client.getclientMail();
+            //String vClientNom = client.getclientNom();
 
             // Construction manuelle de la requête SQL
-            String sql = "INSERT INTO clients (clientID, clientNom, clientMail) VALUES (" +
-                    vClientId + ", '" + vClientMail + "', '" + vClientNom + "')";
+            //String sql = "INSERT INTO clients (clientID, clientNom, clientMail) VALUES (" +
+            //        vClientId + ", '" + vClientMail + "', '" + vClientNom + "')";
 
             // Exécution de la requête d'insertion
-            statement.executeUpdate(sql);
+            //statement.executeUpdate(sql);
 
 
             // Fermeture des ressources
@@ -105,8 +105,8 @@ public class ClientDAOImpl implements ClientDAO {
      * @param : id
      * @return : objet de classe Client cherché et retourné
      */
-    public Client chercher(int id) {
-        Client client = null;
+    public Utilisateur chercher(int id) {
+        Utilisateur client = null;
 
         try {
             // connexion
@@ -127,7 +127,7 @@ public class ClientDAOImpl implements ClientDAO {
                 // Si l'id du client est trouvé, l'instancier et sortir de la boucle
                 if (id == clientId) {
                     // instancier un objet de Produit avec ces 3 champs en paramètres
-                    client = new Client(clientId, clientNom, clientMail);
+                    //client = new Utilisateur(clientId, clientNom, clientMail);
                     break;
                 }
             }
@@ -147,29 +147,29 @@ public class ClientDAOImpl implements ClientDAO {
      * @return : objet client en paramètre mis à jour  dans la base de données à retourner
      */
     @Override
-    public Client modifier(Client client) {
+    public Utilisateur modifier(Utilisateur client) {
         try {
             // Connexion à la base de données
             Connection connexion = daoFactory.getConnection();
             Statement statement = connexion.createStatement();
 
             // Récupération des valeurs de l'objet Client
-            int vClientId = client.getClientId();
-            String vClientMail = client.getclientMail();
-            String vClientNom = client.getclientNom();
+            //int vClientId = client.getClientId();
+            //String vClientMail = client.getclientMail();
+            //String vClientNom = client.getclientNom();
 
             // Construction manuelle de la requête SQL
-            String sql = "UPDATE clients SET clientNom = '" + vClientNom + "', clientMail = '" + vClientMail + "' WHERE clientID = " + vClientId;
+            //String sql = "UPDATE clients SET clientNom = '" + vClientNom + "', clientMail = '" + vClientMail + "' WHERE clientID = " + vClientId;
 
             // Exécution de la requête
-            int rowsAffected = statement.executeUpdate(sql);
+            //int rowsAffected = statement.executeUpdate(sql);
 
             // Vérification que la mise à jour a bien eu lieu
-            if (rowsAffected > 0) {
+            /*if (rowsAffected > 0) {
                 System.out.println("Client mis à jour avec succès.");
             } else {
                 System.out.println("Aucun client trouvé avec l'ID spécifié.");
-            }
+            }*/
 
             // Fermeture des ressources
             statement.close();
@@ -191,20 +191,20 @@ public class ClientDAOImpl implements ClientDAO {
      * table commander qui ont l'id du client supprimé.
      * @params : client = objet de Client en paramètre à supprimer de la base de données
      */
-    public void supprimer(Client client) {
+    public void supprimer(Utilisateur client) {
         try {
             // Connexion à la base de données
             Connection connexion = daoFactory.getConnection();
             Statement statement = connexion.createStatement();
 
             // Récupération des valeurs de l'objet Client
-            int vClientId = client.getClientId();
+            //int vClientId = client.getClientId();
 
             // Construction manuelle de la requête SQL
-            String sql = "DELETE FROM commander WHERE clientID = " + vClientId;
+            //String sql = "DELETE FROM commander WHERE clientID = " + vClientId;
 
             // Exécution de la requête
-            int rowsAffected = statement.executeUpdate(sql);
+            /*int rowsAffected = statement.executeUpdate(sql);
 
             // Vérification que la mise à jour a bien eu lieu
             if (rowsAffected > 0) {
@@ -223,7 +223,7 @@ public class ClientDAOImpl implements ClientDAO {
                 System.out.println("Client supprimé avec succès.");
             } else {
                 System.out.println("Aucun client trouvé avec l'ID spécifié.");
-            }
+            }*/
 
             // Fermeture des ressources
             statement.close();

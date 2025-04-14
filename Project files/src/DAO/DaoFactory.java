@@ -63,27 +63,27 @@ public class DaoFactory {
      * Récupération du Dao pour le produit
      * @return : objet de la classe ProduitDAOImpl
      */
-    public ProduitDAO getProduitDAO() {
+    public ArticleDAO getProduitDAO() {
         // Retourner un objet de ProduitDAOImpl qui implémente ProduitDAO
-        return new ProduitDAOImpl(this);
+        return new ArticleDAOImpl(this);
     }
 
     /**
      * Récupération du Dao pour les clients
      * @return : objet de la classe ClientDAOImpl
      */
-    public ClientDAO getClientDAO() {
+    public UtilisateurDAO getClientDAO() {
         // Retourner un objet de ClientDAOImpl qui implémente ClientDAO
-        return new ClientDAOImpl(this);
+        return new UtilisateurDAOImpl(this);
     }
 
     /**
      * Récupération du Dao pour les commandes
      * @return : objet de la classe CommanderDAOImpl
      */
-    public CommanderDAO getCommanderDAO() {
+    public CommandeDAO getCommanderDAO() {
         // Retourner un objet de CommanderDAOImpl qui implémente CommanderDAO
-        return new CommanderDAOImpl(this);
+        return new CommandeDAOImpl(this);
     }
 
     /**

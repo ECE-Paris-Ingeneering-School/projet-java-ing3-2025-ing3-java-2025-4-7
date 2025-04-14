@@ -2,7 +2,7 @@ package DAO;
 
 // import des packages
 
-import Modele.Commander;
+import modele.Commande;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,12 +11,12 @@ import java.util.ArrayList;
  * implémentation MySQL du stockage dans la base de données des méthodes définies dans l'interface
  * CommanderDao.
  */
-public class CommanderDAOImpl implements CommanderDAO {
+public class CommandeDAOImpl implements CommandeDAO {
     // attribut privé pour l'objet du DaoFactoru
     private DaoFactory daoFactory;
 
     // constructeur dépendant de la classe DaoFactory
-    public CommanderDAOImpl(DaoFactory daoFactory) {
+    public CommandeDAOImpl(DaoFactory daoFactory) {
         this.daoFactory = daoFactory;
     }
 
@@ -25,8 +25,8 @@ public class CommanderDAOImpl implements CommanderDAO {
      * Récupérer de la base de données tous les objets des commandes des produits par les clients dans une liste
      * @return : liste retournée des objets des produits récupérés
      */
-    public ArrayList<Commander> getAll() {
-        ArrayList<Commander> listeCommandes = new ArrayList<Commander>();
+    public ArrayList<Commande> getAll() {
+        ArrayList<Commande> listeCommandes = new ArrayList<Commande>();
 
         /*
             Récupérer la liste des clients de la base de données dans listeProduits
@@ -51,10 +51,10 @@ public class CommanderDAOImpl implements CommanderDAO {
                 int quantite = resultats.getInt(3);
 
                 // instancier un objet de Produit
-                Commander achat = new Commander(clientId, produitId, quantite);
+                //Commande achat = new Commande(clientId, produitId, quantite);
 
                 // ajouter ce produit à listeProduits
-                listeCommandes.add(achat);
+                //listeCommandes.add(achat);
             }
         } catch (SQLException e) {
             //traitement de l'exception
@@ -70,19 +70,19 @@ public class CommanderDAOImpl implements CommanderDAO {
      Ajouter une nouvelle commande d'un produit par un client en paramètre dans la base de données
      @params : achat = objet de la commande en paramètre à insérer dans la base de données
      */
-    public void ajouter(Commander achat) {
+    public void ajouter(Commande achat) {
         try {
             // connexion
             Connection connexion = daoFactory.getConnection();
 
             // récupération du nom et prix de l'objet product en paramètre
-            int vClientID = achat.getClientId();
-            int vProduitID = achat.getProduitId();
-            int vQuantite = achat.getQuantite();
+            //int vClientID = achat.getClientId();
+            //int vProduitID = achat.getProduitId();
+            //int vQuantite = achat.getQuantite();
 
             // Exécution de la requête INSERT INTO de l'objet product en paramètre
-            PreparedStatement preparedStatement = connexion.prepareStatement("INSERT INTO commander(clientID, produitID,quantité) VALUES ('" + vClientID + "','" + vProduitID + "','" + vQuantite + "')");
-            preparedStatement.executeUpdate();
+            //PreparedStatement preparedStatement = connexion.prepareStatement("INSERT INTO commander(clientID, produitID,quantité) VALUES ('" + vClientID + "','" + vProduitID + "','" + vQuantite + "')");
+            //preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -97,8 +97,8 @@ public class CommanderDAOImpl implements CommanderDAO {
      * @param : clientID et produitID
      * @return : objet de commande cherché et retourné
      */
-    public Commander chercher(int clientID, int produitID) {
-        Commander achat = null;
+    public Commande chercher(int clientID, int produitID) {
+        Commande achat = null;
 
         try {
             // connexion
@@ -121,7 +121,7 @@ public class CommanderDAOImpl implements CommanderDAO {
                 if (clientID == vClientId) {
                     System.out.println("Produit  trouvé dans la base de données");
                     // instanciation de l'objet de Produit avec ces 3 champs
-                    achat = new Commander(vClientId, vProduitID, vQuantité);
+                    //achat = new Commande(vClientId, vProduitID, vQuantité);
                     break;
                 }
             }
@@ -139,7 +139,7 @@ public class CommanderDAOImpl implements CommanderDAO {
      * @param : achat = objet en paramètre de la classe Commander à mettre à jour
      * @return : objet achat en paramètre mis à jour  dans la base de données à retourner
      */
-    public Commander modifier(Commander achat) {
+    public Commande modifier(Commande achat) {
         /*
             A COMPLETER
          */
@@ -152,7 +152,7 @@ public class CommanderDAOImpl implements CommanderDAO {
      Supprimer un objet de la classe Commander en paramètre dans la base de données
      @params : product = objet de Produit en paramètre à supprimer de la base de données
      */
-    public void supprimer(Commander achat) {
+    public void supprimer(Commande achat) {
         /*
             A COMPLETER
          */
