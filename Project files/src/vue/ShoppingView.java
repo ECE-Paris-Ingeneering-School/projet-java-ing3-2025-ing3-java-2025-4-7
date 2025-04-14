@@ -111,12 +111,73 @@ public class ShoppingView {
 
     private JPanel createPanierPagePanel() {
         JPanel panel = new JPanel(new BorderLayout());
-        //TODO : Afficher la liste d'articles sélectionnés récupérés à la BDD
-        JLabel label = new JLabel("Votre Panier, Afficher la liste d'articles sélectionnés recupérés a la bdd, ajouter bouton +- et delete, ajouter commander qui renvoie vers nouvelle page", SwingConstants.CENTER);
-        label.setFont(new Font("Arial", Font.BOLD, 24));
-        panel.add(label, BorderLayout.CENTER);
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // marge autour
+
+        // Simuler des données d'article
+        String[][] articles = {
+                {"T-shirt", "2"},
+                {"Jean", "1"},
+                {"Chaussures", "1"}
+        };
+
+        // Conteneur central avec centrage des articles
+        JPanel centerWrapper = new JPanel(new GridBagLayout());
+        JPanel listPanel = new JPanel();
+        listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
+        listPanel.setBorder(BorderFactory.createEmptyBorder(10, 30, 10, 30));
+
+        for (String[] article : articles) {
+            String nom = article[0];
+            int quantite = Integer.parseInt(article[1]);
+
+            JPanel articlePanel = new JPanel(new BorderLayout());
+            articlePanel.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1),
+                    BorderFactory.createEmptyBorder(10, 15, 10, 15)
+            ));
+            articlePanel.setMaximumSize(new Dimension(500, 50));
+            articlePanel.setBackground(Color.WHITE);
+
+            JLabel nomLabel = new JLabel(nom + " (x" + quantite + ")");
+            nomLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+
+            JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+            JButton plusButton = new JButton("+");
+            JButton minusButton = new JButton("-");
+            JButton deleteButton = new JButton("🗑");
+
+            buttonPanel.add(minusButton);
+            buttonPanel.add(plusButton);
+            buttonPanel.add(deleteButton);
+
+            articlePanel.add(nomLabel, BorderLayout.WEST);
+            articlePanel.add(buttonPanel, BorderLayout.EAST);
+
+            listPanel.add(articlePanel);
+            listPanel.add(Box.createVerticalStrut(10)); // espacement entre les articles
+        }
+
+        centerWrapper.add(listPanel);
+        panel.add(centerWrapper, BorderLayout.CENTER);
+
+        // Bouton Commander
+        JButton commanderButton = new JButton("Commander");
+        commanderButton.setFont(new Font("Arial", Font.BOLD, 16));
+        commanderButton.setBackground(new Color(70, 130, 180));
+        commanderButton.setForeground(Color.WHITE);
+        commanderButton.setFocusPainted(false);
+        commanderButton.setPreferredSize(new Dimension(150, 40));
+
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
+        bottomPanel.add(commanderButton);
+
+        panel.add(bottomPanel, BorderLayout.SOUTH);
+
         return panel;
     }
+
+
 
     private JPanel createLoginPagePanel() {
         JPanel panel = new JPanel(new GridLayout(4, 1));
