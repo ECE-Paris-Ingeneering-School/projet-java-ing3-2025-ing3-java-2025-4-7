@@ -2,6 +2,8 @@ package vue;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ShoppingView {
     private JFrame frame;
@@ -11,13 +13,16 @@ public class ShoppingView {
     private JButton homeButton, accountButton, panierButton, loginButton, registerButton, searchButton;
     private JTextField searchField;
 
-    private JPanel homePagePanel, accountPagePanel, panierPagePanel, loginPagePanel, registerPagePanel;
+    private JPanel homePagePanel, accountPagePanel, panierPagePanel, loginPagePanel, registerPagePanel, commandePagePanel;
 
     private JTextField emailField, registerEmailField;
     private JPasswordField passwordField, registerPasswordField;
     private JButton submitLoginButton, submitRegisterButton;
     private JTextField registerPrenomField, registerNomField;
     private JPasswordField registerConfirmPasswordField;
+
+    private JPanel listPanel;
+    private Map<String, JLabel> quantiteLabels;
 
     public ShoppingView() {
         frame = new JFrame("Shopping App");
@@ -27,17 +32,21 @@ public class ShoppingView {
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
 
+        quantiteLabels = new HashMap<>();
+
         homePagePanel = createHomePagePanel();
         accountPagePanel = createAccountPagePanel();
         panierPagePanel = createPanierPagePanel();
         loginPagePanel = createLoginPagePanel();
         registerPagePanel = createRegisterPagePanel();
+        commandePagePanel = createCommandePagePanel();
 
         mainPanel.add(homePagePanel, "HomePage");
         mainPanel.add(accountPagePanel, "Account");
         mainPanel.add(panierPagePanel, "Panier");
         mainPanel.add(loginPagePanel, "Login");
         mainPanel.add(registerPagePanel, "Register");
+        mainPanel.add(commandePagePanel, "Commande");
 
         JPanel globalPanel = new JPanel(new BorderLayout());
         globalPanel.add(createHeaderPanel(), BorderLayout.NORTH);
@@ -51,22 +60,18 @@ public class ShoppingView {
         JPanel header = new JPanel(new BorderLayout());
         header.setBackground(Color.CYAN);
 
-        // Panel gauche : bouton Home
         JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         leftPanel.setOpaque(false);
         homeButton = new JButton("Home");
         leftPanel.add(homeButton);
 
-        // Panel centre : barre de recherche + bouton Rechercher
         JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         centerPanel.setOpaque(false);
         searchField = new JTextField(15);
-        //TODO: faire un select de bdd pour rechercher un article
         searchButton = new JButton("Rechercher");
         centerPanel.add(searchField);
         centerPanel.add(searchButton);
 
-        // Panel droite : bouton compte + panier
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         rightPanel.setOpaque(false);
         accountButton = new JButton("Mon compte");
@@ -74,7 +79,6 @@ public class ShoppingView {
         rightPanel.add(accountButton);
         rightPanel.add(panierButton);
 
-        // Ajout des panels au header
         header.add(leftPanel, BorderLayout.WEST);
         header.add(centerPanel, BorderLayout.CENTER);
         header.add(rightPanel, BorderLayout.EAST);
@@ -82,11 +86,9 @@ public class ShoppingView {
         return header;
     }
 
-
     private JPanel createHomePagePanel() {
         JPanel panel = new JPanel(new BorderLayout());
-        //TODO : Afficher les articles disponibles depuis bdd
-        JLabel label = new JLabel("Bienvenue sur notre site de Shopping, afficher articles depuis bdd, pouvoir add au panier", SwingConstants.CENTER);
+        JLabel label = new JLabel("Bienvenue sur notre site de Shopping", SwingConstants.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 24));
         panel.add(label, BorderLayout.CENTER);
         return panel;
@@ -94,8 +96,7 @@ public class ShoppingView {
 
     private JPanel createAccountPagePanel() {
         JPanel panel = new JPanel(new GridLayout(2, 1));
-        //TODO : Afficher hisotrique commande
-        JLabel label = new JLabel("Mon Compte, historique commande, infos client, bonus: mise a jour infos", SwingConstants.CENTER);
+        JLabel label = new JLabel("Mon Compte", SwingConstants.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 24));
 
         JPanel buttonsPanel = new JPanel();
@@ -111,73 +112,37 @@ public class ShoppingView {
 
     private JPanel createPanierPagePanel() {
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // marge autour
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Simuler des données d'article
-        String[][] articles = {
-                {"T-shirt", "2"},
-                {"Jean", "1"},
-                {"Chaussures", "1"}
-        };
-
-        // Conteneur central avec centrage des articles
-        JPanel centerWrapper = new JPanel(new GridBagLayout());
-        JPanel listPanel = new JPanel();
+        listPanel = new JPanel();
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
-        listPanel.setBorder(BorderFactory.createEmptyBorder(10, 30, 10, 30));
 
-        for (String[] article : articles) {
-            String nom = article[0];
-            int quantite = Integer.parseInt(article[1]);
+        JScrollPane scrollPane = new JScrollPane(listPanel);
+        panel.add(scrollPane, BorderLayout.CENTER);
 
-            JPanel articlePanel = new JPanel(new BorderLayout());
-            articlePanel.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1),
-                    BorderFactory.createEmptyBorder(10, 15, 10, 15)
-            ));
-            articlePanel.setMaximumSize(new Dimension(500, 50));
-            articlePanel.setBackground(Color.WHITE);
-
-            JLabel nomLabel = new JLabel(nom + " (x" + quantite + ")");
-            nomLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-
-            JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-            JButton plusButton = new JButton("+");
-            JButton minusButton = new JButton("-");
-            JButton deleteButton = new JButton("🗑");
-
-            buttonPanel.add(minusButton);
-            buttonPanel.add(plusButton);
-            buttonPanel.add(deleteButton);
-
-            articlePanel.add(nomLabel, BorderLayout.WEST);
-            articlePanel.add(buttonPanel, BorderLayout.EAST);
-
-            listPanel.add(articlePanel);
-            listPanel.add(Box.createVerticalStrut(10)); // espacement entre les articles
-        }
-
-        centerWrapper.add(listPanel);
-        panel.add(centerWrapper, BorderLayout.CENTER);
-
-        // Bouton Commander
         JButton commanderButton = new JButton("Commander");
         commanderButton.setFont(new Font("Arial", Font.BOLD, 16));
         commanderButton.setBackground(new Color(70, 130, 180));
         commanderButton.setForeground(Color.WHITE);
         commanderButton.setFocusPainted(false);
         commanderButton.setPreferredSize(new Dimension(150, 40));
+        commanderButton.addActionListener(e -> showPage("Commande"));
 
         JPanel bottomPanel = new JPanel();
         bottomPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
         bottomPanel.add(commanderButton);
 
         panel.add(bottomPanel, BorderLayout.SOUTH);
-
         return panel;
     }
 
-
+    private JPanel createCommandePagePanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        JLabel label = new JLabel("Merci pour votre commande !", SwingConstants.CENTER);
+        label.setFont(new Font("Arial", Font.BOLD, 24));
+        panel.add(label, BorderLayout.CENTER);
+        return panel;
+    }
 
     private JPanel createLoginPagePanel() {
         JPanel panel = new JPanel(new GridLayout(4, 1));
@@ -196,7 +161,7 @@ public class ShoppingView {
     }
 
     private JPanel createRegisterPagePanel() {
-        JPanel panel = new JPanel(new GridLayout(7, 1));
+        JPanel panel = new JPanel(new GridLayout(12, 1));
         JLabel label = new JLabel("Inscription", SwingConstants.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 24));
 
@@ -222,14 +187,15 @@ public class ShoppingView {
         return panel;
     }
 
-
     public void showPage(String name) {
         cardLayout.show(mainPanel, name);
     }
 
-    public JFrame getFrame() { return frame; }
-    public void setVisible(boolean visible) { frame.setVisible(visible); }
+    public void setVisible(boolean visible) {
+        frame.setVisible(visible);
+    }
 
+    public JFrame getFrame() { return frame; }
     public JButton getHomeButton() { return homeButton; }
     public JButton getAccountButton() { return accountButton; }
     public JButton getPanierButton() { return panierButton; }
@@ -240,18 +206,13 @@ public class ShoppingView {
 
     public String getLoginEmail() { return emailField.getText(); }
     public String getLoginPassword() { return new String(passwordField.getPassword()); }
-
     public String getRegisterEmail() { return registerEmailField.getText(); }
     public String getRegisterPassword() { return new String(registerPasswordField.getPassword()); }
-    public String getRegisterPrenom() {
-        return registerPrenomField.getText();
-    }
+    public String getRegisterPrenom() { return registerPrenomField.getText(); }
+    public String getRegisterNom() { return registerNomField.getText(); }
+    public String getRegisterConfirmPassword() { return new String(registerConfirmPasswordField.getPassword()); }
 
-    public String getRegisterNom() {
-        return registerNomField.getText();
-    }
-
-    public String getRegisterConfirmPassword() {
-        return new String(registerConfirmPasswordField.getPassword());
-    }
+    public JPanel getPanierPagePanel() { return panierPagePanel; }
+    public JPanel getListPanel() { return listPanel; }
+    public Map<String, JLabel> getQuantiteLabels() { return quantiteLabels; }
 }

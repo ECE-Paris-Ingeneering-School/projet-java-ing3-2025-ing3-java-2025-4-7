@@ -4,6 +4,7 @@ import vue.*;
 import modele.*;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -15,7 +16,10 @@ public class ShoppingController {
 
         view.getHomeButton().addActionListener(e -> view.showPage("HomePage"));
         view.getAccountButton().addActionListener(e -> view.showPage("Account"));
-        view.getPanierButton().addActionListener(e -> view.showPage("Panier"));
+        view.getPanierButton().addActionListener(e -> {
+            view.showPage("Panier");
+            setupPanierListeners();
+        });
 
         view.getLoginButton().addActionListener(e -> view.showPage("Login"));
         view.getRegisterButton().addActionListener(e -> view.showPage("Register"));
@@ -44,7 +48,6 @@ public class ShoppingController {
                 String mdp = view.getRegisterPassword();
                 String confirmMdp = view.getRegisterConfirmPassword();
 
-                // Vérifications
                 if (prenom.isEmpty() || nom.isEmpty() || email.isEmpty() || mdp.isEmpty() || confirmMdp.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Tous les champs sont obligatoires.");
                     return;
@@ -65,11 +68,73 @@ public class ShoppingController {
                     return;
                 }
 
-                // Si tout est bon
                 JOptionPane.showMessageDialog(null, "Inscription réussie ! Bienvenue " + prenom + " " + nom + " !");
                 view.showPage("HomePage");
             }
-        });
 
+        });
+    }
+
+    private void setupPanierListeners() {
+        JPanel panierPanel = view.getPanierPagePanel();
+        JScrollPane scrollPane = (JScrollPane) ((BorderLayout) panierPanel.getLayout()).getLayoutComponent(BorderLayout.CENTER);
+        JViewport viewport = scrollPane.getViewport();
+        JPanel listPanel = (JPanel) viewport.getView();
+
+        for (Component comp : listPanel.getComponents()) {
+            if (comp instanceof JPanel articlePanel) {
+                Component east = ((BorderLayout) articlePanel.getLayout()).getLayoutComponent(BorderLayout.EAST);
+                Component west = ((BorderLayout) articlePanel.getLayout()).getLayoutComponent(BorderLayout.WEST);
+
+                if (!(east instanceof JPanel buttonPanel) || !(west instanceof JLabel nomLabel)) continue;
+
+                String labelText = nomLabel.getText();
+                String articleName = labelText.split(" ")[0];
+
+                JButton minusButton = (JButton) buttonPanel.getComponent(0);
+                JButton plusButton = (JButton) buttonPanel.getComponent(1);
+                JButton deleteButton = (JButton) buttonPanel.getComponent(2);
+
+                for (ActionListener al : plusButton.getActionListeners()) plusButton.removeActionListener(al);
+                for (ActionListener al : minusButton.getActionListeners()) minusButton.removeActionListener(al);
+                for (ActionListener al : deleteButton.getActionListeners()) deleteButton.removeActionListener(al);
+
+                plusButton.addActionListener(e -> {
+                    int quantity = extractQuantity(nomLabel.getText());
+                    quantity++;
+                    nomLabel.setText(articleName + " (x" + quantity + ")");
+                });
+
+                minusButton.addActionListener(e -> {
+                    int quantity = extractQuantity(nomLabel.getText());
+                    if (quantity > 1) {
+                        quantity--;
+                        nomLabel.setText(articleName + " (x" + quantity + ")");
+                    }
+                });
+
+                deleteButton.addActionListener(e -> {
+                    listPanel.remove(articlePanel);
+                    listPanel.revalidate();
+                    listPanel.repaint();
+                });
+            }
+        }
+
+        JPanel bottomPanel = (JPanel) panierPanel.getComponent(1);
+        JButton commanderButton = (JButton) bottomPanel.getComponent(0);
+
+        for (ActionListener al : commanderButton.getActionListeners()) commanderButton.removeActionListener(al);
+        commanderButton.addActionListener(e -> view.showPage("Commande"));
+    }
+
+    private int extractQuantity(String labelText) {
+        try {
+            int start = labelText.indexOf("(x") + 2;
+            int end = labelText.indexOf(")", start);
+            return Integer.parseInt(labelText.substring(start, end));
+        } catch (Exception e) {
+            return 1;
+        }
     }
 }
