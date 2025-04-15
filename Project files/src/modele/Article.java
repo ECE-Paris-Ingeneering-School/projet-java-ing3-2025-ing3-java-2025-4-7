@@ -29,6 +29,8 @@ public class Article {
 
     public double getPrixVrac() { return prixVrac; }
 
+    public int getSeuilVrac() { return seuilVrac; }
+
     public int getStock() { return stock; }
 
     public void setNom(String nom) { this.nom = nom; }

@@ -26,7 +26,7 @@ public class ArticleDAOImpl implements ArticleDAO {
      * @return : liste retournée des objets des produits récupérés
      */
     public ArrayList<Article> getAll() {
-        ArrayList<Article> listeProduits = new  ArrayList<Article>();
+        ArrayList<Article> listeArticle = new  ArrayList<Article>();
 
         /*
             Récupérer la liste des produits de la base de données dans listeProduits
@@ -37,29 +37,33 @@ public class ArticleDAOImpl implements ArticleDAO {
             Statement statement = connexion.createStatement();
 
             // récupération des produits de la base de données avec la requete SELECT
-            ResultSet resultats = statement.executeQuery("select * from produits");
+            ResultSet resultats = statement.executeQuery("select * from articles");
 
             // 	Se déplacer sur le prochain enregistrement : retourne false si la fin est atteinte
             while (resultats.next()) {
-                // récupérer les 3 champs de la table produits dans la base de données
-                int produitId = resultats.getInt(1);
-                String produitNom = resultats.getString(2);
-                double produitPrix = resultats.getDouble(3);
+                // récupérer les 7 champs de la table produits dans la base de données
+                int articleID = resultats.getInt(1);
+                String articleNom = resultats.getString(2);
+                String articleMarque = resultats.getString(3);
+                double articlePrixUnitaire = resultats.getDouble(4);
+                double articlePrixVrac = resultats.getDouble(5);
+                int articleSeuil = resultats.getInt(6);
+                int articleStock = resultats.getInt(7);
 
                 // instancier un objet de Produit avec ces 3 champs en paramètres
-                //Article product = new Article(produitId,produitNom,produitPrix);
+                Article article = new Article(articleID, articleNom, articleMarque, articlePrixUnitaire, articlePrixVrac, articleSeuil, articleStock);
 
                 // ajouter ce produit à listeProduits
-                //listeProduits.add(Article);
+                listeArticle.add(article);
             }
         }
         catch (SQLException e) {
             //traitement de l'exception
             e.printStackTrace();
-            System.out.println("Création de la liste de produits impossible");
+            System.out.println("Création de la liste d'article impossible");
         }
 
-        return listeProduits;
+        return listeArticle;
     }
 
     @Override
@@ -67,22 +71,46 @@ public class ArticleDAOImpl implements ArticleDAO {
      Ajouter un nouveau produit en paramètre dans la base de données
      @params : product = objet du Produit en paramètre à insérer dans la base de données
      */
-    public void ajouter(Article product) {
+    public void ajouter(Article article) {
         try {
-            // connexion
+            // Connexion à la base de données
             Connection connexion = daoFactory.getConnection();
+            Statement statement = connexion.createStatement();
 
-            // récupération du nom et prix de l'objet product en paramètre
-            //String nom = product.getProduitNom();
-            //double prix = product.getProduitPrix();
+            int vArticleId = article.getId();
+            String vArticleNom = article.getNom();
+            String vArticleMarque = article.getMarque();
+            double vArticlePrixUnique = article.getPrixUnitaire();
+            double vArticlePrixVrac = article.getPrixVrac();
+            int vArticleSeuilVrac = article.getSeuilVrac();
+            int vArticleStock = article.getStock();
 
-            // Exécution de la requête INSERT INTO de l'objet product en paramètre
-            //PreparedStatement preparedStatement = connexion.prepareStatement("INSERT INTO produits(produitNom, produitPrix) VALUES ('"+nom+"',"+prix+")");
-            //preparedStatement.executeUpdate();
-        }
-        catch (SQLException e) {
+            // Construction manuelle de la requête SQL
+            String sql = "INSERT INTO articles (articleID, articleNom, articleMarque, articlePrix_unitaire, articlePrix_vrac, articleSeuil_vrac, articleStock) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+            try (PreparedStatement pStatement = connexion.prepareStatement(sql)) {
+                pStatement.setInt(1, vArticleId);
+                pStatement.setString(2, vArticleNom);
+                pStatement.setString(3, vArticleMarque);
+                pStatement.setDouble(4, vArticlePrixUnique);
+                pStatement.setDouble(5, vArticlePrixVrac);
+                pStatement.setInt(6, vArticleSeuilVrac);
+                pStatement.setInt(7, vArticleStock);
+                pStatement.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            // Exécution de la requête d'insertion
+            statement.executeUpdate(sql);
+
+            // Fermeture des ressources
+            statement.close();
+            connexion.close();
+        } catch (SQLException e) {
+            // Traitement de l'exception
             e.printStackTrace();
-            System.out.println("Ajout du produit impossible");
+            System.out.println("Erreur lors de l'ajout de l'article dans la base de données");
         }
     }
 
