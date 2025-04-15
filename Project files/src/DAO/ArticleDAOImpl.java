@@ -129,20 +129,24 @@ public class ArticleDAOImpl implements ArticleDAO {
             Statement statement = connexion.createStatement();
 
             // Exécution de la requête SELECT pour récupérer le produit de l'id dans la base de données
-            ResultSet resultats = statement.executeQuery("select * from produits where produitID="+id);
+            ResultSet resultats = statement.executeQuery("select * from articles where articleID="+id);
 
             // 	Se déplacer sur le prochain enregistrement : retourne false si la fin est atteinte
             while (resultats.next()) {
                 // récupérer les 3 champs de la table produits dans la base de données
                 // récupération des 3 champs du produit de la base de données
-                int produitId = resultats.getInt(1);
-                String produitNom = resultats.getString(2);
-                double produitPrix = resultats.getDouble(3);
+                int vArticleId = resultats.getInt(1);
+                String vArticleNom = resultats.getString(2);
+                String vArticleMarque = resultats.getString(3);
+                double vArticlePrixUnique = resultats.getDouble(4);
+                double vArticlePrixVrac = resultats.getDouble(5);
+                int vArticleSeuilVrac = resultats.getInt(6);
+                int vArticleStock = resultats.getInt(7);
 
                 // Si l'id du produit est trouvé, l'instancier et sortir de la boucle
-                if (id == produitId) {
+                if (id == vArticleId) {
                     // instanciation de l'objet de Produit avec ces 3 champs
-                    //product = new Produit(produitId,produitNom,produitPrix);
+                    product = new Article(vArticleId, vArticleNom, vArticleMarque, vArticlePrixUnique, vArticlePrixVrac, vArticleSeuilVrac, vArticleStock);
                     break;
                 }
             }
