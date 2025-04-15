@@ -27,12 +27,18 @@ public class ShoppingController {
         view.getSubmitLoginButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                int Id = 1; // Dummy ID for demonstration
+                String nom = "Doe"; // Dummy name for demonstration
+                String prenom = "John"; // Dummy first name for demonstration
+                String adresse = "123 Main St"; // Dummy address for demonstration
+                int telephone = 1234567890; // Dummy phone number for demonstration
+                Boolean isAdmin = false; // Dummy admin status for demonstration
                 String email = view.getLoginEmail();
                 String password = view.getLoginPassword();
                 if (email.isEmpty() || password.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Veuillez remplir tous les champs.");
                 } else {
-                    Utilisateur utilisateur = new Utilisateur(email, password);
+                    Utilisateur utilisateur = new Utilisateur(Id,email, password, nom, prenom, adresse, telephone, isAdmin);
                     JOptionPane.showMessageDialog(null, "Bienvenue " + utilisateur.getEmail());
                     view.showPage("HomePage");
                 }
