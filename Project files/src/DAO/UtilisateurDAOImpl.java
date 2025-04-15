@@ -121,7 +121,7 @@ public class UtilisateurDAOImpl implements UtilisateurDAO {
     /**
      * Permet de chercher et récupérer un objet de Client dans la base de données via son id en paramètre
      *
-     * @param : id
+     * @params : id
      * @return : objet de classe Client cherché et retourné
      */
     public Utilisateur chercher(int id) {
@@ -165,7 +165,7 @@ public class UtilisateurDAOImpl implements UtilisateurDAO {
     /**
      * Permet de modifier les données de l'objet
      *
-     * @param : client = objet en paramètre de la classe Client à mettre à jour à partir de son id
+     * @params : client = objet en paramètre de la classe Client à mettre à jour à partir de son id
      * @return : objet client en paramètre mis à jour  dans la base de données à retourner
      */
     @Override
@@ -241,39 +241,39 @@ public class UtilisateurDAOImpl implements UtilisateurDAO {
      * table commander qui ont l'id du client supprimé.
      * @params : client = objet de Client en paramètre à supprimer de la base de données
      */
-    public void supprimer(Utilisateur client) {
+    public void supprimer(Utilisateur user) {
         try {
             // Connexion à la base de données
             Connection connexion = daoFactory.getConnection();
             Statement statement = connexion.createStatement();
 
             // Récupération des valeurs de l'objet Client
-            //int vClientId = client.getClientId();
+            int vUserID = user.getId();
 
             // Construction manuelle de la requête SQL
-            //String sql = "DELETE FROM commander WHERE clientID = " + vClientId;
+            String sql = "DELETE FROM commander WHERE utilisateurID = " + vUserID;
 
             // Exécution de la requête
-            /*int rowsAffected = statement.executeUpdate(sql);
+            int rowsAffected = statement.executeUpdate(sql);
 
             // Vérification que la mise à jour a bien eu lieu
             if (rowsAffected > 0) {
-                System.out.println("Client supprimé avec succès.");
+                System.out.println("Utilisateur supprimé avec succès.");
             } else {
-                System.out.println("Aucun client trouvé avec l'ID spécifié.");
+                System.out.println("Aucun utilisateur trouvé avec l'ID spécifié.");
             }
             // Construction manuelle de la requête SQL
-            sql = "DELETE FROM clients WHERE clientID = " + vClientId;
+            sql = "DELETE FROM clients WHERE utilisateurID = " + vUserID;
 
             // Exécution de la requête
             rowsAffected = statement.executeUpdate(sql);
 
             // Vérification que la mise à jour a bien eu lieu
             if (rowsAffected > 0) {
-                System.out.println("Client supprimé avec succès.");
+                System.out.println("Utilisateur supprimé avec succès.");
             } else {
-                System.out.println("Aucun client trouvé avec l'ID spécifié.");
-            }*/
+                System.out.println("Aucun Utilisateur trouvé avec l'ID spécifié.");
+            }
 
             // Fermeture des ressources
             statement.close();
