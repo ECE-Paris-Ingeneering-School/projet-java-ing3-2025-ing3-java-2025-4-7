@@ -4,16 +4,15 @@ package DAO;
 
 import modele.Utilisateur;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 
 /**
  * implémentation MySQL du stockage dans la base de données des méthodes définies dans l'interface
- * ClientDao.
+ * UtilisateurDAO
  */
+
+
 public class UtilisateurDAOImpl implements UtilisateurDAO {
     // attribut privé pour l'objet du DaoFactoru
     private DaoFactory daoFactory;
@@ -25,36 +24,38 @@ public class UtilisateurDAOImpl implements UtilisateurDAO {
 
     @Override
     /**
-     * Récupérer de la base de données tous les objets des clients dans une liste
+     * Récupérer de la base de données tous les objets des utilisateurs dans une liste
      * @return : liste retournée des objets des clients récupérés
      */
     public ArrayList<Utilisateur> getAll() {
         ArrayList<Utilisateur> listeClients = new ArrayList<Utilisateur>();
 
-        /*
-            Récupérer la liste des clients de la base de données dans listeClients
-        */
+        // Récupérer la liste des utilisateurs de la base de données dans listeUtilisateurs
         try {
             // connexion
             Connection connexion = daoFactory.getConnection();
-            ;
             Statement statement = connexion.createStatement();
 
             // récupération des produits de la base de données avec la requete SELECT
-            ResultSet resultats = statement.executeQuery("select * from clients");
+            ResultSet resultats = statement.executeQuery("select * from utilisateurs");
 
             // 	Se déplacer sur le prochain enregistrement : retourne false si la fin est atteinte
             while (resultats.next()) {
-                // récupérer les 3 champs de la table produits dans la base de données
+                // récupérer les 8 champs de la table produits dans la base de données
                 int id = resultats.getInt(1);
-                String nom = resultats.getString(2);
-                String mail = resultats.getString(3);
+                String email = resultats.getString(2);
+                String mdp = resultats.getString(3);
+                String nom = resultats.getString(4);
+                String prenom = resultats.getString(5);
+                String adresse = resultats.getString(6);
+                int telephone = resultats.getInt(7);
+                Boolean isAdmin = resultats.getBoolean(8);
 
                 // instancier un objet de Produit avec ces 3 champs en paramètres
-                //Utilisateur client = new Utilisateur(id, nom, mail);
+                Utilisateur utilisateur = new Utilisateur(id, email, mdp, nom, prenom, adresse, telephone, isAdmin);
 
                 // ajouter ce produit à listeProduits
-                //listeClients.add(client);
+                listeClients.add(utilisateur);
             }
         } catch (SQLException e) {
             //traitement de l'exception
@@ -71,22 +72,40 @@ public class UtilisateurDAOImpl implements UtilisateurDAO {
      * @params : client = objet de Client à insérer dans la base de données
      */
     @Override
-    public void ajouter(Utilisateur client) {
+    public void ajouter(Utilisateur user) {
         try {
             // Connexion à la base de données
             Connection connexion = daoFactory.getConnection();
             Statement statement = connexion.createStatement();
 
-            //int vClientId = client.getClientId();
-            //String vClientMail = client.getclientMail();
-            //String vClientNom = client.getclientNom();
+            int vUserId = user.getId();
+            String vUserMail = user.getEmail();
+            String vUserMDP = user.getMotDePasse();
+            String vUserNom = user.getNom();
+            String vUserPrenom = user.getPrenom();
+            String vUserAdresse = user.getAdresse();
+            int vUserTelephone = user.getTelephone();
+            Boolean vUserIsAdmin = user.getIsAdmin();
 
             // Construction manuelle de la requête SQL
-            //String sql = "INSERT INTO clients (clientID, clientNom, clientMail) VALUES (" +
-            //        vClientId + ", '" + vClientMail + "', '" + vClientNom + "')";
+            String sql = "INSERT INTO clients (utilisateurID, utilisateurPrenom, utilisateurNom, utilisateurMail, utilisateurMDP, utilisateurAdresse, utilisateurTel, utilisateurIsAdmin) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
+            try (PreparedStatement pStatement = connexion.prepareStatement(sql)) {
+                pStatement.setInt(1, vUserId);
+                pStatement.setString(2, vUserPrenom);
+                pStatement.setString(3, vUserNom);
+                pStatement.setString(4, vUserMail);
+                pStatement.setString(5, vUserMDP);
+                pStatement.setString(6, vUserAdresse);
+                pStatement.setInt(7, vUserTelephone);
+                pStatement.setBoolean(8, vUserIsAdmin);
+                pStatement.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
             // Exécution de la requête d'insertion
-            //statement.executeUpdate(sql);
+            statement.executeUpdate(sql);
 
 
             // Fermeture des ressources
@@ -106,28 +125,32 @@ public class UtilisateurDAOImpl implements UtilisateurDAO {
      * @return : objet de classe Client cherché et retourné
      */
     public Utilisateur chercher(int id) {
-        Utilisateur client = null;
+        Utilisateur user = null;
 
         try {
             // connexion
             Connection connexion = daoFactory.getConnection();
-            ;
             Statement statement = connexion.createStatement();
 
             // Exécution de la requête SELECT pour récupérer le client de l'id dans la base de données
-            ResultSet resultats = statement.executeQuery("select * from clients where clientID=" + id);
+            ResultSet resultats = statement.executeQuery("select * from utilisateurs where utilisateurID=" + id);
 
             // 	Se déplacer sur le prochain enregistrement : retourne false si la fin est atteinte
             while (resultats.next()) {
-                // récupérer les 3 champs de la table produits dans la base de données
-                int clientId = resultats.getInt(1);
-                String clientNom = resultats.getString(2);
-                String clientMail = resultats.getString(3);
+                // récupérer les 8 champs de la table produits dans la base de données
+                int utilisateurId = resultats.getInt(1);
+                String utilisateurEmail = resultats.getString(2);
+                String utilisateurMDP = resultats.getString(3);
+                String utilisateurNom = resultats.getString(4);
+                String utilisateurPrenom = resultats.getString(5);
+                String utilisateurAdresse = resultats.getString(6);
+                int utilisateurTelephone = resultats.getInt(7);
+                Boolean utilisateurIsAdmin = resultats.getBoolean(8);
 
                 // Si l'id du client est trouvé, l'instancier et sortir de la boucle
-                if (id == clientId) {
+                if (id == utilisateurId) {
                     // instancier un objet de Produit avec ces 3 champs en paramètres
-                    //client = new Utilisateur(clientId, clientNom, clientMail);
+                    user = new Utilisateur(utilisateurId, utilisateurEmail, utilisateurMDP, utilisateurNom, utilisateurPrenom, utilisateurAdresse, utilisateurTelephone, utilisateurIsAdmin);
                     break;
                 }
             }
@@ -136,40 +159,67 @@ public class UtilisateurDAOImpl implements UtilisateurDAO {
             System.out.println("Client non trouvé dans la base de données");
         }
 
-        return client;
+        return user;
     }
 
     /**
-     * Permet de modifier les données du nom de l'objet de la classe Client en paramètre
-     * dans la base de données à partir de l'id de cet objet en paramètre
+     * Permet de modifier les données de l'objet
      *
      * @param : client = objet en paramètre de la classe Client à mettre à jour à partir de son id
      * @return : objet client en paramètre mis à jour  dans la base de données à retourner
      */
     @Override
-    public Utilisateur modifier(Utilisateur client) {
+    public Utilisateur modifier(Utilisateur user, String mail, String mdp, String nom, String prenom, String adresse, int telephone, Boolean isAdmin) {
+        Utilisateur newUser = new Utilisateur(user.getId(), mail, mdp, nom, prenom, adresse, telephone, isAdmin);
+
         try {
             // Connexion à la base de données
             Connection connexion = daoFactory.getConnection();
             Statement statement = connexion.createStatement();
 
-            // Récupération des valeurs de l'objet Client
-            //int vClientId = client.getClientId();
-            //String vClientMail = client.getclientMail();
-            //String vClientNom = client.getclientNom();
+            // Récupération des valeurs de l'objet user
+            int vUserId = newUser.getId();
+            String vUserMail = newUser.getEmail();
+            String vUserMDP = newUser.getMotDePasse();
+            String vUserNom = newUser.getNom();
+            String vUserPrenom = newUser.getPrenom();
+            String vUserAdresse = newUser.getAdresse();
+            int vUserTelephone = newUser.getTelephone();
+            Boolean vUserIsAdmin = newUser.getIsAdmin();
 
             // Construction manuelle de la requête SQL
-            //String sql = "UPDATE clients SET clientNom = '" + vClientNom + "', clientMail = '" + vClientMail + "' WHERE clientID = " + vClientId;
+            String sql = "UPDATE utilisateurs SET utilisateurPrenom = ?, " +
+                    "utilisateurNom = ?, " +
+                    "utilisateurMail = ?, " +
+                    "utilisateurMDP = ?, " +
+                    "utilisateurAdresse = ?, " +
+                    "utilisateurTel = ?, " +
+                    "utilisateurIsAdmin = ? " +
+                    "WHERE utilisateurID = ?";
+
+            try (PreparedStatement pStatement = connexion.prepareStatement(sql)) {
+                pStatement.setString(1, vUserPrenom);
+                pStatement.setString(2, vUserNom);
+                pStatement.setString(3, vUserMail);
+                pStatement.setString(4, vUserMDP);
+                pStatement.setString(5, vUserAdresse);
+                pStatement.setInt(6, vUserTelephone);
+                pStatement.setBoolean(7, vUserIsAdmin);
+                pStatement.setInt(8, vUserId);
+                pStatement.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
 
             // Exécution de la requête
-            //int rowsAffected = statement.executeUpdate(sql);
+            int rowsAffected = statement.executeUpdate(sql);
 
             // Vérification que la mise à jour a bien eu lieu
-            /*if (rowsAffected > 0) {
-                System.out.println("Client mis à jour avec succès.");
+            if (rowsAffected > 0) {
+                System.out.println("Utilisateur mis à jour avec succès.");
             } else {
-                System.out.println("Aucun client trouvé avec l'ID spécifié.");
-            }*/
+                System.out.println("Aucun utilisateur trouvé avec l'ID spécifié.");
+            }
 
             // Fermeture des ressources
             statement.close();
@@ -181,7 +231,7 @@ public class UtilisateurDAOImpl implements UtilisateurDAO {
         }
 
         // Retourne le client mis à jour
-        return client;
+        return newUser;
     }
 
     @Override

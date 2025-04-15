@@ -31,23 +31,17 @@ SET time_zone = "+00:00";
 -- Structure de la table `clients`
 --
 
-DROP TABLE IF EXISTS `utilisateur`;
-CREATE TABLE IF NOT EXISTS `utilisateur` (
+DROP TABLE IF EXISTS `utilisateurs`;
+CREATE TABLE IF NOT EXISTS `utilisateurs` (
   `utilisateurID` int NOT NULL AUTO_INCREMENT,
   `utilisateurPrenom` varchar(50) NOT NULL,
   `utilisateurNom` varchar(50) NOT NULL,
   `utilisateurMail` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL UNIQUE,
   `utilisateurMDP` varchar(100) NOT NULL,
+  `utilisateurAdresse` varchar(50) NOT NULL,
+  `utilisateurTel` varchar(50) NOT NULL,
+  `utilisateurIsAdmin` boolean NOT NULL,
   PRIMARY KEY (`utilisateurID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-DROP TABLE IF EXISTS `client`;
-CREATE TABLE IF NOT EXISTS `client` (
-    `clientID` int NOT NULL AUTO_INCREMENT,
-    `clientAdresse` varchar(50) NOT NULL,
-    `clientTel` varchar(50) NOT NULL,
-    FOREIGN KEY (clientID) REFERENCES utilisateur(utilisateurID) ON DELETE CASCADE,
-    PRIMARY KEY (`clientID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
@@ -68,18 +62,6 @@ CREATE TABLE IF NOT EXISTS `articles` (
 
 
 --
--- Structure de la table `admin`
---
-
-DROP TABLE IF EXISTS `admin`;
-CREATE TABLE IF NOT EXISTS `admin` (
-   `adminID` int NOT NULL AUTO_INCREMENT,
-   FOREIGN KEY (adminID) REFERENCES utilisateur(utilisateurID) ON DELETE CASCADE,
-   PRIMARY KEY (`adminID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-
---
 -- Structure de la table `commande_totale`
 --
 
@@ -90,7 +72,7 @@ CREATE TABLE IF NOT EXISTS `commande_totale` (
    `commandeDate` DATE NOT NULL,
    `statut_commande`varchar(20) NOT NULL,
    `commande_total` FLOAT,
-   FOREIGN KEY (clientID) REFERENCES client(clientID) ON DELETE SET NULL,
+   FOREIGN KEY (clientID) REFERENCES utilisateurs(utilisateurID) ON DELETE SET NULL,
    PRIMARY KEY (`commandeID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 

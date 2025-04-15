@@ -36,7 +36,7 @@ public interface UtilisateurDAO {
      * @param : client = objet en paramètre de la classe Client à mettre à jour
      * @return : objet client en paramètre mis à jour  dans la base de données à retourner
      */
-    public Utilisateur modifier(Utilisateur utilisateur);
+    public Utilisateur modifier(Utilisateur user, String mail, String mdp, String nom, String prenom, String adresse, int telephone, Boolean isAdmin);
 
     /**
      * Supprimer un objet de la classe Client en paramètre dans la base de données en respectant la contrainte
