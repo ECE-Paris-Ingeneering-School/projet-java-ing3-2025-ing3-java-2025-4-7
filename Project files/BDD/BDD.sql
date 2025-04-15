@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS `commande_totale` (
    `clientID` int NOT NULL,
    `commandeDate` DATE NOT NULL,
    `statut_commande`varchar(20) NOT NULL,
-   `commande_total` FLOAT,
+   `prix` FLOAT,
    FOREIGN KEY (clientID) REFERENCES utilisateurs(utilisateurID) ON DELETE SET NULL,
    PRIMARY KEY (`commandeID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -92,7 +92,7 @@ INSERT INTO `utilisateurs` (`utilisateurID`, `utilisateurPrenom`, `utilisateurNo
 -- Déchargement des données de la table `commande_totale`
 --
 
-INSERT INTO `commande_totale` (`commandeID`, `clientID`, `commandeDate`,`statut_commande`,`commande_total`) VALUES
+INSERT INTO `commande_totale` (`commandeID`, `clientID`, `commandeDate`,`statut_commande`,`prix`) VALUES
                                                                                                                 (1, 1, '2023-11-11', 'en cours', 0),
                                                                                                                 (2, 2, '2023-12-12', 'en cours', 0),
                                                                                                                 (3, 3, '2023-10-10', 'en cours', 0);
