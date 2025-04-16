@@ -5,7 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class Article {
-    private final int id;
+    private int id;
     private String nom;
     private String marque;
     private double prixUnitaire;
@@ -51,6 +51,8 @@ public class Article {
     public int getStock() { return stock; }
 
     public boolean isAvailable() { return isAvailable; }
+
+    public void setId(int id) { this.id = id; };
 
     public void setNom(String nom) { this.nom = nom; }
 
