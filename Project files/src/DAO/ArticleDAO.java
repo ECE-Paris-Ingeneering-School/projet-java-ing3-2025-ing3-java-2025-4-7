@@ -11,6 +11,10 @@ import java.util.ArrayList;
  * indépendamment de la méthode de stockage. On indique juste des noms de méthodes ici.
  */
 public interface ArticleDAO {
+
+    public int getSQL_ID();
+
+
     /**
      * Récupérer de la base de données tous les objets des produits dans une liste
      * @return : liste retournée des objets des produits récupérés

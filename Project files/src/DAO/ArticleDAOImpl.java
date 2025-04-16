@@ -21,6 +21,33 @@ public class ArticleDAOImpl implements ArticleDAO {
     }
 
     @Override
+    public int getSQL_ID() {
+        int id = 0;
+        try{
+            // connexion
+            Connection connexion = daoFactory.getConnection();
+            Statement statement = connexion.createStatement();
+
+
+            // Construction manuelle de la requête SQL
+            ResultSet resultat = statement.executeQuery("select articleID from articles");
+            if (resultat.next()) {
+                id = resultat.getInt(1);
+            }
+
+            // Fermeture des ressources
+            resultat.close();
+            statement.close();
+            connexion.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Modification du produit impossible");
+        }
+        return id;
+    }
+
+
+    @Override
     /**
      * Récupérer de la base de données tous les objets des produits dans une liste
      * @return : liste retournée des objets des produits récupérés
