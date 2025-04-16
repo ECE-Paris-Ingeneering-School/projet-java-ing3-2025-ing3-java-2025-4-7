@@ -166,27 +166,58 @@ public class ArticleDAOImpl implements ArticleDAO {
      * @param : product = objet en paramètre de la classe Produit à mettre à jour
      * @return : objet product en paramètre mis à jour  dans la base de données à retourner
       */
-    public Article modifier(Article product) {
+    public Article modifier(Article article, String nom, String marque, double prixUnitaire, double prixVrac, int seuilVrac, int stock) {
+        Article newArticle = new Article(article.getId(), nom, marque, prixUnitaire, prixVrac, seuilVrac, stock);
+
         try{
             // connexion
             Connection connexion = daoFactory.getConnection();
 
             // récupération du nom et prix de l'objet product en paramètre
-            //String nom = product.getProduitNom();
-            //double prix = product.getProduitPrix();
-            //int id = product.getProduitId();
+            int vArticleId = newArticle.getId();
+            String vArticleNom = newArticle.getNom();
+            String vArticleMarque = newArticle.getMarque();
+            double vArticlePrixUnique = newArticle.getPrixUnitaire();
+            double vArticlePrixVrac = newArticle.getPrixVrac();
+            int vArticleSeuilVrac = newArticle.getSeuilVrac();
+            int vArticleStock = newArticle.getStock();
 
-            // Exécution de la requête UPDATE pour modifier le produit dans la base de données
-            PreparedStatement preparedStatement = connexion.prepareStatement("UPDATE produits SET produitNom = ?, produitPrix = ? WHERE produitID = ?");
-            /*preparedStatement.setString(1, nom);
-            preparedStatement.setDouble(2, prix);
-            preparedStatement.setInt(3, id);
-            preparedStatement.executeUpdate();*/
+            // Construction manuelle de la requête SQL
+            String sql = "UPDATE articles SET articleNom = ?, " +
+                    "articleMarque = ?, " +
+                    "articlePrix_unitaire = ?, " +
+                    "articlePrix_vrac = ?, " +
+                    "articleSeuil_vrac = ?, " +
+                    "articleStock = ?, " +
+                    "WHERE utilisateurID = ?";
+
+            try (PreparedStatement statement = connexion.prepareStatement(sql)) {
+                statement.setString(1, vArticleNom);
+                statement.setString(2, vArticleMarque);
+                statement.setDouble(3, vArticlePrixUnique);
+                statement.setDouble(4, vArticlePrixVrac);
+                statement.setInt(5, vArticleSeuilVrac);
+                statement.setInt(6, vArticleStock);
+                statement.setInt(7, vArticleId);
+                int rowsAffected = statement.executeUpdate();
+
+                // Vérification que la mise à jour a bien eu lieu
+                if (rowsAffected > 0) {
+                    System.out.println("Utilisateur mis à jour avec succès.");
+                } else {
+                    System.out.println("Aucun utilisateur trouvé avec l'ID spécifié.");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            // Fermeture des ressources
+            connexion.close();
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("Modification du produit impossible");
         }
-        return product;
+        return newArticle;
     }
 
     @Override
@@ -196,26 +227,40 @@ public class ArticleDAOImpl implements ArticleDAO {
      * table commander qui ont l'id du produit supprimé.
      * @params : product = objet de Produit en paramètre à supprimer de la base de données
      */
-    public void supprimer(Article product) {
+    public Article supprimer(Article article) {
+        Article articleSupp = new Article(article.getId(), article.getNom(), article.getMarque(), article.getPrixUnitaire(), article.getPrixVrac(), article.getSeuilVrac(), article.getStock());
+        articleSupp.setAvailable(false);
+
         try {
             // connexion
             Connection connexion = daoFactory.getConnection();
 
             // récupération de l'id de l'objet product en paramètre
-            //int id = product.getProduitId();
+            int id = articleSupp.getId();
+            boolean isAvailable = articleSupp.isAvailable();
 
-            // Exécution de la requête DELETE pour supprimer les commandes associées au produit
-            PreparedStatement preparedStatement = connexion.prepareStatement("DELETE FROM commander WHERE produitID = ?");
-            //preparedStatement.setInt(1, id);
-            preparedStatement.executeUpdate();
+            // Construction manuelle de la requête SQL
+            String sql = "UPDATE articles SET isAvailable = ?, WHERE articleID = ?";
 
-            // Exécution de la requête DELETE pour supprimer le produit de la base de données
-            preparedStatement = connexion.prepareStatement("DELETE FROM produits WHERE produitID = ?");
-            //preparedStatement.setInt(1, id);
-            preparedStatement.executeUpdate();
+            try (PreparedStatement statement = connexion.prepareStatement(sql)) {
+                statement.setBoolean(1, isAvailable);
+                statement.setInt(2, id);
+                int rowsAffected = statement.executeUpdate();
+
+                // Vérification que la mise à jour a bien eu lieu
+                if (rowsAffected > 0) {
+                    System.out.println("Utilisateur mis à jour avec succès.");
+                } else {
+                    System.out.println("Aucun utilisateur trouvé avec l'ID spécifié.");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("Suppression du produit impossible");
         }
+        return articleSupp;
     }
 }

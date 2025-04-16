@@ -8,6 +8,18 @@ public class Article {
     private double prixVrac;
     private int seuilVrac;
     private int stock;
+    private boolean isAvailable;
+
+    public Article() {
+        this.id = -1;
+        this.nom = "INCONNU";
+        this.marque = "INCONNU";
+        this.prixUnitaire = -1;
+        this.prixVrac = -1;
+        this.seuilVrac = -1;
+        this.stock = -1;
+        this.isAvailable = false;
+    }
 
     public Article(int id, String nom, String marque, double prixUnitaire, double prixVrac, int seuilVrac, int stock) {
         this.id = id;
@@ -17,6 +29,7 @@ public class Article {
         this.prixVrac = prixVrac;
         this.seuilVrac = seuilVrac;
         this.stock = stock;
+        this.isAvailable = true;
     }
 
     public int getId() { return id; }
@@ -33,6 +46,8 @@ public class Article {
 
     public int getStock() { return stock; }
 
+    public boolean isAvailable() { return isAvailable; }
+
     public void setNom(String nom) { this.nom = nom; }
 
     public void setMarque(String marque) { this.marque = marque; }
@@ -44,4 +59,6 @@ public class Article {
     public void setSeuilVrac(int seuilVrac) { this.seuilVrac = seuilVrac; }
 
     public void setStock(int stock) { this.stock = stock; }
+
+    public void setAvailable(boolean available) { this.isAvailable = available; }
 }

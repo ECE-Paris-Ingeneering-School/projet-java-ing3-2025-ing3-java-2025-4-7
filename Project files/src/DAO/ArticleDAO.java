@@ -36,7 +36,7 @@ public interface ArticleDAO {
      * @param : product = objet en paramètre de la classe Produit à mettre à jour
      * @return : objet product en paramètre mis à jour  dans la base de données à retourner
      */
-    public Article modifier(Article product);
+    public Article modifier(Article article, String nom, String marque, double prixUnitaire, double prixVrac, int seuilVrac, int stock);
 
     /**
      * Supprimer un objet de la classe Produit en paramètre dans la base de données en respectant la contrainte
@@ -44,5 +44,5 @@ public interface ArticleDAO {
      * table commander qui ont l'id du produit supprimé.
      * @params : product = objet de Produit en paramètre à supprimer de la base de données
      */
-    public void supprimer (Article product);
+    public Article supprimer (Article product);
 }
