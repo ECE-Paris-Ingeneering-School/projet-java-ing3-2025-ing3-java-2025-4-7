@@ -10,7 +10,27 @@ public class Utilisateur {
     private int telephone;
     private boolean isAdmin;
 
+    public Utilisateur() {
+        this.id = -1;
+        this.email = "INCONNU";
+        this.motDePasse = "INCONNU";
+        this.nom = "INCONNU";
+        this.prenom = "INCONNU";
+        this.adresse = "INCONNU";
+        this.telephone = -1;
+        this.isAdmin = false;
+    }
 
+    public Utilisateur(String email, String motDePasse, String nom, String prenom, String adresse, int telephone, Boolean isAdmin) {
+        this.id = -1;
+        this.email = email;
+        this.motDePasse = motDePasse;
+        this.nom = nom;
+        this.prenom = prenom;
+        this.adresse = adresse;
+        this.telephone = telephone;
+        this.isAdmin = isAdmin;
+    }
 
     public Utilisateur(int id, String email, String motDePasse, String nom, String prenom, String adresse, int telephone, Boolean isAdmin) {
         this.id = id;
