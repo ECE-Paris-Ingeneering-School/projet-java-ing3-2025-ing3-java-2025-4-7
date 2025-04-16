@@ -49,6 +49,24 @@ public class DaoFactory {
         return instance;
     }
 
+    public static DaoFactory getInstanceTest(String database, String username, String password) {
+        try {
+            // Chargement du driver JDBC
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            System.out.println("Erreur : le driver JDBC n'a pas été trouvé.");
+        }
+
+        if (database == null || database.isEmpty() || username == null || username.isEmpty()) {
+            throw new IllegalArgumentException("Les paramètres de connexion ne peuvent pas être vides.");
+        }
+
+        String url = "jdbc:mysql://localhost:3306/" + database;
+
+        return new DaoFactory(url, username, password);
+    }
+
     /**
      * Méthode qui retourne le driver de base de données approprié
      * @return : le driver approprié

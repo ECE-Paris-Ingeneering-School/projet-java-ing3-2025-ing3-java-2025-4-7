@@ -11,9 +11,14 @@ import java.awt.event.ActionListener;
 
 public class ShoppingController {
     private ShoppingView view;
+    UtilisateurDAOImpl utilisateurdao;
+    DaoFactory daofactory;
+
 
     public ShoppingController(ShoppingView view) {
         this.view = view;
+        this.daofactory = DaoFactory.getInstance("projetshoppingjava","root","");
+        this.utilisateurdao = new UtilisateurDAOImpl(daofactory);
 
         view.getHomeButton().addActionListener(e -> view.showPage("HomePage"));
         view.getAccountButton().addActionListener(e -> view.showPage("Account"));
