@@ -60,7 +60,7 @@ public class ArticleDAOImpl implements ArticleDAO {
         */
         try {
             // connexion
-            Connection connexion = daoFactory.getConnection();;
+            Connection connexion = daoFactory.getConnection();
             Statement statement = connexion.createStatement();
 
             // récupération des produits de la base de données avec la requete SELECT
@@ -98,13 +98,15 @@ public class ArticleDAOImpl implements ArticleDAO {
      Ajouter un nouveau produit en paramètre dans la base de données
      @params : product = objet du Produit en paramètre à insérer dans la base de données
      */
-    public void ajouter(Article article) {
+    public Article ajouter(Article article) {
+        Connection connexion = null;
+        PreparedStatement pStatement = null;
+        ResultSet generatedKeys = null;
+
         try {
             // Connexion à la base de données
-            Connection connexion = daoFactory.getConnection();
-            Statement statement = connexion.createStatement();
+            connexion = daoFactory.getConnection();
 
-            int vArticleId = article.getId();
             String vArticleNom = article.getNom();
             String vArticleMarque = article.getMarque();
             double vArticlePrixUnique = article.getPrixUnitaire();
@@ -112,32 +114,52 @@ public class ArticleDAOImpl implements ArticleDAO {
             int vArticleSeuilVrac = article.getSeuilVrac();
             int vArticleStock = article.getStock();
 
-            // Construction manuelle de la requête SQL
-            String sql = "INSERT INTO articles (articleID, articleNom, articleMarque, articlePrix_unitaire, articlePrix_vrac, articleSeuil_vrac, articleStock) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?)";
+            // Construction de la requête SQL avec RETURN_GENERATED_KEYS
+            String sql = "INSERT INTO articles (articleNom, articleMarque, articlePrix_unitaire, articlePrix_vrac, articleSeuil_vrac, articleStock) " +
+                    "VALUES (?, ?, ?, ?, ?, ?)";
 
-            try (PreparedStatement pStatement = connexion.prepareStatement(sql)) {
-                pStatement.setInt(1, vArticleId);
-                pStatement.setString(2, vArticleNom);
-                pStatement.setString(3, vArticleMarque);
-                pStatement.setDouble(4, vArticlePrixUnique);
-                pStatement.setDouble(5, vArticlePrixVrac);
-                pStatement.setInt(6, vArticleSeuilVrac);
-                pStatement.setInt(7, vArticleStock);
-                pStatement.executeUpdate();
+            // Préparation de la requête avec la possibilité de récupérer les clés générées
+            pStatement = connexion.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
+            // Note: Les paramètres commencent à 1, pas à 2
+            pStatement.setString(1, vArticleNom);
+            pStatement.setString(2, vArticleMarque);
+            pStatement.setDouble(3, vArticlePrixUnique);
+            pStatement.setDouble(4, vArticlePrixVrac);
+            pStatement.setInt(5, vArticleSeuilVrac);
+            pStatement.setInt(6, vArticleStock);
+
+            // Exécution de la requête
+            int affectedRows = pStatement.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new SQLException("L'insertion a échoué, aucune ligne affectée.");
+            }
+
+            // Récupération de l'ID généré
+            generatedKeys = pStatement.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                int generatedId = generatedKeys.getInt(1);
+                article.setId(generatedId); // Supposons que votre classe Article a une méthode setId()
+            } else {
+                throw new SQLException("L'insertion a échoué, aucun ID généré.");
+            }
+
+            return article;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Erreur lors de l'ajout de l'article dans la base de données");
+            return null;
+        } finally {
+            // Fermeture des ressources dans le bloc finally
+            try {
+                if (generatedKeys != null) generatedKeys.close();
+                if (pStatement != null) pStatement.close();
+                if (connexion != null) connexion.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            // Exécution de la requête d'insertion
-            statement.executeUpdate(sql);
-
-            // Fermeture des ressources
-            statement.close();
-            connexion.close();
-        } catch (SQLException e) {
-            // Traitement de l'exception
-            e.printStackTrace();
-            System.out.println("Erreur lors de l'ajout de l'article dans la base de données");
         }
     }
 

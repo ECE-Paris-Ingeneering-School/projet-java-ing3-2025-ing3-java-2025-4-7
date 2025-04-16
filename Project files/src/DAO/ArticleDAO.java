@@ -25,7 +25,7 @@ public interface ArticleDAO {
      Ajouter un nouveau produit en paramètre dans la base de données
      @params : product = objet du Produit en paramètre à insérer dans la base de données
      */
-    public void ajouter(Article product);
+    public Article ajouter(Article product);
 
     /**
      * Permet de chercher et récupérer un objet de Produit dans la base de données via son id en paramètre
