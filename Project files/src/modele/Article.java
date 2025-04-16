@@ -1,9 +1,5 @@
 package modele;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
 public class Article {
     private int id;
     private String nom;
@@ -25,7 +21,18 @@ public class Article {
         this.isAvailable = false;
     }
 
-    public Article(int id, String nom, String marque, double prixUnitaire, double prixVrac, int seuilVrac, int stock) {
+    public Article(String nom, String marque, double prixUnitaire, double prixVrac, int seuilVrac, int stock, boolean isAvailable) {
+        this.id = 0;
+        this.nom = nom;
+        this.marque = marque;
+        this.prixUnitaire = prixUnitaire;
+        this.prixVrac = prixVrac;
+        this.seuilVrac = seuilVrac;
+        this.stock = stock;
+        this.isAvailable = isAvailable;
+    }
+
+    public Article(int id, String nom, String marque, double prixUnitaire, double prixVrac, int seuilVrac, int stock, boolean isAvailable) {
         this.id = id;
         this.nom = nom;
         this.marque = marque;
@@ -33,7 +40,7 @@ public class Article {
         this.prixVrac = prixVrac;
         this.seuilVrac = seuilVrac;
         this.stock = stock;
-        this.isAvailable = true;
+        this.isAvailable = isAvailable;
     }
 
     public int getId() { return id; }
@@ -50,7 +57,7 @@ public class Article {
 
     public int getStock() { return stock; }
 
-    public boolean isAvailable() { return isAvailable; }
+    public boolean getIsAvailable() { return isAvailable; }
 
     public void setId(int id) { this.id = id; };
 

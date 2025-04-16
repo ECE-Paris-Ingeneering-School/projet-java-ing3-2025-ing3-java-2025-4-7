@@ -193,7 +193,7 @@ public class UtilisateurDAOImpl implements UtilisateurDAO {
      * @params : client = objet de Client en paramètre à supprimer de la base de données
      */
     @Override
-    public void supprimer(Utilisateur user) {
+    public void supprimer(int id) {
         String deleteCommandesSQL = "DELETE FROM commande_totale WHERE utilisateurID = ?";
         String deleteUtilisateurSQL = "DELETE FROM utilisateurs WHERE utilisateurID = ?";
 
@@ -202,8 +202,8 @@ public class UtilisateurDAOImpl implements UtilisateurDAO {
              PreparedStatement deleteUtilisateurStmt = connexion.prepareStatement(deleteUtilisateurSQL)) {
 
             // Définir l'ID de l'utilisateur pour les deux requêtes
-            deleteCommandesStmt.setInt(1, user.getId());
-            deleteUtilisateurStmt.setInt(1, user.getId());
+            deleteCommandesStmt.setInt(1, id);
+            deleteUtilisateurStmt.setInt(1, id);
 
             // Supprimer les commandes associées
             int commandesAffected = deleteCommandesStmt.executeUpdate();

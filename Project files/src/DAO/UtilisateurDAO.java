@@ -44,6 +44,6 @@ public interface UtilisateurDAO {
      * table commander qui ont l'id du client supprimé.
      * @params : client = objet de Client en paramètre à supprimer de la base de données
      */
-    public void supprimer (Utilisateur utilisateur);
+    public void supprimer (int id);
 
 }

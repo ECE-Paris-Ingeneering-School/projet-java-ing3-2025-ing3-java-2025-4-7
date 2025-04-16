@@ -12,9 +12,6 @@ import java.util.ArrayList;
  */
 public interface ArticleDAO {
 
-    public int getSQL_ID();
-
-
     /**
      * Récupérer de la base de données tous les objets des produits dans une liste
      * @return : liste retournée des objets des produits récupérés
@@ -48,5 +45,5 @@ public interface ArticleDAO {
      * table commander qui ont l'id du produit supprimé.
      * @params : product = objet de Produit en paramètre à supprimer de la base de données
      */
-    public Article supprimer (Article product);
+    public void supprimer (Article product);
 }

@@ -9,22 +9,46 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.UnknownServiceException;
+import java.util.ArrayList;
 
 public class ShoppingController {
     private ShoppingView view;
-    UtilisateurDAOImpl utilisateurdao;
+    UtilisateurDAOImpl utilisateurDAO;
+    ArticleDAOImpl articleDAO;
+    CommandeDAOImpl commandeDAO;
     DaoFactory daofactory;
 
 
     public ShoppingController(ShoppingView view) {
         this.view = view;
         this.daofactory = DaoFactory.getInstance("projetshoppingjava","root","");
-        this.utilisateurdao = new UtilisateurDAOImpl(daofactory);
-        Utilisateur user = new Utilisateur(4,"test", "test", "test", "test", "test", 1234567890, false);
-        Utilisateur user2 = new Utilisateur(7,"test", "test", "test", "test", "test", 1234567890, false);
-        utilisateurdao.ajouter(user);
-        user = utilisateurdao.chercher(2);
-        utilisateurdao.supprimer(user);
+
+        /// TEST - DAO Utilisateur
+        this.utilisateurDAO = new UtilisateurDAOImpl(daofactory);
+        //Utilisateur user = new Utilisateur(4,"test", "test", "test", "test", "test", 1234567890, false);
+        //utilisateurDAO.ajouter(user);
+        //utilisateurDAO.supprimer(3);
+
+        /// TEST - DAO Article
+        this.articleDAO = new ArticleDAOImpl(daofactory);
+        /*Article newArticle = new Article("Choubidou", "yolo", 12.00, 20.00, 5, 50, true);
+        newArticle = articleDAO.ajouter(newArticle);
+
+        System.out.println("Liste des articles");
+        ArrayList<Article> liste = articleDAO.getAll();
+        for (Article a : liste) {
+            System.out.println("ID :" + a.getId() + ", nom :" + a.getNom() + ", marque :" + a.getMarque() + ", disponible :" + a.getIsAvailable());
+        }
+
+        Article aChercher = articleDAO.chercher(5);
+
+        System.out.println(" ");
+        System.out.println("Liste des articles");
+        Article aModifier = articleDAO.modifier(aChercher, "Testxxxxxxxxxxxx...", aChercher.getMarque(), aChercher.getPrixUnitaire(), aChercher.getPrixVrac(), aChercher.getSeuilVrac(), aChercher.getStock());
+        liste = articleDAO.getAll();
+        for (Article a : liste) {
+            System.out.println("ID :" + a.getId() + ", nom :" + a.getNom() + ", marque :" + a.getMarque() + ", disponible :" + a.getIsAvailable());
+        }*/
 
         view.getHomeButton().addActionListener(e -> view.showPage("HomePage"));
         view.getAccountButton().addActionListener(e -> view.showPage("Account"));

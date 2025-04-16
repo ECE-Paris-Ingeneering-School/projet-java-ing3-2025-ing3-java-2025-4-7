@@ -50,13 +50,14 @@ CREATE TABLE IF NOT EXISTS `utilisateurs` (
 
 DROP TABLE IF EXISTS `article`;
 CREATE TABLE IF NOT EXISTS `article` (
-                                         `articleID` int NOT NULL,
+                                         `articleID` int NOT NULL AUTO_INCREMENT,
                                          `articleNom` varchar(50) NOT NULL,
                                          `articleMarque` varchar(50) NOT NULL,
                                          `articlePrix_unitaire` FLOAT NOT NULL,
                                          `articlePrix_vrac` FLOAT NOT NULL,
                                          `articleSeuil_vrac` FLOAT NOT NULL,
                                          `articleStock` int NOT NULL,
+                                         `articleIsAvailable` boolean NOT NULL,
                                          PRIMARY KEY (`articleID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -106,10 +107,10 @@ INSERT INTO `commande_totale` (`commandeID`, `utilisateurID`, `commandeDate`,`Li
 -- Déchargement des données de la table `articles`
 --
 
-INSERT INTO `article` (`articleID`, `articleNom`, `articleMarque`,`articlePrix_unitaire`,`articlePrix_vrac`,`articleSeuil_vrac`,`articleStock`) VALUES
-                                                                                                                                                    (1, 'pantalons', 'adidas', 20, 15, 10, 100),
-                                                                                                                                                    (2, 'chemise', 'adidas', 30, 25, 5, 50),
-                                                                                                                                                    (3, 'chaussures', 'adidas', 50, 40, 2, 20);
+INSERT INTO `article` (`articleID`, `articleNom`, `articleMarque`,`articlePrix_unitaire`,`articlePrix_vrac`,`articleSeuil_vrac`,`articleStock`, `articleIsAvailable`) VALUES
+                                                                                                                                                    (1, 'pantalons', 'adidas', 20, 15, 10, 100, true),
+                                                                                                                                                    (2, 'chemise', 'adidas', 30, 25, 5, 50, true),
+                                                                                                                                                    (3, 'chaussures', 'adidas', 50, 40, 2, 20, true);
 
 COMMIT;
 
