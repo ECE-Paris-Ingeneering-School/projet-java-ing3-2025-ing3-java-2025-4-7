@@ -2,16 +2,16 @@ package modele;
 
 public class Commande {
     private final int id;
-    private final int clientID;
+    private final int utilisateurID;
     private final String date;
     private String statut;
     private final double prix;
     private final String listeID_Article;
     private final String listeQuantite_Article;
 
-    public Commande(int id, int clientID, String date, String statut, double prix, String listeID_Article, String listeQuantite_Article) {
+    public Commande(int id, int utilisateurID, String date, String statut, double prix, String listeID_Article, String listeQuantite_Article) {
         this.id = id;
-        this.clientID = clientID;
+        this.utilisateurID = utilisateurID;
         this.date = date;
         this.statut = statut;
         this.prix = prix;
@@ -21,7 +21,7 @@ public class Commande {
 
     public int getId() { return id; }
 
-    public int getClientID() { return clientID; }
+    public int getUtilisateurID() { return utilisateurID; }
 
     public String getDate() { return date; }
 
