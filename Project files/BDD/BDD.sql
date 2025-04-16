@@ -68,13 +68,13 @@ CREATE TABLE IF NOT EXISTS `article` (
 DROP TABLE IF EXISTS `commande_totale`;
 CREATE TABLE IF NOT EXISTS `commande_totale` (
                                                  `commandeID` int NOT NULL AUTO_INCREMENT,
-                                                 `clientID` int NOT NULL,
+                                                 `utilisateurID` int NOT NULL,
                                                  `commandeDate` DATE NOT NULL,
                                                  `statut_commande`varchar(20) NOT NULL,
                                                  `Liste_Id_articles` VARCHAR(255) NOT NULL,
                                                  `Liste_Quantite_articles` VARCHAR(255) NOT NULL,
                                                  `prix` FLOAT,
-                                                 FOREIGN KEY (clientID) REFERENCES utilisateurs(utilisateurID) ON DELETE SET NULL,
+                                                 FOREIGN KEY (utilisateurID) REFERENCES utilisateurs(utilisateurID) ON DELETE SET NULL,
                                                  PRIMARY KEY (`commandeID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -94,7 +94,7 @@ INSERT INTO `utilisateurs` (`utilisateurID`, `utilisateurPrenom`, `utilisateurNo
 -- Déchargement des données de la table `commande_totale`
 --
 
-INSERT INTO `commande_totale` (`commandeID`, `clientID`, `commandeDate`,`Liste_Id_articles`,`Liste_Quantite_articles`,`statut_commande`,`prix`) VALUES
+INSERT INTO `commande_totale` (`commandeID`, `utilisateurID`, `commandeDate`,`Liste_Id_articles`,`Liste_Quantite_articles`,`statut_commande`,`prix`) VALUES
                                                                                                                                                     (1, 1, '2023-11-11', '0-1-2','0-4-2','en cours', 0),
                                                                                                                                                     (2, 2, '2023-11-12', '0-1','0-4','en cours', 0),
                                                                                                                                                     (3, 3, '2023-11-13', '0-1-2','0-4-2','en cours', 0),

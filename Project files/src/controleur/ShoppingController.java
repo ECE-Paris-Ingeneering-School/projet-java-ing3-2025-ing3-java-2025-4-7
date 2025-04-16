@@ -20,11 +20,11 @@ public class ShoppingController {
         this.view = view;
         this.daofactory = DaoFactory.getInstance("projetshoppingjava","root","");
         this.utilisateurdao = new UtilisateurDAOImpl(daofactory);
-        Utilisateur user = new Utilisateur(6,"test", "test", "test", "test", "test", 1234567890, false);
+        Utilisateur user = new Utilisateur(4,"test", "test", "test", "test", "test", 1234567890, false);
         Utilisateur user2 = new Utilisateur(7,"test", "test", "test", "test", "test", 1234567890, false);
-        user2 = utilisateurdao.chercher(5);
-        utilisateurdao.modifier(user2, "aze", "test", "erz", "azerf", "aef", 1234567890, false);
-        //utilisateurdao.supprimer(user);
+        utilisateurdao.ajouter(user);
+        user = utilisateurdao.chercher(2);
+        utilisateurdao.supprimer(user);
 
         view.getHomeButton().addActionListener(e -> view.showPage("HomePage"));
         view.getAccountButton().addActionListener(e -> view.showPage("Account"));

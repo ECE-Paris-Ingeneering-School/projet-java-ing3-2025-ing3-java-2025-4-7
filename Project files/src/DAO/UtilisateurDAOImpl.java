@@ -148,6 +148,10 @@ public class UtilisateurDAOImpl implements UtilisateurDAO {
      */
     @Override
     public Utilisateur modifier(Utilisateur user, String mail, String mdp, String nom, String prenom, String adresse, int telephone, Boolean isAdmin) {
+        if (user == null) {
+            throw new IllegalArgumentException("L'utilisateur à modifier ne peut pas être null.");
+        }
+
         Utilisateur newUser = new Utilisateur(user.getId(), mail, mdp, nom, prenom, adresse, telephone, isAdmin);
 
         String sql = "UPDATE utilisateurs SET utilisateurPrenom = ?, utilisateurNom = ?, utilisateurMail = ?, utilisateurMDP = ?, utilisateurAdresse = ?, utilisateurTel = ?, utilisateurIsAdmin = ? WHERE utilisateurID = ?";
@@ -182,54 +186,44 @@ public class UtilisateurDAOImpl implements UtilisateurDAO {
         return newUser;
     }
 
-    @Override
     /**
      * Supprimer un objet de la classe Client en paramètre dans la base de données en respectant la contrainte
      * d'intégrité référentielle : en supprimant un client, supprimer aussi en cascade toutes les commandes de la
      * table commander qui ont l'id du client supprimé.
      * @params : client = objet de Client en paramètre à supprimer de la base de données
      */
+    @Override
     public void supprimer(Utilisateur user) {
-        try {
-            // Connexion à la base de données
-            Connection connexion = daoFactory.getConnection();
-            Statement statement = connexion.createStatement();
+        String deleteCommandesSQL = "DELETE FROM commande_totale WHERE utilisateurID = ?";
+        String deleteUtilisateurSQL = "DELETE FROM utilisateurs WHERE utilisateurID = ?";
 
-            // Récupération des valeurs de l'objet Client
-            int vUserID = user.getId();
+        try (Connection connexion = daoFactory.getConnection();
+             PreparedStatement deleteCommandesStmt = connexion.prepareStatement(deleteCommandesSQL);
+             PreparedStatement deleteUtilisateurStmt = connexion.prepareStatement(deleteUtilisateurSQL)) {
 
-            // Construction manuelle de la requête SQL
-            String sql = "DELETE FROM commander WHERE utilisateurID = " + vUserID;
+            // Définir l'ID de l'utilisateur pour les deux requêtes
+            deleteCommandesStmt.setInt(1, user.getId());
+            deleteUtilisateurStmt.setInt(1, user.getId());
 
-            // Exécution de la requête
-            int rowsAffected = statement.executeUpdate(sql);
+            // Supprimer les commandes associées
+            int commandesAffected = deleteCommandesStmt.executeUpdate();
+            if (commandesAffected > 0) {
+                System.out.println("Commandes associées supprimées avec succès.");
+            } else {
+                System.out.println("Aucune commande trouvée pour cet utilisateur.");
+            }
 
-            // Vérification que la mise à jour a bien eu lieu
-            if (rowsAffected > 0) {
+            // Supprimer l'utilisateur
+            int utilisateurAffected = deleteUtilisateurStmt.executeUpdate();
+            if (utilisateurAffected > 0) {
                 System.out.println("Utilisateur supprimé avec succès.");
             } else {
                 System.out.println("Aucun utilisateur trouvé avec l'ID spécifié.");
             }
-            // Construction manuelle de la requête SQL
-            sql = "DELETE FROM clients WHERE utilisateurID = " + vUserID;
 
-            // Exécution de la requête
-            rowsAffected = statement.executeUpdate(sql);
-
-            // Vérification que la mise à jour a bien eu lieu
-            if (rowsAffected > 0) {
-                System.out.println("Utilisateur supprimé avec succès.");
-            } else {
-                System.out.println("Aucun Utilisateur trouvé avec l'ID spécifié.");
-            }
-
-            // Fermeture des ressources
-            statement.close();
-            connexion.close();
         } catch (SQLException e) {
-            // Traitement de l'exception
             e.printStackTrace();
-            System.out.println("Erreur lors de la mise à jour du client dans la base de données");
+            System.out.println("Erreur lors de la suppression de l'utilisateur dans la base de données.");
         }
     }
 
