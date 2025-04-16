@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.UnknownServiceException;
 
 public class ShoppingController {
     private ShoppingView view;
@@ -19,8 +20,11 @@ public class ShoppingController {
         this.view = view;
         this.daofactory = DaoFactory.getInstance("projetshoppingjava","root","");
         this.utilisateurdao = new UtilisateurDAOImpl(daofactory);
-        Utilisateur user = new Utilisateur(4,"test", "test", "test", "test", "test", 1234567890, false);
-        utilisateurdao.ajouter(user);
+        Utilisateur user = new Utilisateur(6,"test", "test", "test", "test", "test", 1234567890, false);
+        Utilisateur user2 = new Utilisateur(7,"test", "test", "test", "test", "test", 1234567890, false);
+        user2 = utilisateurdao.chercher(5);
+        utilisateurdao.modifier(user2, "aze", "test", "erz", "azerf", "aef", 1234567890, false);
+        //utilisateurdao.supprimer(user);
 
         view.getHomeButton().addActionListener(e -> view.showPage("HomePage"));
         view.getAccountButton().addActionListener(e -> view.showPage("Account"));

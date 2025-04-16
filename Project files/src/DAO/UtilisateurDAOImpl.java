@@ -150,64 +150,35 @@ public class UtilisateurDAOImpl implements UtilisateurDAO {
     public Utilisateur modifier(Utilisateur user, String mail, String mdp, String nom, String prenom, String adresse, int telephone, Boolean isAdmin) {
         Utilisateur newUser = new Utilisateur(user.getId(), mail, mdp, nom, prenom, adresse, telephone, isAdmin);
 
-        try {
-            // Connexion à la base de données
-            Connection connexion = daoFactory.getConnection();
-            Statement statement = connexion.createStatement();
+        String sql = "UPDATE utilisateurs SET utilisateurPrenom = ?, utilisateurNom = ?, utilisateurMail = ?, utilisateurMDP = ?, utilisateurAdresse = ?, utilisateurTel = ?, utilisateurIsAdmin = ? WHERE utilisateurID = ?";
 
-            // Récupération des valeurs de l'objet user
-            String vUserMail = newUser.getEmail();
-            String vUserMDP = newUser.getMotDePasse();
-            String vUserNom = newUser.getNom();
-            String vUserPrenom = newUser.getPrenom();
-            String vUserAdresse = newUser.getAdresse();
-            int vUserTelephone = newUser.getTelephone();
-            Boolean vUserIsAdmin = newUser.getIsAdmin();
+        try (Connection connexion = daoFactory.getConnection();
+             PreparedStatement pStatement = connexion.prepareStatement(sql)) {
 
-            // Construction manuelle de la requête SQL
-            String sql = "UPDATE utilisateurs SET utilisateurPrenom = ?, " +
-                    "utilisateurNom = ?, " +
-                    "utilisateurMail = ?, " +
-                    "utilisateurMDP = ?, " +
-                    "utilisateurAdresse = ?, " +
-                    "utilisateurTel = ?, " +
-                    "utilisateurIsAdmin = ? " +
-                    "WHERE utilisateurID = ?";
+            // Définir les paramètres de la requête
+            pStatement.setString(1, prenom);
+            pStatement.setString(2, nom);
+            pStatement.setString(3, mail);
+            pStatement.setString(4, mdp);
+            pStatement.setString(5, adresse);
+            pStatement.setInt(6, telephone);
+            pStatement.setBoolean(7, isAdmin);
+            pStatement.setInt(8, user.getId());
 
-            try (PreparedStatement pStatement = connexion.prepareStatement(sql)) {
-                pStatement.setString(1, vUserPrenom);
-                pStatement.setString(2, vUserNom);
-                pStatement.setString(3, vUserMail);
-                pStatement.setString(4, vUserMDP);
-                pStatement.setString(5, vUserAdresse);
-                pStatement.setInt(6, vUserTelephone);
-                pStatement.setBoolean(7, vUserIsAdmin);
-                pStatement.setInt(8, newUser.getId());
-                pStatement.executeUpdate();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            // Exécuter la requête
+            int rowsAffected = pStatement.executeUpdate();
 
-            // Exécution de la requête
-            int rowsAffected = statement.executeUpdate(sql);
-
-            // Vérification que la mise à jour a bien eu lieu
             if (rowsAffected > 0) {
                 System.out.println("Utilisateur mis à jour avec succès.");
             } else {
                 System.out.println("Aucun utilisateur trouvé avec l'ID spécifié.");
             }
 
-            // Fermeture des ressources
-            statement.close();
-            connexion.close();
         } catch (SQLException e) {
-            // Traitement de l'exception
             e.printStackTrace();
             System.out.println("Erreur lors de la mise à jour du client dans la base de données");
         }
 
-        // Retourne le client mis à jour
         return newUser;
     }
 
