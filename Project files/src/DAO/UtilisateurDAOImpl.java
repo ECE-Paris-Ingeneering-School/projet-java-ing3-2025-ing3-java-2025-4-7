@@ -178,7 +178,6 @@ public class UtilisateurDAOImpl implements UtilisateurDAO {
             Statement statement = connexion.createStatement();
 
             // Récupération des valeurs de l'objet user
-            int vUserId = newUser.getId();
             String vUserMail = newUser.getEmail();
             String vUserMDP = newUser.getMotDePasse();
             String vUserNom = newUser.getNom();
@@ -205,7 +204,7 @@ public class UtilisateurDAOImpl implements UtilisateurDAO {
                 pStatement.setString(5, vUserAdresse);
                 pStatement.setInt(6, vUserTelephone);
                 pStatement.setBoolean(7, vUserIsAdmin);
-                pStatement.setInt(8, vUserId);
+                pStatement.setInt(8, newUser.getId());
                 pStatement.executeUpdate();
             } catch (SQLException e) {
                 e.printStackTrace();

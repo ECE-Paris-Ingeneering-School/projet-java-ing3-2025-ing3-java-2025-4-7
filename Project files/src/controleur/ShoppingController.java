@@ -2,6 +2,7 @@ package controleur;
 
 import vue.*;
 import modele.*;
+import DAO.*;
 
 import javax.swing.*;
 import java.awt.*;
