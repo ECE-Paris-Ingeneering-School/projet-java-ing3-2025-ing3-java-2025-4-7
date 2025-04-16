@@ -19,6 +19,8 @@ public class ShoppingController {
         this.view = view;
         this.daofactory = DaoFactory.getInstance("projetshoppingjava","root","");
         this.utilisateurdao = new UtilisateurDAOImpl(daofactory);
+        Utilisateur user = new Utilisateur(4,"test", "test", "test", "test", "test", 1234567890, false);
+        utilisateurdao.ajouter(user);
 
         view.getHomeButton().addActionListener(e -> view.showPage("HomePage"));
         view.getAccountButton().addActionListener(e -> view.showPage("Account"));
@@ -38,7 +40,7 @@ public class ShoppingController {
                 String prenom = "John"; // Dummy first name for demonstration
                 String adresse = "123 Main St"; // Dummy address for demonstration
                 int telephone = 1234567890; // Dummy phone number for demonstration
-                Boolean isAdmin = false; // Dummy admin status for demonstration
+                boolean isAdmin = false; // Dummy admin status for demonstration
                 String email = view.getLoginEmail();
                 String password = view.getLoginPassword();
                 if (email.isEmpty() || password.isEmpty()) {

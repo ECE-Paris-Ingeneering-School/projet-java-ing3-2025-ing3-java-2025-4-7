@@ -49,7 +49,7 @@ public class UtilisateurDAOImpl implements UtilisateurDAO {
                 String prenom = resultats.getString(5);
                 String adresse = resultats.getString(6);
                 int telephone = resultats.getInt(7);
-                Boolean isAdmin = resultats.getBoolean(8);
+                boolean isAdmin = resultats.getBoolean(8);
 
                 // instancier un objet de Produit avec ces 3 champs en paramètres
                 Utilisateur utilisateur = new Utilisateur(id, email, mdp, nom, prenom, adresse, telephone, isAdmin);
@@ -73,46 +73,24 @@ public class UtilisateurDAOImpl implements UtilisateurDAO {
      */
     @Override
     public void ajouter(Utilisateur user) {
-        try {
-            // Connexion à la base de données
-            Connection connexion = daoFactory.getConnection();
-            Statement statement = connexion.createStatement();
+        String sql = "INSERT INTO utilisateurs (utilisateurID, utilisateurPrenom, utilisateurNom, utilisateurMail, utilisateurMDP, utilisateurAdresse, utilisateurTel, utilisateurIsAdmin) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-            int vUserId = user.getId();
-            String vUserMail = user.getEmail();
-            String vUserMDP = user.getMotDePasse();
-            String vUserNom = user.getNom();
-            String vUserPrenom = user.getPrenom();
-            String vUserAdresse = user.getAdresse();
-            int vUserTelephone = user.getTelephone();
-            Boolean vUserIsAdmin = user.getIsAdmin();
+        try (Connection connexion = daoFactory.getConnection();
+             PreparedStatement pStatement = connexion.prepareStatement(sql)) {
 
-            // Construction manuelle de la requête SQL
-            String sql = "INSERT INTO clients (utilisateurID, utilisateurPrenom, utilisateurNom, utilisateurMail, utilisateurMDP, utilisateurAdresse, utilisateurTel, utilisateurIsAdmin) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            pStatement.setInt(1, user.getId());
+            pStatement.setString(2, user.getPrenom());
+            pStatement.setString(3, user.getNom());
+            pStatement.setString(4, user.getEmail());
+            pStatement.setString(5, user.getMotDePasse());
+            pStatement.setString(6, user.getAdresse());
+            pStatement.setInt(7, user.getTelephone());
+            pStatement.setBoolean(8, user.getIsAdmin());
 
-            try (PreparedStatement pStatement = connexion.prepareStatement(sql)) {
-                pStatement.setInt(1, vUserId);
-                pStatement.setString(2, vUserPrenom);
-                pStatement.setString(3, vUserNom);
-                pStatement.setString(4, vUserMail);
-                pStatement.setString(5, vUserMDP);
-                pStatement.setString(6, vUserAdresse);
-                pStatement.setInt(7, vUserTelephone);
-                pStatement.setBoolean(8, vUserIsAdmin);
-                pStatement.executeUpdate();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            // Exécution de la requête d'insertion
-            statement.executeUpdate(sql);
-
-
-            // Fermeture des ressources
-            statement.close();
-            connexion.close();
+            pStatement.executeUpdate();
+            System.out.println("Utilisateur ajouté avec succès !");
         } catch (SQLException e) {
-            // Traitement de l'exception
             e.printStackTrace();
             System.out.println("Erreur lors de l'ajout du client dans la base de données");
         }

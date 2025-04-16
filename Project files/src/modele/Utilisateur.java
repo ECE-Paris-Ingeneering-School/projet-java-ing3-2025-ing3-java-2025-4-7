@@ -8,7 +8,7 @@ public class Utilisateur {
     private String prenom;
     private String adresse;
     private int telephone;
-    private Boolean isAdmin;
+    private boolean isAdmin;
 
 
 
@@ -37,7 +37,7 @@ public class Utilisateur {
 
     public int getTelephone() { return telephone; }
 
-    public Boolean getIsAdmin() { return isAdmin; }
+    public boolean getIsAdmin() { return isAdmin; }
 
     public void setEmail(String email) { this.email = email; }
 
@@ -51,5 +51,5 @@ public class Utilisateur {
 
     public void setTelephone(int telephone) { this.telephone = telephone; }
 
-    public void setIsAdmin(Boolean isAdmin) { this.isAdmin = isAdmin; }
+    public void setIsAdmin(boolean isAdmin) { this.isAdmin = isAdmin; }
 }
