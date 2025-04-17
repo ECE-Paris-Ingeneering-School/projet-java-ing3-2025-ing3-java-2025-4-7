@@ -141,11 +141,72 @@ public class ShoppingView {
 
     private JPanel createCommandePagePanel() {
         JPanel panel = new JPanel(new BorderLayout());
-        JLabel label = new JLabel("Merci pour votre commande !", SwingConstants.CENTER);
+
+        JLabel label = new JLabel("Finalisez votre commande", SwingConstants.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 24));
-        panel.add(label, BorderLayout.CENTER);
+        panel.add(label, BorderLayout.NORTH);
+
+        JPanel formPanel = new JPanel();
+        formPanel.setLayout(new GridLayout(12, 2, 10, 10));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
+
+        // Section adresse
+        formPanel.add(new JLabel("Adresse (ligne 1) :"));
+        JTextField adresseField = new JTextField();
+        formPanel.add(adresseField);
+
+        formPanel.add(new JLabel("Code postal :"));
+        JTextField codePostalField = new JTextField();
+        formPanel.add(codePostalField);
+
+        formPanel.add(new JLabel("Ville :"));
+        JTextField villeField = new JTextField();
+        formPanel.add(villeField);
+
+        formPanel.add(new JLabel("Pays :"));
+        JTextField paysField = new JTextField();
+        formPanel.add(paysField);
+
+        // Espacement visuel
+        formPanel.add(new JLabel("")); formPanel.add(new JLabel(""));
+
+        // Section paiement
+        formPanel.add(new JLabel("Nom et prénom sur la carte :"));
+        JTextField nomPrenomCarteField = new JTextField();
+        formPanel.add(nomPrenomCarteField);
+
+        formPanel.add(new JLabel("Numéro de carte :"));
+        JTextField numeroCarteField = new JTextField();
+        formPanel.add(numeroCarteField);
+
+        formPanel.add(new JLabel("Date d'expiration (MM/AA) :"));
+        JTextField expirationField = new JTextField();
+        formPanel.add(expirationField);
+
+        formPanel.add(new JLabel("Code de sécurité (CVC) :"));
+        JTextField cvcField = new JTextField();
+        formPanel.add(cvcField);
+
+        // Espacement visuel
+        formPanel.add(new JLabel("")); formPanel.add(new JLabel(""));
+
+        // Bouton de validation
+        JButton validerButton = new JButton("Valider la commande");
+        validerButton.setFont(new Font("Arial", Font.BOLD, 16));
+        validerButton.setBackground(new Color(34, 139, 34));
+        validerButton.setForeground(Color.WHITE);
+        validerButton.setFocusPainted(false);
+        validerButton.setPreferredSize(new Dimension(200, 40));
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(validerButton);
+
+        panel.add(formPanel, BorderLayout.CENTER);
+        panel.add(buttonPanel, BorderLayout.SOUTH);
+
         return panel;
     }
+
 
     private JPanel createLoginPagePanel() {
         JPanel panel = new JPanel(new GridLayout(4, 1));
