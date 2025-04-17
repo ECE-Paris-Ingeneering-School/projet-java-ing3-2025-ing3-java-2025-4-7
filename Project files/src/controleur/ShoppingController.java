@@ -22,11 +22,8 @@ public class ShoppingController {
         this.utilisateurConnecte = null; // Au début, personne n'est connecté
         this.daoFactory = DaoFactory.getInstance("projetshoppingjava","root","");
         this.utilisateurDAO = new UtilisateurDAOImpl(this.daoFactory);
-//        Utilisateur user = new Utilisateur("email", "password", "nom", "prenom", "adresse", 1234567890, false);
-//        this.utilisateurDAO.ajouter(user);
-//        this.utilisateurDAO.modifier(user, "bite", "password", "nom", "prenom", "adresse", 1234567890, false);
 
-
+        // Initialisation des listeners
         view.getHomeButton().addActionListener(e -> view.showPage("HomePage"));
         view.getAccountButton().addActionListener(e -> {
             if (this.utilisateurConnecte != null) {
@@ -56,6 +53,7 @@ public class ShoppingController {
             view.showPage("HomePage"); // Redirection vers la page d'accueil après déconnexion
         });
 
+        // Gestion des boutons de la page de connexion et d'inscription
         view.getSubmitLoginButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -193,3 +191,9 @@ public class ShoppingController {
         }
     }
 }
+
+
+//Exemple de comment utiliser le dao:
+//        Utilisateur user = new Utilisateur("email", "password", "nom", "prenom", "adresse", 1234567890, false);
+//        this.utilisateurDAO.ajouter(user);
+//        this.utilisateurDAO.modifier(user, "bite", "password", "nom", "prenom", "adresse", 1234567890, false);
