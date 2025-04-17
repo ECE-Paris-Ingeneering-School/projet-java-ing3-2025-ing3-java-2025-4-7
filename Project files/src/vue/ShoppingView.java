@@ -6,6 +6,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ShoppingView {
     private JFrame frame;
@@ -98,6 +102,57 @@ public class ShoppingView {
         panel.add(label, BorderLayout.CENTER);
         return panel;
     }
+
+    public void updateHomePageView(List<Map<String, String>> articles) {
+        JPanel homePanel = new JPanel();
+        homePanel.setLayout(new BoxLayout(homePanel, BoxLayout.Y_AXIS));
+        homePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        // Titre centré
+        JLabel title = new JLabel("Bienvenue sur notre site de Shopping");
+        title.setFont(new Font("Arial", Font.BOLD, 24));
+        title.setAlignmentX(Component.CENTER_ALIGNMENT);
+        homePanel.add(title);
+        homePanel.add(Box.createRigidArea(new Dimension(0, 20)));
+
+        // Panel des articles avec une grille de 2 lignes
+        JPanel articlesPanel = new JPanel(new GridLayout(2, 3, 20, 20)); // 2 lignes, 3 colonnes
+
+        for (Map<String, String> a : articles) {
+            JPanel card = new JPanel();
+            card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
+            card.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+            card.setBackground(Color.WHITE);
+            card.setPreferredSize(new Dimension(200, 150));
+
+            JLabel nom = new JLabel(a.get("nom"));
+            nom.setFont(new Font("Arial", Font.BOLD, 16));
+            JLabel marque = new JLabel("Marque : " + a.get("marque"));
+            JLabel prix = new JLabel("Prix : " + a.get("prix"));
+
+            nom.setAlignmentX(Component.CENTER_ALIGNMENT);
+            marque.setAlignmentX(Component.CENTER_ALIGNMENT);
+            prix.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+            card.add(nom);
+            card.add(marque);
+            card.add(prix);
+
+            articlesPanel.add(card);
+        }
+
+        JScrollPane scrollPane = new JScrollPane(articlesPanel);
+        homePanel.add(scrollPane);
+
+        // Mise à jour du mainPanel
+        mainPanel.removeAll();
+        mainPanel.add(homePanel, BorderLayout.CENTER);
+        mainPanel.revalidate();
+        mainPanel.repaint();
+    }
+
+
+
 
     private JPanel createAccountPagePanel() {
         JPanel panel = new JPanel(new BorderLayout());
@@ -381,10 +436,6 @@ public class ShoppingView {
         panel.add(formContainer, gbc);
         return panel;
     }
-
-
-
-
 
     // Method to create the updateAccountPagePanel
     private JPanel updateAccountPagePanel() {

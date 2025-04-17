@@ -110,7 +110,14 @@ INSERT INTO `commande_totale` (`commandeID`, `utilisateurID`, `commandeDate`,`Li
 INSERT INTO `article` (`articleID`, `articleNom`, `articleMarque`,`articlePrix_unitaire`,`articlePrix_vrac`,`articleSeuil_vrac`,`articleStock`, `articleIsAvailable`) VALUES
                                                                                                                                                     (1, 'pantalons', 'adidas', 20, 15, 10, 100, true),
                                                                                                                                                     (2, 'chemise', 'adidas', 30, 25, 5, 50, true),
-                                                                                                                                                    (3, 'chaussures', 'adidas', 50, 40, 2, 20, true);
+                                                                                                                                                    (3, 'chaussures', 'adidas', 50, 40, 2, 20, true),
+                                                                                                                                                    (4, 'sac', 'adidas', 10, 8, 20, 200, true),
+                                                                                                                                                    (5, 'veste', 'adidas', 40, 35, 15, 150, true),
+                                                                                                                                                    (6, 'ceinture', 'adidas', 15, 12, 25, 250, true),
+                                                                                                                                                    (7, 'montre', 'adidas', 100, 80, 1, 10, true),
+                                                                                                                                                    (8, 'lunettes', 'adidas', 60, 50, 3, 30, true),
+                                                                                                                                                    (9, 'chapeau', 'adidas', 25, 20, 8, 80, true),
+                                                                                                                                                    (10,'gants', 'adidas', 12.5 ,10 ,12 ,120 ,true);
 
 COMMIT;
 

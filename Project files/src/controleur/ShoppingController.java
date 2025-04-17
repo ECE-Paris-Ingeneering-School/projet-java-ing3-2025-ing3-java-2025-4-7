@@ -3,6 +3,10 @@ package controleur;
 import vue.*;
 import modele.*;
 import DAO.*;
+import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 
 import javax.swing.*;
@@ -23,7 +27,15 @@ public class ShoppingController {
         this.daoFactory = DaoFactory.getInstance("projetshoppingjava","root","");
         this.utilisateurDAO = new UtilisateurDAOImpl(this.daoFactory);
 
+
+
         // Initialisation des listeners
+
+        //bouton de la page d'accueil
+        view.getHomeButton().addActionListener(e -> {
+            view.showPage("HomePage");
+        });
+
         view.getAccountButton().addActionListener(e -> {
             if (utilisateurConnecte != null) {
                 // MAJ des infos dynamiquement depuis la BDD
@@ -133,6 +145,8 @@ public class ShoppingController {
             JOptionPane.showMessageDialog(null, "Vous êtes maintenant déconnecté.");
             view.showPage("HomePage"); // Redirige vers la page d'accueil après déconnexion
         });
+
+        afficherAccueil();
     }
 
     private void setupPanierListeners() {
@@ -196,6 +210,25 @@ public class ShoppingController {
         } catch (Exception e) {
             return 1;
         }
+    }
+
+    public void afficherAccueil() {
+        ArticleDAO articleDAO = new ArticleDAOImpl(daoFactory);
+        List<Article> articles = articleDAO.getAll();
+
+        List<Map<String, String>> articlesFormates = new ArrayList<>();
+        for (Article article : articles) {
+            if (article.getIsAvailable()) {
+                Map<String, String> data = new HashMap<>();
+                data.put("nom", article.getNom());
+                data.put("marque", article.getMarque());
+                data.put("prix", String.format("%.2f €", article.getPrixUnitaire()));
+                articlesFormates.add(data);
+            }
+        }
+
+        view.updateHomePageView(articlesFormates);
+        view.showPage("HomePage");
     }
 
 }
