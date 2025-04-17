@@ -160,6 +160,9 @@ public class ShoppingView {
         JPanel articlesPanel = new JPanel();
         articlesPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 20));
 
+        // Appliquer un padding uniforme à l'intérieur du panel d'articles
+        articlesPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));  // Padding de 10 pixels de chaque côté
+
         for (Map<String, String> article : articles) {
             JPanel card = new JPanel();
             card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
@@ -187,6 +190,14 @@ public class ShoppingView {
         JScrollPane scrollPane = new JScrollPane(articlesPanel,
                 JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         scrollPane.getHorizontalScrollBar().setUnitIncrement(16); // Ajuste la vitesse du défilement horizontal
+
+        // Cacher la barre de défilement verticale
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+
+        // Cacher la barre de défilement horizontale et la rendre manipulable uniquement via les boutons
+        JScrollBar horizontalBar = scrollPane.getHorizontalScrollBar();
+        horizontalBar.setPreferredSize(new Dimension(0, 0)); // Réduire la taille à 0 pour la cacher visuellement
+
         panel.add(scrollPane);
 
         // Ajouter les boutons fléchés pour contrôler le défilement
@@ -195,13 +206,11 @@ public class ShoppingView {
         JButton rightButton = new JButton("▶");
 
         leftButton.addActionListener(e -> {
-            JScrollBar horizontalBar = scrollPane.getHorizontalScrollBar();
-            horizontalBar.setValue(horizontalBar.getValue() - 50);  // Défilement à gauche
+            horizontalBar.setValue(horizontalBar.getValue() - 230);  // Défilement à gauche
         });
 
         rightButton.addActionListener(e -> {
-            JScrollBar horizontalBar = scrollPane.getHorizontalScrollBar();
-            horizontalBar.setValue(horizontalBar.getValue() + 50);  // Défilement à droite
+            horizontalBar.setValue(horizontalBar.getValue() + 230);  // Défilement à droite
         });
 
         buttonPanel.add(leftButton);
@@ -210,6 +219,8 @@ public class ShoppingView {
 
         return panel;
     }
+
+
 
 
 
