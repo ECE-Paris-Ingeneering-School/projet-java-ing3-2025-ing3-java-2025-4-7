@@ -29,8 +29,9 @@ public class ShoppingController {
 
         view.getHomeButton().addActionListener(e -> view.showPage("HomePage"));
         view.getAccountButton().addActionListener(e -> {
-            if (utilisateurConnecte != null) {
+            if (this.utilisateurConnecte != null) {
                 // Si l'utilisateur est connecté, affiche la page "UpdateAccount"
+                view.updateAccountPanel(this.utilisateurConnecte); // Met à jour les informations
                 view.showPage("UpdateAccount");
             } else {
                 // Si l'utilisateur n'est pas connecté, affiche la page "Login" (connexion)

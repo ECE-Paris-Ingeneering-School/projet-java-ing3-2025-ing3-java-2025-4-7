@@ -1,5 +1,7 @@
 package vue;
 
+import modele.Utilisateur;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
@@ -384,27 +386,48 @@ public class ShoppingView {
 
 
 
+    // Method to create the updateAccountPagePanel
     private JPanel updateAccountPagePanel() {
         JPanel panel = new JPanel(new BorderLayout());
         JLabel label = new JLabel("Mon Compte", SwingConstants.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 24));
 
-        // Création du panneau d'informations de l'utilisateur
-        JPanel userInfoPanel = new JPanel(new GridLayout(3, 1));
-        JLabel userNameLabel = new JLabel("Nom: Jean Dupont"); // Exemple statique
-        JLabel userEmailLabel = new JLabel("Email: jean.dupont@email.com"); // Exemple statique
+        // User information panel
+        JPanel userInfoPanel = new JPanel(new GridLayout(2, 1));
+        JLabel userNameLabel = new JLabel("Nom: ");
+        JLabel userEmailLabel = new JLabel("Email: ");
         userInfoPanel.add(userNameLabel);
         userInfoPanel.add(userEmailLabel);
 
-        // Bouton de logout
+        // Logout button
         logoutButton = new JButton("Logout");
 
-        // Ajout des éléments au panneau principal de la page de compte
+        // Add components to the main panel
         panel.add(label, BorderLayout.NORTH);
-        panel.add(userInfoPanel, BorderLayout.CENTER);  // Ajout du panneau d'infos utilisateur
-        panel.add(logoutButton, BorderLayout.SOUTH); // Ajout du bouton logout en bas
+        panel.add(userInfoPanel, BorderLayout.CENTER);
+        panel.add(logoutButton, BorderLayout.SOUTH);
+
+        // Store the labels for dynamic updates
+        panel.putClientProperty("userNameLabel", userNameLabel);
+        panel.putClientProperty("userEmailLabel", userEmailLabel);
 
         return panel;
+    }
+
+    // Method to update the user information dynamically
+    public void updateAccountPanel(Utilisateur utilisateur) {
+        if (utilisateur == null) {
+            JOptionPane.showMessageDialog(null, "Aucun utilisateur connecté.");
+            return;
+        }
+
+        JLabel userNameLabel = (JLabel) updateAccountPagePanel.getClientProperty("userNameLabel");
+        JLabel userEmailLabel = (JLabel) updateAccountPagePanel.getClientProperty("userEmailLabel");
+
+        if (userNameLabel != null && userEmailLabel != null) {
+            userNameLabel.setText("Nom: " + utilisateur.getNom() + " " + utilisateur.getPrenom());
+            userEmailLabel.setText("Email: " + utilisateur.getEmail());
+        }
     }
 
 
@@ -439,4 +462,6 @@ public class ShoppingView {
     public JPanel getPanierPagePanel() { return panierPagePanel; }
     public JPanel getListPanel() { return listPanel; }
     public Map<String, JLabel> getQuantiteLabels() { return quantiteLabels; }
+
+
 }
