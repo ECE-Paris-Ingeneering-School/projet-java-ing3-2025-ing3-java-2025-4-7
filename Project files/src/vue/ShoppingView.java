@@ -391,27 +391,56 @@ public class ShoppingView {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(new Color(245, 245, 245));
 
+        // Titre principal
         JLabel titleLabel = new JLabel("Mon Compte", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 26));
         titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
         panel.add(titleLabel, BorderLayout.NORTH);
 
+        // === PANEL INFOS UTILISATEUR ===
+        JPanel userInfoPanel = new JPanel(new GridLayout(2, 2, 10, 10));
+        userInfoPanel.setBorder(BorderFactory.createTitledBorder("Informations utilisateur"));
+        userInfoPanel.setBackground(Color.WHITE);
+        userInfoPanel.setPreferredSize(new Dimension(600, 100));
+
+        JLabel userNameLabel = new JLabel("Nom : Jade Parilla");
+        JLabel userEmailLabel = new JLabel("Email : jade.parilla@mail.com");
+        JLabel userAdresseLabel = new JLabel("🏠 Adresse : non renseignée");
+        JLabel userTelLabel = new JLabel("📞 Téléphone : non reseigné");
+
+        userInfoPanel.add(userNameLabel);
+        userInfoPanel.add(userEmailLabel);
+        userInfoPanel.add(userAdresseLabel);
+        userInfoPanel.add(userTelLabel);
+
+        // === PANEL COMMANDES ===
         JPanel ordersPanel = new JPanel();
         ordersPanel.setLayout(new BoxLayout(ordersPanel, BoxLayout.Y_AXIS));
         ordersPanel.setBackground(new Color(245, 245, 245));
 
-        // EXEMPLES (à remplacer par les vraies données BDD)
+        // Exemples (à remplacer avec les données de la BDD)
         ordersPanel.add(createOrderCard("Commande retirée en magasin", "11/04/2025", "N°HA07EHDK2WVGK", "images/p1.png"));
         ordersPanel.add(createOrderCard("Commande annulée", "06/03/2025", "N°BYACTPS5CHNCK", "images/p2.png"));
         ordersPanel.add(createOrderCard("Commande retirée en magasin", "03/02/2025", "N°6GQT5WPLHW2OK", "images/p3.png"));
+        ordersPanel.add(createOrderCard("Commande retirée en magasin", "03/02/2025", "N°6GQT5WPLHW2OK", "images/p3.png"));
+        ordersPanel.add(createOrderCard("Commande retirée en magasin", "03/02/2025", "N°6GQT5WPLHW2OK", "images/p3.png"));
 
+        // Scroll pour l'historique
         JScrollPane scrollPane = new JScrollPane(ordersPanel);
         scrollPane.setBorder(BorderFactory.createTitledBorder("Historique des commandes"));
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
-        panel.add(scrollPane, BorderLayout.CENTER);
+        // Conteneur pour les infos + commandes
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+        centerPanel.setBackground(new Color(245, 245, 245));
+        centerPanel.add(userInfoPanel);
+        centerPanel.add(Box.createVerticalStrut(20)); // Espace
+        centerPanel.add(scrollPane);
 
-        // Bouton de déconnexion
+        panel.add(centerPanel, BorderLayout.CENTER);
+
+        // === Bouton déconnexion ===
         logoutButton = new JButton("Se déconnecter");
         logoutButton.setFont(new Font("Arial", Font.BOLD, 14));
         logoutButton.setBackground(new Color(220, 53, 69));
@@ -424,8 +453,13 @@ public class ShoppingView {
         logoutPanel.add(logoutButton);
         panel.add(logoutPanel, BorderLayout.SOUTH);
 
+        // Pour mise à jour dynamique si besoin
+        panel.putClientProperty("userNameLabel", userNameLabel);
+        panel.putClientProperty("userEmailLabel", userEmailLabel);
+
         return panel;
     }
+
 
 
     private JPanel createOrderCard(String statut, String date, String numeroCommande, String imagePath) {
@@ -484,6 +518,7 @@ public class ShoppingView {
     }
 
     // Method to update the user information dynamically
+    //TODO: changer la method pour actualiser les donnés issues de la bdd
     public void updateAccountPanel(Utilisateur utilisateur) {
         if (utilisateur == null) {
             JOptionPane.showMessageDialog(null, "Aucun utilisateur connecté.");
