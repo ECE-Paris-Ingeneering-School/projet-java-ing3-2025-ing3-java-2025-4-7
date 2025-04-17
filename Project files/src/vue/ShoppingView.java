@@ -389,29 +389,98 @@ public class ShoppingView {
     // Method to create the updateAccountPagePanel
     private JPanel updateAccountPagePanel() {
         JPanel panel = new JPanel(new BorderLayout());
-        JLabel label = new JLabel("Mon Compte", SwingConstants.CENTER);
-        label.setFont(new Font("Arial", Font.BOLD, 24));
+        panel.setBackground(new Color(245, 245, 245));
 
-        // User information panel
-        JPanel userInfoPanel = new JPanel(new GridLayout(2, 1));
-        JLabel userNameLabel = new JLabel("Nom: ");
-        JLabel userEmailLabel = new JLabel("Email: ");
-        userInfoPanel.add(userNameLabel);
-        userInfoPanel.add(userEmailLabel);
+        JLabel titleLabel = new JLabel("Mon Compte", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 26));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
+        panel.add(titleLabel, BorderLayout.NORTH);
 
-        // Logout button
-        logoutButton = new JButton("Logout");
+        JPanel ordersPanel = new JPanel();
+        ordersPanel.setLayout(new BoxLayout(ordersPanel, BoxLayout.Y_AXIS));
+        ordersPanel.setBackground(new Color(245, 245, 245));
 
-        // Add components to the main panel
-        panel.add(label, BorderLayout.NORTH);
-        panel.add(userInfoPanel, BorderLayout.CENTER);
-        panel.add(logoutButton, BorderLayout.SOUTH);
+        // EXEMPLES (à remplacer par les vraies données BDD)
+        ordersPanel.add(createOrderCard("Commande retirée en magasin", "11/04/2025", "N°HA07EHDK2WVGK", "images/p1.png"));
+        ordersPanel.add(createOrderCard("Commande annulée", "06/03/2025", "N°BYACTPS5CHNCK", "images/p2.png"));
+        ordersPanel.add(createOrderCard("Commande retirée en magasin", "03/02/2025", "N°6GQT5WPLHW2OK", "images/p3.png"));
 
-        // Store the labels for dynamic updates
-        panel.putClientProperty("userNameLabel", userNameLabel);
-        panel.putClientProperty("userEmailLabel", userEmailLabel);
+        JScrollPane scrollPane = new JScrollPane(ordersPanel);
+        scrollPane.setBorder(BorderFactory.createTitledBorder("Historique des commandes"));
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+
+        panel.add(scrollPane, BorderLayout.CENTER);
+
+        // Bouton de déconnexion
+        logoutButton = new JButton("Se déconnecter");
+        logoutButton.setFont(new Font("Arial", Font.BOLD, 14));
+        logoutButton.setBackground(new Color(220, 53, 69));
+        logoutButton.setForeground(Color.WHITE);
+        logoutButton.setFocusPainted(false);
+        logoutButton.setPreferredSize(new Dimension(160, 35));
+
+        JPanel logoutPanel = new JPanel();
+        logoutPanel.setBackground(new Color(245, 245, 245));
+        logoutPanel.add(logoutButton);
+        panel.add(logoutPanel, BorderLayout.SOUTH);
 
         return panel;
+    }
+
+
+    private JPanel createOrderCard(String statut, String date, String numeroCommande, String imagePath) {
+        JPanel card = new JPanel(new BorderLayout());
+        card.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        card.setBackground(Color.WHITE);
+        card.setPreferredSize(new Dimension(600, 120));
+
+        // Statut
+        JLabel statutLabel = new JLabel(statut);
+        statutLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        statutLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        if (statut.toLowerCase().contains("annulée")) {
+            statutLabel.setForeground(new Color(200, 0, 0));
+        } else {
+            statutLabel.setForeground(new Color(0, 128, 0));
+        }
+
+        // Image produit
+        JLabel imageLabel = new JLabel();
+        imageLabel.setPreferredSize(new Dimension(100, 100));
+        if (imagePath != null && !imagePath.isEmpty()) {
+            ImageIcon icon = new ImageIcon(imagePath);
+            Image img = icon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+            imageLabel.setIcon(new ImageIcon(img));
+        }
+
+        // Infos commande
+        JPanel infoPanel = new JPanel(new GridLayout(2, 1));
+        infoPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
+        infoPanel.setOpaque(false);
+
+        JLabel dateLabel = new JLabel("📅 Date de commande : " + date);
+        JLabel numLabel = new JLabel("📦 Numéro de commande : " + numeroCommande);
+        infoPanel.add(dateLabel);
+        infoPanel.add(numLabel);
+
+        // Détail bouton
+        JButton detailsButton = new JButton("Détails de la commande");
+        detailsButton.setBackground(new Color(255, 193, 7));
+        detailsButton.setFocusPainted(false);
+        detailsButton.setPreferredSize(new Dimension(200, 30));
+
+        // Layout horizontal
+        JPanel content = new JPanel(new BorderLayout(20, 0));
+        content.setBackground(Color.WHITE);
+        content.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        content.add(imageLabel, BorderLayout.WEST);
+        content.add(infoPanel, BorderLayout.CENTER);
+        content.add(detailsButton, BorderLayout.EAST);
+
+        card.add(statutLabel, BorderLayout.NORTH);
+        card.add(content, BorderLayout.CENTER);
+
+        return card;
     }
 
     // Method to update the user information dynamically
