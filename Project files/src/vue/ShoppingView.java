@@ -13,11 +13,12 @@ public class ShoppingView {
     private JButton homeButton, accountButton, panierButton, loginButton, registerButton, searchButton;
     private JTextField searchField;
 
-    private JPanel homePagePanel, accountPagePanel, panierPagePanel, loginPagePanel, registerPagePanel, commandePagePanel;
+    private JPanel homePagePanel, accountPagePanel, panierPagePanel, loginPagePanel, registerPagePanel, commandePagePanel, updateAccountPagePanel;
 
     private JTextField emailField, registerEmailField;
     private JPasswordField passwordField, registerPasswordField;
     private JButton submitLoginButton, submitRegisterButton;
+    private JButton logoutButton; // Déclarer le bouton
     private JTextField registerPrenomField, registerNomField;
     private JPasswordField registerConfirmPasswordField;
 
@@ -40,6 +41,7 @@ public class ShoppingView {
         loginPagePanel = createLoginPagePanel();
         registerPagePanel = createRegisterPagePanel();
         commandePagePanel = createCommandePagePanel();
+        updateAccountPagePanel = updateAccountPagePanel();
 
         mainPanel.add(homePagePanel, "HomePage");
         mainPanel.add(accountPagePanel, "Account");
@@ -47,6 +49,7 @@ public class ShoppingView {
         mainPanel.add(loginPagePanel, "Login");
         mainPanel.add(registerPagePanel, "Register");
         mainPanel.add(commandePagePanel, "Commande");
+        mainPanel.add(updateAccountPagePanel, "UpdateAccount");
 
         JPanel globalPanel = new JPanel(new BorderLayout());
         globalPanel.add(createHeaderPanel(), BorderLayout.NORTH);
@@ -187,6 +190,30 @@ public class ShoppingView {
         return panel;
     }
 
+    private JPanel updateAccountPagePanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        JLabel label = new JLabel("Mon Compte", SwingConstants.CENTER);
+        label.setFont(new Font("Arial", Font.BOLD, 24));
+
+        // Création du panneau d'informations de l'utilisateur
+        JPanel userInfoPanel = new JPanel(new GridLayout(3, 1));
+        JLabel userNameLabel = new JLabel("Nom: Jean Dupont"); // Exemple statique
+        JLabel userEmailLabel = new JLabel("Email: jean.dupont@email.com"); // Exemple statique
+        userInfoPanel.add(userNameLabel);
+        userInfoPanel.add(userEmailLabel);
+
+        // Bouton de logout
+        logoutButton = new JButton("Logout");
+
+        // Ajout des éléments au panneau principal de la page de compte
+        panel.add(label, BorderLayout.NORTH);
+        panel.add(userInfoPanel, BorderLayout.CENTER);  // Ajout du panneau d'infos utilisateur
+        panel.add(logoutButton, BorderLayout.SOUTH); // Ajout du bouton logout en bas
+
+        return panel;
+    }
+
+
     public void showPage(String name) {
         cardLayout.show(mainPanel, name);
     }
@@ -203,6 +230,9 @@ public class ShoppingView {
     public JButton getRegisterButton() { return registerButton; }
     public JButton getSubmitLoginButton() { return submitLoginButton; }
     public JButton getSubmitRegisterButton() { return submitRegisterButton; }
+    public JButton getSearchButton() { return searchButton; }
+    public JButton getLogoutButton() { return logoutButton; }
+
 
     public String getLoginEmail() { return emailField.getText(); }
     public String getLoginPassword() { return new String(passwordField.getPassword()); }
