@@ -77,22 +77,21 @@ public class ArticleDAOImpl implements ArticleDAO {
         PreparedStatement pStatement = null;
         ResultSet generatedKeys = null;
 
+        String vArticleNom = article.getNom();
+        String vArticleMarque = article.getMarque();
+        double vArticlePrixUnique = article.getPrixUnitaire();
+        double vArticlePrixVrac = article.getPrixVrac();
+        int vArticleSeuilVrac = article.getSeuilVrac();
+        int vArticleStock = article.getStock();
+        boolean vArticleIsAvailable = article.getIsAvailable();
+
+        // Construction de la requête SQL avec RETURN_GENERATED_KEYS
+        String sql = "INSERT INTO article (articleNom, articleMarque, articlePrix_unitaire, articlePrix_vrac, articleSeuil_vrac, articleStock, articleIsAvailable) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+
         try {
             // Connexion à la base de données
             connexion = daoFactory.getConnection();
-
-            String vArticleNom = article.getNom();
-            String vArticleMarque = article.getMarque();
-            double vArticlePrixUnique = article.getPrixUnitaire();
-            double vArticlePrixVrac = article.getPrixVrac();
-            int vArticleSeuilVrac = article.getSeuilVrac();
-            int vArticleStock = article.getStock();
-            boolean vArticleIsAvailable = article.getIsAvailable();
-
-            // Construction de la requête SQL avec RETURN_GENERATED_KEYS
-            String sql = "INSERT INTO article (articleNom, articleMarque, articlePrix_unitaire, articlePrix_vrac, articleSeuil_vrac, articleStock, articleIsAvailable) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?)";
-
             // Préparation de la requête avec la possibilité de récupérer les clés générées
             pStatement = connexion.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 

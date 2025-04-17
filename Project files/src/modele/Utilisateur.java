@@ -1,7 +1,7 @@
 package modele;
 
 public class Utilisateur {
-    private final int id;
+    private int id;
     private String email;
     private String motDePasse;
     private String nom;
@@ -58,6 +58,8 @@ public class Utilisateur {
     public int getTelephone() { return telephone; }
 
     public boolean getIsAdmin() { return isAdmin; }
+
+    public void setId(int id) { this.id = id; }
 
     public void setEmail(String email) { this.email = email; }
 

@@ -72,27 +72,56 @@ public class UtilisateurDAOImpl implements UtilisateurDAO {
      * @params : client = objet de Client à insérer dans la base de données
      */
     @Override
-    public void ajouter(Utilisateur user) {
-        String sql = "INSERT INTO utilisateurs (utilisateurID, utilisateurPrenom, utilisateurNom, utilisateurMail, utilisateurMDP, utilisateurAdresse, utilisateurTel, utilisateurIsAdmin) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    public Utilisateur ajouter(Utilisateur user) {
+        Connection connexion = null;
+        PreparedStatement pStatement = null;
+        ResultSet generatedKeys = null;
 
-        try (Connection connexion = daoFactory.getConnection();
-             PreparedStatement pStatement = connexion.prepareStatement(sql)) {
+        String sql = "INSERT INTO utilisateurs (utilisateurPrenom, utilisateurNom, utilisateurMail, utilisateurMDP, utilisateurAdresse, utilisateurTel, utilisateurIsAdmin) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-            pStatement.setInt(1, user.getId());
-            pStatement.setString(2, user.getPrenom());
-            pStatement.setString(3, user.getNom());
-            pStatement.setString(4, user.getEmail());
-            pStatement.setString(5, user.getMotDePasse());
-            pStatement.setString(6, user.getAdresse());
-            pStatement.setInt(7, user.getTelephone());
-            pStatement.setBoolean(8, user.getIsAdmin());
+        try {
+            connexion = daoFactory.getConnection();
+            pStatement = connexion.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
-            pStatement.executeUpdate();
-            System.out.println("Utilisateur ajouté avec succès !");
+            pStatement.setString(1, user.getPrenom());
+            pStatement.setString(2, user.getNom());
+            pStatement.setString(3, user.getEmail());
+            pStatement.setString(4, user.getMotDePasse());
+            pStatement.setString(5, user.getAdresse());
+            pStatement.setInt(6, user.getTelephone());
+            pStatement.setBoolean(7, user.getIsAdmin());
+
+            // Exécution de la requête
+            int affectedRows = pStatement.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new SQLException("L'insertion a échoué, aucune ligne affectée.");
+            }
+            // Récupération de l'ID généré
+            generatedKeys = pStatement.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                int generatedId = generatedKeys.getInt(1);
+                user.setId(generatedId); // Supposons que votre classe Article a une méthode setId()
+            } else {
+                throw new SQLException("L'insertion a échoué, aucun ID généré.");
+            }
+
+            return user;
+
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("Erreur lors de l'ajout du client dans la base de données");
+            return null;
+        } finally {
+            // Fermeture des ressources dans le bloc finally
+            try {
+                if (generatedKeys != null) generatedKeys.close();
+                if (pStatement != null) pStatement.close();
+                if (connexion != null) connexion.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
