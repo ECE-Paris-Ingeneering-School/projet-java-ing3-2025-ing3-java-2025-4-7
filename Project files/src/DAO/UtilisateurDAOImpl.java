@@ -169,6 +169,50 @@ public class UtilisateurDAOImpl implements UtilisateurDAO {
         return user;
     }
 
+    public Utilisateur chercherLogin(String email, String mdp) throws Exception {
+        Utilisateur user = null;
+        boolean emailExists = false;
+
+        try (Connection connexion = daoFactory.getConnection();
+             PreparedStatement statement = connexion.prepareStatement("SELECT * FROM utilisateurs WHERE utilisateurMail = ?")) {
+
+            // Check if the email exists
+            statement.setString(1, email);
+            try (ResultSet resultats = statement.executeQuery()) {
+                if (resultats.next()) {
+                    emailExists = true;
+
+                    // Check if the password matches
+                    if (mdp.equals(resultats.getString("utilisateurMDP"))) {
+                        // Create the user object if both email and password match
+                        user = new Utilisateur(
+                                resultats.getInt("utilisateurID"),
+                                resultats.getString("utilisateurMail"),
+                                resultats.getString("utilisateurMDP"),
+                                resultats.getString("utilisateurNom"),
+                                resultats.getString("utilisateurPrenom"),
+                                resultats.getString("utilisateurAdresse"),
+                                resultats.getInt("utilisateurTel"),
+                                resultats.getBoolean("utilisateurIsAdmin")
+                        );
+                    } else {
+                        throw new Exception("Mot de passe incorrect.");
+                    }
+                }
+            }
+
+            if (!emailExists) {
+                throw new Exception("Adresse email introuvable.");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new Exception("Erreur lors de la recherche de l'utilisateur.");
+        }
+
+        return user;
+    }
+
     /**
      * Permet de modifier les données de l'objet
      *

@@ -63,9 +63,12 @@ public class ShoppingController {
                 if (email.isEmpty() || password.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Veuillez remplir tous les champs.");
                 } else {
-                    // Simulation de la connexion (ici, utiliser un vrai modèle d'authentification)
-                    // Exemple d'un utilisateur connecté avec des valeurs fictives
-                    utilisateurConnecte = new Utilisateur(1, email, password, "Doe", "John", "123 Main St", 1234567890, false);
+                    try {
+                        utilisateurConnecte = utilisateurDAO.chercherLogin(email, password);
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, "Erreur lors de la connexion. Veuillez réessayer.");
+                        return;
+                    }
                     JOptionPane.showMessageDialog(null, "Bienvenue " + utilisateurConnecte.getEmail());
                     view.showPage("HomePage");
                 }

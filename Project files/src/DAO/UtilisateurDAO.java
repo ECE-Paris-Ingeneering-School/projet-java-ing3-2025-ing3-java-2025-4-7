@@ -46,4 +46,11 @@ public interface UtilisateurDAO {
      */
     public void supprimer (int id);
 
+    /**
+     * Permet de chercher et récupérer un objet de Client dans la base de données via son email et mot de passe en paramètre
+     * @param : email et mdp
+     * @return : objet de classe Client cherché et retourné
+     */
+    public Utilisateur chercherLogin(String email, String mdp) throws Exception;
+
 }
