@@ -108,27 +108,69 @@ public class ShoppingView {
         homePanel.setLayout(new BoxLayout(homePanel, BoxLayout.Y_AXIS));
         homePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Titre centré
+        // Titre principal
         JLabel title = new JLabel("Bienvenue sur notre site de Shopping");
         title.setFont(new Font("Arial", Font.BOLD, 24));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
         homePanel.add(title);
         homePanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
-        // Panel des articles avec une grille de 2 lignes
-        JPanel articlesPanel = new JPanel(new GridLayout(2, 3, 20, 20)); // 2 lignes, 3 colonnes
+        // Séparer les articles par marque
+        List<Map<String, String>> adidasArticles = new ArrayList<>();
+        List<Map<String, String>> nikeArticles = new ArrayList<>();
 
-        for (Map<String, String> a : articles) {
+        for (Map<String, String> article : articles) {
+            String marque = article.get("marque");
+            if ("adidas".equalsIgnoreCase(marque)) {
+                adidasArticles.add(article);
+            } else if ("nike".equalsIgnoreCase(marque)) {
+                nikeArticles.add(article);
+            }
+        }
+
+        // Créer un panel pour chaque groupe d'articles (Adidas et Nike)
+        JPanel adidasPanel = createScrollableArticleLinePanel("Articles Adidas", adidasArticles);
+        JPanel nikePanel = createScrollableArticleLinePanel("Articles Nike", nikeArticles);
+
+        // Ajouter les panels au panel principal
+        homePanel.add(adidasPanel);
+        homePanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        homePanel.add(nikePanel);
+
+        // Mettre à jour l'affichage
+        mainPanel.removeAll();
+        mainPanel.add(homePanel, BorderLayout.CENTER);
+        mainPanel.revalidate();
+        mainPanel.repaint();
+    }
+
+    // Méthode pour créer un panel d'articles avec défilement horizontal
+    private JPanel createScrollableArticleLinePanel(String lineTitle, List<Map<String, String>> articles) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        // Ajouter un titre pour la ligne
+        JLabel lineTitleLabel = new JLabel(lineTitle);
+        lineTitleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        lineTitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(lineTitleLabel);
+        panel.add(Box.createRigidArea(new Dimension(0, 10)));
+
+        // Créer un panel d'articles pour cette ligne avec défilement horizontal
+        JPanel articlesPanel = new JPanel();
+        articlesPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 20));
+
+        for (Map<String, String> article : articles) {
             JPanel card = new JPanel();
             card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
             card.setBorder(BorderFactory.createLineBorder(Color.GRAY));
             card.setBackground(Color.WHITE);
             card.setPreferredSize(new Dimension(200, 150));
 
-            JLabel nom = new JLabel(a.get("nom"));
+            JLabel nom = new JLabel(article.get("nom"));
             nom.setFont(new Font("Arial", Font.BOLD, 16));
-            JLabel marque = new JLabel("Marque : " + a.get("marque"));
-            JLabel prix = new JLabel("Prix : " + a.get("prix"));
+            JLabel marque = new JLabel("Marque : " + article.get("marque"));
+            JLabel prix = new JLabel("Prix : " + article.get("prix"));
 
             nom.setAlignmentX(Component.CENTER_ALIGNMENT);
             marque.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -141,14 +183,32 @@ public class ShoppingView {
             articlesPanel.add(card);
         }
 
-        JScrollPane scrollPane = new JScrollPane(articlesPanel);
-        homePanel.add(scrollPane);
+        // Mettre les articles dans un JScrollPane pour un défilement horizontal
+        JScrollPane scrollPane = new JScrollPane(articlesPanel,
+                JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scrollPane.getHorizontalScrollBar().setUnitIncrement(16); // Ajuste la vitesse du défilement horizontal
+        panel.add(scrollPane);
 
-        // Mise à jour du mainPanel
-        mainPanel.removeAll();
-        mainPanel.add(homePanel, BorderLayout.CENTER);
-        mainPanel.revalidate();
-        mainPanel.repaint();
+        // Ajouter les boutons fléchés pour contrôler le défilement
+        JPanel buttonPanel = new JPanel();
+        JButton leftButton = new JButton("◀");
+        JButton rightButton = new JButton("▶");
+
+        leftButton.addActionListener(e -> {
+            JScrollBar horizontalBar = scrollPane.getHorizontalScrollBar();
+            horizontalBar.setValue(horizontalBar.getValue() - 50);  // Défilement à gauche
+        });
+
+        rightButton.addActionListener(e -> {
+            JScrollBar horizontalBar = scrollPane.getHorizontalScrollBar();
+            horizontalBar.setValue(horizontalBar.getValue() + 50);  // Défilement à droite
+        });
+
+        buttonPanel.add(leftButton);
+        buttonPanel.add(rightButton);
+        panel.add(buttonPanel);
+
+        return panel;
     }
 
 

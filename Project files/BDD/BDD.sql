@@ -114,10 +114,20 @@ INSERT INTO `article` (`articleID`, `articleNom`, `articleMarque`,`articlePrix_u
                                                                                                                                                     (4, 'sac', 'adidas', 10, 8, 20, 200, true),
                                                                                                                                                     (5, 'veste', 'adidas', 40, 35, 15, 150, true),
                                                                                                                                                     (6, 'ceinture', 'adidas', 15, 12, 25, 250, true),
-                                                                                                                                                    (7, 'montre', 'adidas', 100, 80, 1, 10, true),
-                                                                                                                                                    (8, 'lunettes', 'adidas', 60, 50, 3, 30, true),
-                                                                                                                                                    (9, 'chapeau', 'adidas', 25, 20, 8, 80, true),
-                                                                                                                                                    (10,'gants', 'adidas', 12.5 ,10 ,12 ,120 ,true);
+                                                                                                                                                    (7, 'montre', 'nike', 100, 80, 1, 10, true),
+                                                                                                                                                    (8, 'lunettes', 'nike', 60, 50, 3, 30, true),
+                                                                                                                                                    (9, 'chapeau', 'nike', 25, 20, 8, 80, true),
+                                                                                                                                                    (10,'gants', 'nike', 12.5 ,10 ,12 ,120 ,true),
+                                                                                                                                                    (11,'sac à dos', 'nike', 35, 30, 5, 50, true),
+                                                                                                                                                    (12,'écharpe', 'nike', 20, 15, 10, 100, true),
+                                                                                                                                                    (13,'bonnet', 'adidas', 15, 12, 20, 200, true),
+                                                                                                                                                    (14,'moufles', 'nike', 10, 8, 25, 250, true),
+                                                                                                                                                    (15,'parapluie', 'adidas', 5 ,4 ,30 ,300 ,true),
+                                                                                                                                                    (16,'sous-vêtements', 'adidas', 8 ,6 ,50 ,500 ,true),
+                                                                                                                                                    (17,'chaussettes', 'nike', 3 ,2.5 ,100 ,1000 ,true),
+                                                                                                                                                    (18,'cravate', 'adidas', 12.5 ,10 ,15 ,150 ,true),
+                                                                                                                                                    (19,'ceinture', 'nike', 20, 15, 20, 200, true),
+                                                                                                                                                    (20,'montre connectée', 'adidas', 150, 120, 1, 10, true);
 
 COMMIT;
 
