@@ -2,56 +2,32 @@ package controleur;
 
 import vue.*;
 import modele.*;
-import DAO.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.UnknownServiceException;
-import java.util.ArrayList;
 
 public class ShoppingController {
     private ShoppingView view;
-    UtilisateurDAOImpl utilisateurDAO;
-    ArticleDAOImpl articleDAO;
-    CommandeDAOImpl commandeDAO;
-    DaoFactory daofactory;
-
+    private Utilisateur utilisateurConnecte; // Stocke l'utilisateur connecté
 
     public ShoppingController(ShoppingView view) {
         this.view = view;
-        this.daofactory = DaoFactory.getInstance("projetshoppingjava","root","");
-
-        /// TEST - DAO Utilisateur
-        this.utilisateurDAO = new UtilisateurDAOImpl(daofactory);
-        //Utilisateur user = new Utilisateur(4,"test", "test", "test", "test", "test", 1234567890, false);
-        //utilisateurDAO.ajouter(user);
-        //utilisateurDAO.supprimer(3);
-
-        /// TEST - DAO Article
-        this.articleDAO = new ArticleDAOImpl(daofactory);
-        /*Article newArticle = new Article("Choubidou", "yolo", 12.00, 20.00, 5, 50, true);
-        newArticle = articleDAO.ajouter(newArticle);
-
-        System.out.println("Liste des articles");
-        ArrayList<Article> liste = articleDAO.getAll();
-        for (Article a : liste) {
-            System.out.println("ID :" + a.getId() + ", nom :" + a.getNom() + ", marque :" + a.getMarque() + ", disponible :" + a.getIsAvailable());
-        }
-
-        Article aChercher = articleDAO.chercher(5);
-
-        System.out.println(" ");
-        System.out.println("Liste des articles");
-        Article aModifier = articleDAO.modifier(aChercher, "Testxxxxxxxxxxxx...", aChercher.getMarque(), aChercher.getPrixUnitaire(), aChercher.getPrixVrac(), aChercher.getSeuilVrac(), aChercher.getStock());
-        liste = articleDAO.getAll();
-        for (Article a : liste) {
-            System.out.println("ID :" + a.getId() + ", nom :" + a.getNom() + ", marque :" + a.getMarque() + ", disponible :" + a.getIsAvailable());
-        }*/
+        this.utilisateurConnecte = null; // Au début, personne n'est connecté
 
         view.getHomeButton().addActionListener(e -> view.showPage("HomePage"));
-        view.getAccountButton().addActionListener(e -> view.showPage("Account"));
+        view.getAccountButton().addActionListener(e -> {
+            if (utilisateurConnecte != null) {
+                // Si l'utilisateur est connecté, affiche la page "UpdateAccount"
+                view.showPage("UpdateAccount");
+            } else {
+                // Si l'utilisateur n'est pas connecté, affiche la page "Login" (connexion)
+                view.showPage("Account");
+            }
+        });
+
+
         view.getPanierButton().addActionListener(e -> {
             view.showPage("Panier");
             setupPanierListeners();
@@ -60,22 +36,26 @@ public class ShoppingController {
         view.getLoginButton().addActionListener(e -> view.showPage("Login"));
         view.getRegisterButton().addActionListener(e -> view.showPage("Register"));
 
+        // Gestion du bouton Logout
+        view.getLogoutButton().addActionListener(e -> {
+            // Déconnexion de l'utilisateur
+            utilisateurConnecte = null;
+            JOptionPane.showMessageDialog(null, "Vous êtes maintenant déconnecté.");
+            view.showPage("HomePage"); // Redirection vers la page d'accueil après déconnexion
+        });
+
         view.getSubmitLoginButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int Id = 1; // Dummy ID for demonstration
-                String nom = "Doe"; // Dummy name for demonstration
-                String prenom = "John"; // Dummy first name for demonstration
-                String adresse = "123 Main St"; // Dummy address for demonstration
-                int telephone = 1234567890; // Dummy phone number for demonstration
-                boolean isAdmin = false; // Dummy admin status for demonstration
                 String email = view.getLoginEmail();
                 String password = view.getLoginPassword();
                 if (email.isEmpty() || password.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Veuillez remplir tous les champs.");
                 } else {
-                    Utilisateur utilisateur = new Utilisateur(Id,email, password, nom, prenom, adresse, telephone, isAdmin);
-                    JOptionPane.showMessageDialog(null, "Bienvenue " + utilisateur.getEmail());
+                    // Simulation de la connexion (ici, utiliser un vrai modèle d'authentification)
+                    // Exemple d'un utilisateur connecté avec des valeurs fictives
+                    utilisateurConnecte = new Utilisateur(1, email, password, "Doe", "John", "123 Main St", 1234567890, false);
+                    JOptionPane.showMessageDialog(null, "Bienvenue " + utilisateurConnecte.getEmail());
                     view.showPage("HomePage");
                 }
             }
@@ -110,10 +90,19 @@ public class ShoppingController {
                     return;
                 }
 
+                // On peut simuler l'inscription ici
+                // Exemple d'un nouvel utilisateur
+                utilisateurConnecte = new Utilisateur(1, email, mdp, nom, prenom, "123 Main St", 1234567890, false);
                 JOptionPane.showMessageDialog(null, "Inscription réussie ! Bienvenue " + prenom + " " + nom + " !");
                 view.showPage("HomePage");
             }
+        });
 
+        view.getLogoutButton().addActionListener(e -> {
+            // Déconnexion de l'utilisateur
+            utilisateurConnecte = null;
+            JOptionPane.showMessageDialog(null, "Vous êtes maintenant déconnecté.");
+            view.showPage("HomePage"); // Redirige vers la page d'accueil après déconnexion
         });
     }
 
