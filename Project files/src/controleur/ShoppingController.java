@@ -24,15 +24,22 @@ public class ShoppingController {
         this.utilisateurDAO = new UtilisateurDAOImpl(this.daoFactory);
 
         // Initialisation des listeners
-        view.getHomeButton().addActionListener(e -> view.showPage("HomePage"));
         view.getAccountButton().addActionListener(e -> {
-            if (this.utilisateurConnecte != null) {
-                // Si l'utilisateur est connecté, affiche la page "UpdateAccount"
-                view.updateAccountPanel(this.utilisateurConnecte); // Met à jour les informations
+            if (utilisateurConnecte != null) {
+                // MAJ des infos dynamiquement depuis la BDD
+                Utilisateur userBdd = utilisateurDAO.chercher(utilisateurConnecte.getId());
+                if (userBdd != null) {
+                    utilisateurConnecte = userBdd;
+                    String nomComplet = userBdd.getNom() + " " + userBdd.getPrenom();
+                    String tel = (userBdd.getTelephone() > 0) ? String.valueOf(userBdd.getTelephone()) : "Non renseigné";
+                    String adresse = (userBdd.getAdresse() != null && !userBdd.getAdresse().isEmpty()) ? userBdd.getAdresse() : "Non renseignée";
+
+                    view.updateAccountPanel(nomComplet, userBdd.getEmail(), tel, adresse);
+                }
+
                 view.showPage("UpdateAccount");
             } else {
-                // Si l'utilisateur n'est pas connecté, affiche la page "Login" (connexion)
-                view.showPage("Account");
+                view.showPage("Account"); // redirige vers page de connexion
             }
         });
 
@@ -190,6 +197,7 @@ public class ShoppingController {
             return 1;
         }
     }
+
 }
 
 

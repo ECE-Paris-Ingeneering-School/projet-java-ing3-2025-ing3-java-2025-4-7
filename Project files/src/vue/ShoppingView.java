@@ -518,19 +518,24 @@ public class ShoppingView {
     }
 
     // Method to update the user information dynamically
-    //TODO: changer la method pour actualiser les donnés issues de la bdd
-    public void updateAccountPanel(Utilisateur utilisateur) {
-        if (utilisateur == null) {
-            JOptionPane.showMessageDialog(null, "Aucun utilisateur connecté.");
-            return;
-        }
-
+    //TODO: changer la method pour actualiser les donnés issues de la bdd (peut etre a decale dans le controleur aussi)
+    public void updateAccountPanel(String nomComplet, String email, String telephone, String adresse) {
         JLabel userNameLabel = (JLabel) updateAccountPagePanel.getClientProperty("userNameLabel");
         JLabel userEmailLabel = (JLabel) updateAccountPagePanel.getClientProperty("userEmailLabel");
+        JLabel userPhoneLabel = (JLabel) updateAccountPagePanel.getClientProperty("userPhoneLabel");
+        JLabel userAddressLabel = (JLabel) updateAccountPagePanel.getClientProperty("userAddressLabel");
 
-        if (userNameLabel != null && userEmailLabel != null) {
-            userNameLabel.setText("Nom: " + utilisateur.getNom() + " " + utilisateur.getPrenom());
-            userEmailLabel.setText("Email: " + utilisateur.getEmail());
+        if (userNameLabel != null) {
+            userNameLabel.setText("Nom : " + nomComplet);
+        }
+        if (userEmailLabel != null) {
+            userEmailLabel.setText("Email : " + email);
+        }
+        if (userPhoneLabel != null) {
+            userPhoneLabel.setText("Téléphone : " + telephone);
+        }
+        if (userAddressLabel != null) {
+            userAddressLabel.setText("Adresse : " + adresse);
         }
     }
 
