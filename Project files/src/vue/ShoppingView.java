@@ -98,20 +98,39 @@ public class ShoppingView {
     }
 
     private JPanel createAccountPagePanel() {
-        JPanel panel = new JPanel(new GridLayout(2, 1));
+        JPanel panel = new JPanel(new BorderLayout());
+
+        // Titre
         JLabel label = new JLabel("Mon Compte", SwingConstants.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 24));
+        label.setBorder(BorderFactory.createEmptyBorder(40, 0, 20, 0));
+        panel.add(label, BorderLayout.NORTH);
 
+        // Panel des boutons
         JPanel buttonsPanel = new JPanel();
-        loginButton = new JButton("Login");
-        registerButton = new JButton("Register");
-        buttonsPanel.add(loginButton);
-        buttonsPanel.add(registerButton);
+        buttonsPanel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(15, 20, 15, 20); // espace entre les boutons
 
-        panel.add(label);
-        panel.add(buttonsPanel);
+        loginButton = new JButton("Se connecter");
+        loginButton.setPreferredSize(new Dimension(160, 40));
+        loginButton.setFont(new Font("Arial", Font.PLAIN, 16));
+
+        registerButton = new JButton("S'inscrire");
+        registerButton.setPreferredSize(new Dimension(160, 40));
+        registerButton.setFont(new Font("Arial", Font.PLAIN, 16));
+
+        gbc.gridx = 0;
+        buttonsPanel.add(loginButton, gbc);
+
+        gbc.gridx = 1;
+        buttonsPanel.add(registerButton, gbc);
+
+        panel.add(buttonsPanel, BorderLayout.CENTER);
+
         return panel;
     }
+
 
     private JPanel createPanierPagePanel() {
         JPanel panel = new JPanel(new BorderLayout());
@@ -209,47 +228,161 @@ public class ShoppingView {
 
 
     private JPanel createLoginPagePanel() {
-        JPanel panel = new JPanel(new GridLayout(4, 1));
+        JPanel panel = new JPanel(new BorderLayout());
+        // On ne définit pas de couleur ici, donc il garde le fond par défaut
+
+        // Titre
         JLabel label = new JLabel("Connexion", SwingConstants.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 24));
+        label.setBorder(BorderFactory.createEmptyBorder(30, 0, 20, 0));
+        panel.add(label, BorderLayout.NORTH);
 
-        emailField = new JTextField();
-        passwordField = new JPasswordField();
+        // Panel du formulaire
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        // Email
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.EAST;
+        formPanel.add(new JLabel("Email :"), gbc);
+
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        emailField = new JTextField(15);
+        formPanel.add(emailField, gbc);
+
+        // Mot de passe
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.EAST;
+        formPanel.add(new JLabel("Mot de passe :"), gbc);
+
+        gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        passwordField = new JPasswordField(15);
+        formPanel.add(passwordField, gbc);
+
+        panel.add(formPanel, BorderLayout.CENTER);
+
+        // Bouton
         submitLoginButton = new JButton("Se connecter");
+        submitLoginButton.setFont(new Font("Arial", Font.BOLD, 16));
+        submitLoginButton.setBackground(new Color(70, 130, 180));
+        submitLoginButton.setForeground(Color.WHITE);
+        submitLoginButton.setFocusPainted(false);
+        submitLoginButton.setPreferredSize(new Dimension(160, 40));
 
-        panel.add(label);
-        panel.add(emailField);
-        panel.add(passwordField);
-        panel.add(submitLoginButton);
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 30, 0));
+        buttonPanel.add(submitLoginButton);
+
+        panel.add(buttonPanel, BorderLayout.SOUTH);
+
         return panel;
     }
+
+
+
 
     private JPanel createRegisterPagePanel() {
-        JPanel panel = new JPanel(new GridLayout(12, 1));
+        JPanel panel = new JPanel(new GridBagLayout()); // Centrage global
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.insets = new Insets(20, 20, 20, 20);
+
+        JPanel formContainer = new JPanel(new GridBagLayout()); // Deux colonnes
+        formContainer.setBorder(BorderFactory.createEmptyBorder(30, 60, 30, 60));
+        GridBagConstraints innerGbc = new GridBagConstraints();
+        innerGbc.insets = new Insets(12, 12, 12, 12); // Espacement vertical & horizontal
+        innerGbc.anchor = GridBagConstraints.LINE_END; // Aligner texte à droite
+
+        int row = 0;
+
+        // Titre centré
         JLabel label = new JLabel("Inscription", SwingConstants.CENTER);
-        label.setFont(new Font("Arial", Font.BOLD, 24));
+        label.setFont(new Font("Arial", Font.BOLD, 26));
+        innerGbc.gridx = 0;
+        innerGbc.gridy = row++;
+        innerGbc.gridwidth = 2;
+        innerGbc.anchor = GridBagConstraints.CENTER;
+        formContainer.add(label, innerGbc);
 
-        registerPrenomField = new JTextField();
-        registerNomField = new JTextField();
-        registerEmailField = new JTextField();
-        registerPasswordField = new JPasswordField();
-        registerConfirmPasswordField = new JPasswordField();
+        innerGbc.gridwidth = 1;
+
+        // Prénom
+        innerGbc.gridy = row++;
+        innerGbc.gridx = 0;
+        innerGbc.anchor = GridBagConstraints.LINE_END;
+        formContainer.add(new JLabel("Prénom :"), innerGbc);
+        innerGbc.gridx = 1;
+        innerGbc.anchor = GridBagConstraints.LINE_START;
+        registerPrenomField = new JTextField(16);
+        formContainer.add(registerPrenomField, innerGbc);
+
+        // Nom
+        innerGbc.gridy = row++;
+        innerGbc.gridx = 0;
+        innerGbc.anchor = GridBagConstraints.LINE_END;
+        formContainer.add(new JLabel("Nom :"), innerGbc);
+        innerGbc.gridx = 1;
+        innerGbc.anchor = GridBagConstraints.LINE_START;
+        registerNomField = new JTextField(16);
+        formContainer.add(registerNomField, innerGbc);
+
+        // Email
+        innerGbc.gridy = row++;
+        innerGbc.gridx = 0;
+        innerGbc.anchor = GridBagConstraints.LINE_END;
+        formContainer.add(new JLabel("Email :"), innerGbc);
+        innerGbc.gridx = 1;
+        innerGbc.anchor = GridBagConstraints.LINE_START;
+        registerEmailField = new JTextField(16);
+        formContainer.add(registerEmailField, innerGbc);
+
+        // Mot de passe
+        innerGbc.gridy = row++;
+        innerGbc.gridx = 0;
+        innerGbc.anchor = GridBagConstraints.LINE_END;
+        formContainer.add(new JLabel("Mot de passe :"), innerGbc);
+        innerGbc.gridx = 1;
+        innerGbc.anchor = GridBagConstraints.LINE_START;
+        registerPasswordField = new JPasswordField(16);
+        formContainer.add(registerPasswordField, innerGbc);
+
+        // Confirmation mot de passe
+        innerGbc.gridy = row++;
+        innerGbc.gridx = 0;
+        innerGbc.anchor = GridBagConstraints.LINE_END;
+        formContainer.add(new JLabel("Confirmer le mot de passe :"), innerGbc);
+        innerGbc.gridx = 1;
+        innerGbc.anchor = GridBagConstraints.LINE_START;
+        registerConfirmPasswordField = new JPasswordField(16);
+        formContainer.add(registerConfirmPasswordField, innerGbc);
+
+        // Bouton centré
+        innerGbc.gridy = row++;
+        innerGbc.gridx = 0;
+        innerGbc.gridwidth = 2;
+        innerGbc.anchor = GridBagConstraints.CENTER;
         submitRegisterButton = new JButton("S'inscrire");
+        submitRegisterButton.setFont(new Font("Arial", Font.BOLD, 16));
+        submitRegisterButton.setBackground(new Color(70, 130, 180));
+        submitRegisterButton.setForeground(Color.WHITE);
+        formContainer.add(submitRegisterButton, innerGbc);
 
-        panel.add(label);
-        panel.add(new JLabel("Prénom :"));
-        panel.add(registerPrenomField);
-        panel.add(new JLabel("Nom :"));
-        panel.add(registerNomField);
-        panel.add(new JLabel("Email :"));
-        panel.add(registerEmailField);
-        panel.add(new JLabel("Mot de passe :"));
-        panel.add(registerPasswordField);
-        panel.add(new JLabel("Confirmer le mot de passe :"));
-        panel.add(registerConfirmPasswordField);
-        panel.add(submitRegisterButton);
+        panel.add(formContainer, gbc);
         return panel;
     }
+
+
+
+
 
     private JPanel updateAccountPagePanel() {
         JPanel panel = new JPanel(new BorderLayout());

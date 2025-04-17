@@ -7,6 +7,5 @@ public class Main {
         new ShoppingController(view);
         view.setVisible(true);
         view.showPage("HomePage");
-
     }
 }
