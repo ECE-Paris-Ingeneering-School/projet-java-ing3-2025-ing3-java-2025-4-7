@@ -2,6 +2,8 @@ package controleur;
 
 import vue.*;
 import modele.*;
+import DAO.*;
+
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,10 +13,19 @@ import java.awt.event.ActionListener;
 public class ShoppingController {
     private ShoppingView view;
     private Utilisateur utilisateurConnecte; // Stocke l'utilisateur connecté
+    private UtilisateurDAOImpl utilisateurDAO; // DAO pour les utilisateurs
+    private DaoFactory daoFactory;
 
     public ShoppingController(ShoppingView view) {
+        System.out.println("Controller initialized");
         this.view = view;
         this.utilisateurConnecte = null; // Au début, personne n'est connecté
+        this.daoFactory = DaoFactory.getInstance("projetshoppingjava","root","");
+        this.utilisateurDAO = new UtilisateurDAOImpl(this.daoFactory);
+//        Utilisateur user = new Utilisateur("email", "password", "nom", "prenom", "adresse", 1234567890, false);
+//        this.utilisateurDAO.ajouter(user);
+//        this.utilisateurDAO.modifier(user, "bite", "password", "nom", "prenom", "adresse", 1234567890, false);
+
 
         view.getHomeButton().addActionListener(e -> view.showPage("HomePage"));
         view.getAccountButton().addActionListener(e -> {
@@ -92,7 +103,16 @@ public class ShoppingController {
 
                 // On peut simuler l'inscription ici
                 // Exemple d'un nouvel utilisateur
-                utilisateurConnecte = new Utilisateur(1, email, mdp, nom, prenom, "123 Main St", 1234567890, false);
+                utilisateurConnecte = new Utilisateur(email, mdp, nom, prenom, "adresse", 1234567890, false);
+                try{
+                    boolean success = utilisateurDAO.ajouter(utilisateurConnecte);
+                    if (success) {
+                        JOptionPane.showMessageDialog(null, "Inscription réussie !");
+                        view.showPage("HomePage");
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Erreur lors de l'inscription. Veuillez réessayer.");
+                }
                 JOptionPane.showMessageDialog(null, "Inscription réussie ! Bienvenue " + prenom + " " + nom + " !");
                 view.showPage("HomePage");
             }

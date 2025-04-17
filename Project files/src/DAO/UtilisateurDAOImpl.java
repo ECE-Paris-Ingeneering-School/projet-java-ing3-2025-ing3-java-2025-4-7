@@ -72,7 +72,7 @@ public class UtilisateurDAOImpl implements UtilisateurDAO {
      * @params : client = objet de Client à insérer dans la base de données
      */
     @Override
-    public Utilisateur ajouter(Utilisateur user) {
+    public boolean ajouter(Utilisateur user) {
         Connection connexion = null;
         PreparedStatement pStatement = null;
         ResultSet generatedKeys = null;
@@ -107,12 +107,12 @@ public class UtilisateurDAOImpl implements UtilisateurDAO {
                 throw new SQLException("L'insertion a échoué, aucun ID généré.");
             }
 
-            return user;
+            return true;
 
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("Erreur lors de l'ajout du client dans la base de données");
-            return null;
+            return false;
         } finally {
             // Fermeture des ressources dans le bloc finally
             try {
