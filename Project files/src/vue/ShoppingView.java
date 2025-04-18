@@ -1,34 +1,23 @@
 package vue;
 
-import modele.Utilisateur;
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.HashMap;
+import controleur.*;
 
 public class ShoppingView {
     private JFrame frame;
     private JPanel mainPanel;
     private CardLayout cardLayout;
 
-    private JButton homeButton, accountButton, panierButton, loginButton, registerButton, searchButton;
-    private JTextField searchField;
+    private JButton homeButton, accountButton, panierButton, loginButton, registerButton, searchButton, submitLoginButton, submitRegisterButton, logoutButton;
+    private JTextField searchField, emailField, registerEmailField, registerPrenomField, registerNomField;
+    private JPasswordField passwordField, registerPasswordField, registerConfirmPasswordField;
 
     private JPanel homePagePanel, accountPagePanel, panierPagePanel, loginPagePanel, registerPagePanel, commandePagePanel, updateAccountPagePanel;
-
-    private JTextField emailField, registerEmailField;
-    private JPasswordField passwordField, registerPasswordField;
-    private JButton submitLoginButton, submitRegisterButton;
-    private JButton logoutButton; // Déclarer le bouton
-    private JTextField registerPrenomField, registerNomField;
-    private JPasswordField registerConfirmPasswordField;
-
-    private JPanel listPanel;
+    private JPanel listPanel; // Class-level field for listPanel
     private Map<String, JLabel> quantiteLabels;
 
     public ShoppingView() {
@@ -47,7 +36,7 @@ public class ShoppingView {
         loginPagePanel = createLoginPagePanel();
         registerPagePanel = createRegisterPagePanel();
         commandePagePanel = createCommandePagePanel();
-        updateAccountPagePanel = updateAccountPagePanel();
+        updateAccountPagePanel = createUpdateAccountPagePanel("","");
 
         mainPanel.add(homePagePanel, "HomePage");
         mainPanel.add(accountPagePanel, "Account");
@@ -103,142 +92,18 @@ public class ShoppingView {
         return panel;
     }
 
-    public void updateHomePageView(List<Map<String, String>> articles) {
-        JPanel homePanel = new JPanel();
-        homePanel.setLayout(new BoxLayout(homePanel, BoxLayout.Y_AXIS));
-        homePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
-        // Titre principal
-        JLabel title = new JLabel("Bienvenue sur notre site de Shopping");
-        title.setFont(new Font("Arial", Font.BOLD, 24));
-        title.setAlignmentX(Component.CENTER_ALIGNMENT);
-        homePanel.add(title);
-        homePanel.add(Box.createRigidArea(new Dimension(0, 20)));
-
-        // Séparer les articles par marque
-        List<Map<String, String>> adidasArticles = new ArrayList<>();
-        List<Map<String, String>> nikeArticles = new ArrayList<>();
-
-        for (Map<String, String> article : articles) {
-            String marque = article.get("marque");
-            if ("adidas".equalsIgnoreCase(marque)) {
-                adidasArticles.add(article);
-            } else if ("nike".equalsIgnoreCase(marque)) {
-                nikeArticles.add(article);
-            }
-        }
-
-        // Créer un panel pour chaque groupe d'articles (Adidas et Nike)
-        JPanel adidasPanel = createScrollableArticleLinePanel("Articles Adidas", adidasArticles);
-        JPanel nikePanel = createScrollableArticleLinePanel("Articles Nike", nikeArticles);
-
-        // Ajouter les panels au panel principal
-        homePanel.add(adidasPanel);
-        homePanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        homePanel.add(nikePanel);
-
-        // Mettre à jour l'affichage
-        mainPanel.removeAll();
-        mainPanel.add(homePanel, BorderLayout.CENTER);
-        mainPanel.revalidate();
-        mainPanel.repaint();
-    }
-
-    // Méthode pour créer un panel d'articles avec défilement horizontal
-    private JPanel createScrollableArticleLinePanel(String lineTitle, List<Map<String, String>> articles) {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-
-        // Ajouter un titre pour la ligne
-        JLabel lineTitleLabel = new JLabel(lineTitle);
-        lineTitleLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        lineTitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panel.add(lineTitleLabel);
-        panel.add(Box.createRigidArea(new Dimension(0, 10)));
-
-        // Créer un panel d'articles pour cette ligne avec défilement horizontal
-        JPanel articlesPanel = new JPanel();
-        articlesPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 20));
-
-        // Appliquer un padding uniforme à l'intérieur du panel d'articles
-        articlesPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));  // Padding de 10 pixels de chaque côté
-
-        for (Map<String, String> article : articles) {
-            JPanel card = new JPanel();
-            card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-            card.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-            card.setBackground(Color.WHITE);
-            card.setPreferredSize(new Dimension(200, 150));
-
-            JLabel nom = new JLabel(article.get("nom"));
-            nom.setFont(new Font("Arial", Font.BOLD, 16));
-            JLabel marque = new JLabel("Marque : " + article.get("marque"));
-            JLabel prix = new JLabel("Prix : " + article.get("prix"));
-
-            nom.setAlignmentX(Component.CENTER_ALIGNMENT);
-            marque.setAlignmentX(Component.CENTER_ALIGNMENT);
-            prix.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-            card.add(nom);
-            card.add(marque);
-            card.add(prix);
-
-            articlesPanel.add(card);
-        }
-
-        // Mettre les articles dans un JScrollPane pour un défilement horizontal
-        JScrollPane scrollPane = new JScrollPane(articlesPanel,
-                JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        scrollPane.getHorizontalScrollBar().setUnitIncrement(16); // Ajuste la vitesse du défilement horizontal
-
-        // Cacher la barre de défilement verticale
-        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
-
-        // Cacher la barre de défilement horizontale et la rendre manipulable uniquement via les boutons
-        JScrollBar horizontalBar = scrollPane.getHorizontalScrollBar();
-        horizontalBar.setPreferredSize(new Dimension(0, 0)); // Réduire la taille à 0 pour la cacher visuellement
-
-        panel.add(scrollPane);
-
-        // Ajouter les boutons fléchés pour contrôler le défilement
-        JPanel buttonPanel = new JPanel();
-        JButton leftButton = new JButton("◀");
-        JButton rightButton = new JButton("▶");
-
-        leftButton.addActionListener(e -> {
-            horizontalBar.setValue(horizontalBar.getValue() - 230);  // Défilement à gauche
-        });
-
-        rightButton.addActionListener(e -> {
-            horizontalBar.setValue(horizontalBar.getValue() + 230);  // Défilement à droite
-        });
-
-        buttonPanel.add(leftButton);
-        buttonPanel.add(rightButton);
-        panel.add(buttonPanel);
-
-        return panel;
-    }
-
-
-
-
-
-
     private JPanel createAccountPagePanel() {
         JPanel panel = new JPanel(new BorderLayout());
 
-        // Titre
         JLabel label = new JLabel("Mon Compte", SwingConstants.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 24));
         label.setBorder(BorderFactory.createEmptyBorder(40, 0, 20, 0));
         panel.add(label, BorderLayout.NORTH);
 
-        // Panel des boutons
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(15, 20, 15, 20); // espace entre les boutons
+        gbc.insets = new Insets(15, 20, 15, 20);
 
         loginButton = new JButton("Se connecter");
         loginButton.setPreferredSize(new Dimension(160, 40));
@@ -259,12 +124,11 @@ public class ShoppingView {
         return panel;
     }
 
-
     private JPanel createPanierPagePanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        listPanel = new JPanel();
+        listPanel = new JPanel(); // Initialize listPanel
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
 
         JScrollPane scrollPane = new JScrollPane(listPanel);
@@ -276,13 +140,93 @@ public class ShoppingView {
         commanderButton.setForeground(Color.WHITE);
         commanderButton.setFocusPainted(false);
         commanderButton.setPreferredSize(new Dimension(150, 40));
-        commanderButton.addActionListener(e -> showPage("Commande"));
 
         JPanel bottomPanel = new JPanel();
         bottomPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
         bottomPanel.add(commanderButton);
 
         panel.add(bottomPanel, BorderLayout.SOUTH);
+        return panel;
+    }
+
+
+    private JPanel createLoginPagePanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
+
+        JLabel titleLabel = new JLabel("Connexion", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        panel.add(titleLabel, BorderLayout.NORTH);
+
+        JPanel formPanel = new JPanel(new GridLayout(3, 2, 10, 10));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+
+        formPanel.add(new JLabel("Email :"));
+        emailField = new JTextField();
+        formPanel.add(emailField);
+
+        formPanel.add(new JLabel("Mot de passe :"));
+        passwordField = new JPasswordField();
+        formPanel.add(passwordField);
+
+        submitLoginButton = new JButton("Se connecter");
+        submitLoginButton.setFont(new Font("Arial", Font.BOLD, 16));
+        submitLoginButton.setBackground(new Color(70, 130, 180));
+        submitLoginButton.setForeground(Color.WHITE);
+        submitLoginButton.setFocusPainted(false);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(submitLoginButton);
+
+        panel.add(formPanel, BorderLayout.CENTER);
+        panel.add(buttonPanel, BorderLayout.SOUTH);
+
+        return panel;
+    }
+
+    private JPanel createRegisterPagePanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
+
+        JLabel titleLabel = new JLabel("Inscription", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        panel.add(titleLabel, BorderLayout.NORTH);
+
+        JPanel formPanel = new JPanel(new GridLayout(6, 2, 10, 10));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+
+        formPanel.add(new JLabel("Prénom :"));
+        registerPrenomField = new JTextField();
+        formPanel.add(registerPrenomField);
+
+        formPanel.add(new JLabel("Nom :"));
+        registerNomField = new JTextField();
+        formPanel.add(registerNomField);
+
+        formPanel.add(new JLabel("Email :"));
+        registerEmailField = new JTextField();
+        formPanel.add(registerEmailField);
+
+        formPanel.add(new JLabel("Mot de passe :"));
+        registerPasswordField = new JPasswordField();
+        formPanel.add(registerPasswordField);
+
+        formPanel.add(new JLabel("Confirmer le mot de passe :"));
+        registerConfirmPasswordField = new JPasswordField();
+        formPanel.add(registerConfirmPasswordField);
+
+        submitRegisterButton = new JButton("S'inscrire");
+        submitRegisterButton.setFont(new Font("Arial", Font.BOLD, 16));
+        submitRegisterButton.setBackground(new Color(34, 139, 34));
+        submitRegisterButton.setForeground(Color.WHITE);
+        submitRegisterButton.setFocusPainted(false);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(submitRegisterButton);
+
+        panel.add(formPanel, BorderLayout.CENTER);
+        panel.add(buttonPanel, BorderLayout.SOUTH);
+
         return panel;
     }
 
@@ -293,12 +237,10 @@ public class ShoppingView {
         label.setFont(new Font("Arial", Font.BOLD, 24));
         panel.add(label, BorderLayout.NORTH);
 
-        JPanel formPanel = new JPanel();
-        formPanel.setLayout(new GridLayout(12, 2, 10, 10));
+        JPanel formPanel = new JPanel(new GridLayout(4, 2, 10, 10));
         formPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
 
-        // Section adresse
-        formPanel.add(new JLabel("Adresse (ligne 1) :"));
+        formPanel.add(new JLabel("Adresse :"));
         JTextField adresseField = new JTextField();
         formPanel.add(adresseField);
 
@@ -314,36 +256,11 @@ public class ShoppingView {
         JTextField paysField = new JTextField();
         formPanel.add(paysField);
 
-        // Espacement visuel
-        formPanel.add(new JLabel("")); formPanel.add(new JLabel(""));
-
-        // Section paiement
-        formPanel.add(new JLabel("Nom et prénom sur la carte :"));
-        JTextField nomPrenomCarteField = new JTextField();
-        formPanel.add(nomPrenomCarteField);
-
-        formPanel.add(new JLabel("Numéro de carte :"));
-        JTextField numeroCarteField = new JTextField();
-        formPanel.add(numeroCarteField);
-
-        formPanel.add(new JLabel("Date d'expiration (MM/AA) :"));
-        JTextField expirationField = new JTextField();
-        formPanel.add(expirationField);
-
-        formPanel.add(new JLabel("Code de sécurité (CVC) :"));
-        JTextField cvcField = new JTextField();
-        formPanel.add(cvcField);
-
-        // Espacement visuel
-        formPanel.add(new JLabel("")); formPanel.add(new JLabel(""));
-
-        // Bouton de validation
         JButton validerButton = new JButton("Valider la commande");
         validerButton.setFont(new Font("Arial", Font.BOLD, 16));
         validerButton.setBackground(new Color(34, 139, 34));
         validerButton.setForeground(Color.WHITE);
         validerButton.setFocusPainted(false);
-        validerButton.setPreferredSize(new Dimension(200, 40));
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(validerButton);
@@ -354,313 +271,75 @@ public class ShoppingView {
         return panel;
     }
 
-
-    private JPanel createLoginPagePanel() {
-        JPanel panel = new JPanel(new BorderLayout());
-        // On ne définit pas de couleur ici, donc il garde le fond par défaut
-
-        // Titre
-        JLabel label = new JLabel("Connexion", SwingConstants.CENTER);
-        label.setFont(new Font("Arial", Font.BOLD, 24));
-        label.setBorder(BorderFactory.createEmptyBorder(30, 0, 20, 0));
-        panel.add(label, BorderLayout.NORTH);
-
-        // Panel du formulaire
-        JPanel formPanel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-
-        // Email
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.EAST;
-        formPanel.add(new JLabel("Email :"), gbc);
-
-        gbc.gridx = 1;
-        gbc.anchor = GridBagConstraints.WEST;
-        emailField = new JTextField(15);
-        formPanel.add(emailField, gbc);
-
-        // Mot de passe
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.anchor = GridBagConstraints.EAST;
-        formPanel.add(new JLabel("Mot de passe :"), gbc);
-
-        gbc.gridx = 1;
-        gbc.anchor = GridBagConstraints.WEST;
-        passwordField = new JPasswordField(15);
-        formPanel.add(passwordField, gbc);
-
-        panel.add(formPanel, BorderLayout.CENTER);
-
-        // Bouton
-        submitLoginButton = new JButton("Se connecter");
-        submitLoginButton.setFont(new Font("Arial", Font.BOLD, 16));
-        submitLoginButton.setBackground(new Color(70, 130, 180));
-        submitLoginButton.setForeground(Color.WHITE);
-        submitLoginButton.setFocusPainted(false);
-        submitLoginButton.setPreferredSize(new Dimension(160, 40));
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 30, 0));
-        buttonPanel.add(submitLoginButton);
-
-        panel.add(buttonPanel, BorderLayout.SOUTH);
-
-        return panel;
-    }
-
-
-
-
-    private JPanel createRegisterPagePanel() {
-        JPanel panel = new JPanel(new GridBagLayout()); // Centrage global
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.insets = new Insets(20, 20, 20, 20);
-
-        JPanel formContainer = new JPanel(new GridBagLayout()); // Deux colonnes
-        formContainer.setBorder(BorderFactory.createEmptyBorder(30, 60, 30, 60));
-        GridBagConstraints innerGbc = new GridBagConstraints();
-        innerGbc.insets = new Insets(12, 12, 12, 12); // Espacement vertical & horizontal
-        innerGbc.anchor = GridBagConstraints.LINE_END; // Aligner texte à droite
-
-        int row = 0;
-
-        // Titre centré
-        JLabel label = new JLabel("Inscription", SwingConstants.CENTER);
-        label.setFont(new Font("Arial", Font.BOLD, 26));
-        innerGbc.gridx = 0;
-        innerGbc.gridy = row++;
-        innerGbc.gridwidth = 2;
-        innerGbc.anchor = GridBagConstraints.CENTER;
-        formContainer.add(label, innerGbc);
-
-        innerGbc.gridwidth = 1;
-
-        // Prénom
-        innerGbc.gridy = row++;
-        innerGbc.gridx = 0;
-        innerGbc.anchor = GridBagConstraints.LINE_END;
-        formContainer.add(new JLabel("Prénom :"), innerGbc);
-        innerGbc.gridx = 1;
-        innerGbc.anchor = GridBagConstraints.LINE_START;
-        registerPrenomField = new JTextField(16);
-        formContainer.add(registerPrenomField, innerGbc);
-
-        // Nom
-        innerGbc.gridy = row++;
-        innerGbc.gridx = 0;
-        innerGbc.anchor = GridBagConstraints.LINE_END;
-        formContainer.add(new JLabel("Nom :"), innerGbc);
-        innerGbc.gridx = 1;
-        innerGbc.anchor = GridBagConstraints.LINE_START;
-        registerNomField = new JTextField(16);
-        formContainer.add(registerNomField, innerGbc);
-
-        // Email
-        innerGbc.gridy = row++;
-        innerGbc.gridx = 0;
-        innerGbc.anchor = GridBagConstraints.LINE_END;
-        formContainer.add(new JLabel("Email :"), innerGbc);
-        innerGbc.gridx = 1;
-        innerGbc.anchor = GridBagConstraints.LINE_START;
-        registerEmailField = new JTextField(16);
-        formContainer.add(registerEmailField, innerGbc);
-
-        // Mot de passe
-        innerGbc.gridy = row++;
-        innerGbc.gridx = 0;
-        innerGbc.anchor = GridBagConstraints.LINE_END;
-        formContainer.add(new JLabel("Mot de passe :"), innerGbc);
-        innerGbc.gridx = 1;
-        innerGbc.anchor = GridBagConstraints.LINE_START;
-        registerPasswordField = new JPasswordField(16);
-        formContainer.add(registerPasswordField, innerGbc);
-
-        // Confirmation mot de passe
-        innerGbc.gridy = row++;
-        innerGbc.gridx = 0;
-        innerGbc.anchor = GridBagConstraints.LINE_END;
-        formContainer.add(new JLabel("Confirmer le mot de passe :"), innerGbc);
-        innerGbc.gridx = 1;
-        innerGbc.anchor = GridBagConstraints.LINE_START;
-        registerConfirmPasswordField = new JPasswordField(16);
-        formContainer.add(registerConfirmPasswordField, innerGbc);
-
-        // Bouton centré
-        innerGbc.gridy = row++;
-        innerGbc.gridx = 0;
-        innerGbc.gridwidth = 2;
-        innerGbc.anchor = GridBagConstraints.CENTER;
-        submitRegisterButton = new JButton("S'inscrire");
-        submitRegisterButton.setFont(new Font("Arial", Font.BOLD, 16));
-        submitRegisterButton.setBackground(new Color(70, 130, 180));
-        submitRegisterButton.setForeground(Color.WHITE);
-        formContainer.add(submitRegisterButton, innerGbc);
-
-        panel.add(formContainer, gbc);
-        return panel;
-    }
-
-    // Method to create the updateAccountPagePanel
-    private JPanel updateAccountPagePanel() {
+    public JPanel createUpdateAccountPagePanel(String userName, String userEmail) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(new Color(245, 245, 245));
 
-        // Titre principal
         JLabel titleLabel = new JLabel("Mon Compte", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 26));
         titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
         panel.add(titleLabel, BorderLayout.NORTH);
 
-        // === PANEL INFOS UTILISATEUR ===
         JPanel userInfoPanel = new JPanel(new GridLayout(2, 2, 10, 10));
         userInfoPanel.setBorder(BorderFactory.createTitledBorder("Informations utilisateur"));
         userInfoPanel.setBackground(Color.WHITE);
-        userInfoPanel.setPreferredSize(new Dimension(600, 100));
 
-        JLabel userNameLabel = new JLabel("Nom : Jade Parilla");
-        JLabel userEmailLabel = new JLabel("Email : jade.parilla@mail.com");
-        JLabel userAdresseLabel = new JLabel("🏠 Adresse : non renseignée");
-        JLabel userTelLabel = new JLabel("📞 Téléphone : non reseigné");
+        JLabel userNameLabel = new JLabel("Nom :");
+        JLabel userNameValue = new JLabel(userName); // Display the user's name
+        JLabel userEmailLabel = new JLabel("Email :");
+        JLabel userEmailValue = new JLabel(userEmail); // Display the user's email
 
         userInfoPanel.add(userNameLabel);
+        userInfoPanel.add(userNameValue);
         userInfoPanel.add(userEmailLabel);
-        userInfoPanel.add(userAdresseLabel);
-        userInfoPanel.add(userTelLabel);
+        userInfoPanel.add(userEmailValue);
 
-        // === PANEL COMMANDES ===
-        JPanel ordersPanel = new JPanel();
-        ordersPanel.setLayout(new BoxLayout(ordersPanel, BoxLayout.Y_AXIS));
-        ordersPanel.setBackground(new Color(245, 245, 245));
-
-        // Exemples (à remplacer avec les données de la BDD)
-        ordersPanel.add(createOrderCard("Commande retirée en magasin", "11/04/2025", "N°HA07EHDK2WVGK", "images/p1.png"));
-        ordersPanel.add(createOrderCard("Commande annulée", "06/03/2025", "N°BYACTPS5CHNCK", "images/p2.png"));
-        ordersPanel.add(createOrderCard("Commande retirée en magasin", "03/02/2025", "N°6GQT5WPLHW2OK", "images/p3.png"));
-        ordersPanel.add(createOrderCard("Commande retirée en magasin", "03/02/2025", "N°6GQT5WPLHW2OK", "images/p3.png"));
-        ordersPanel.add(createOrderCard("Commande retirée en magasin", "03/02/2025", "N°6GQT5WPLHW2OK", "images/p3.png"));
-
-        // Scroll pour l'historique
-        JScrollPane scrollPane = new JScrollPane(ordersPanel);
-        scrollPane.setBorder(BorderFactory.createTitledBorder("Historique des commandes"));
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-
-        // Conteneur pour les infos + commandes
-        JPanel centerPanel = new JPanel();
-        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
-        centerPanel.setBackground(new Color(245, 245, 245));
-        centerPanel.add(userInfoPanel);
-        centerPanel.add(Box.createVerticalStrut(20)); // Espace
-        centerPanel.add(scrollPane);
-
-        panel.add(centerPanel, BorderLayout.CENTER);
-
-        // === Bouton déconnexion ===
-        logoutButton = new JButton("Se déconnecter");
-        logoutButton.setFont(new Font("Arial", Font.BOLD, 14));
-        logoutButton.setBackground(new Color(220, 53, 69));
-        logoutButton.setForeground(Color.WHITE);
-        logoutButton.setFocusPainted(false);
-        logoutButton.setPreferredSize(new Dimension(160, 35));
+        // Use the existing logoutButton instance
+        if (logoutButton == null) {
+            logoutButton = new JButton("Se déconnecter");
+            logoutButton.setFont(new Font("Arial", Font.BOLD, 14));
+            logoutButton.setBackground(new Color(220, 53, 69));
+            logoutButton.setForeground(Color.WHITE);
+            logoutButton.setFocusPainted(false);
+        }
 
         JPanel logoutPanel = new JPanel();
         logoutPanel.setBackground(new Color(245, 245, 245));
         logoutPanel.add(logoutButton);
-        panel.add(logoutPanel, BorderLayout.SOUTH);
 
-        // Pour mise à jour dynamique si besoin
-        panel.putClientProperty("userNameLabel", userNameLabel);
-        panel.putClientProperty("userEmailLabel", userEmailLabel);
+        panel.add(userInfoPanel, BorderLayout.CENTER);
+        panel.add(logoutPanel, BorderLayout.SOUTH);
 
         return panel;
     }
 
+    public void updateHomePageView(List<Map<String, String>> articles) {
+        homePagePanel.removeAll(); // Clear existing content
 
+        JPanel articlesPanel = new JPanel();
+        articlesPanel.setLayout(new BoxLayout(articlesPanel, BoxLayout.Y_AXIS));
 
-    private JPanel createOrderCard(String statut, String date, String numeroCommande, String imagePath) {
-        JPanel card = new JPanel(new BorderLayout());
-        card.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-        card.setBackground(Color.WHITE);
-        card.setPreferredSize(new Dimension(600, 120));
+        for (Map<String, String> article : articles) {
+            JPanel articlePanel = new JPanel(new GridLayout(1, 3, 10, 10));
+            articlePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Statut
-        JLabel statutLabel = new JLabel(statut);
-        statutLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        statutLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        if (statut.toLowerCase().contains("annulée")) {
-            statutLabel.setForeground(new Color(200, 0, 0));
-        } else {
-            statutLabel.setForeground(new Color(0, 128, 0));
+            JLabel nameLabel = new JLabel("Nom: " + article.get("nom"));
+            JLabel brandLabel = new JLabel("Marque: " + article.get("marque"));
+            JLabel priceLabel = new JLabel("Prix: " + article.get("prix"));
+
+            articlePanel.add(nameLabel);
+            articlePanel.add(brandLabel);
+            articlePanel.add(priceLabel);
+
+            articlesPanel.add(articlePanel);
         }
 
-        // Image produit
-        JLabel imageLabel = new JLabel();
-        imageLabel.setPreferredSize(new Dimension(100, 100));
-        if (imagePath != null && !imagePath.isEmpty()) {
-            ImageIcon icon = new ImageIcon(imagePath);
-            Image img = icon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-            imageLabel.setIcon(new ImageIcon(img));
-        }
+        JScrollPane scrollPane = new JScrollPane(articlesPanel);
+        homePagePanel.add(scrollPane, BorderLayout.CENTER);
 
-        // Infos commande
-        JPanel infoPanel = new JPanel(new GridLayout(2, 1));
-        infoPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
-        infoPanel.setOpaque(false);
-
-        JLabel dateLabel = new JLabel("📅 Date de commande : " + date);
-        JLabel numLabel = new JLabel("📦 Numéro de commande : " + numeroCommande);
-        infoPanel.add(dateLabel);
-        infoPanel.add(numLabel);
-
-        // Détail bouton
-        JButton detailsButton = new JButton("Détails de la commande");
-        detailsButton.setBackground(new Color(255, 193, 7));
-        detailsButton.setFocusPainted(false);
-        detailsButton.setPreferredSize(new Dimension(200, 30));
-
-        // Layout horizontal
-        JPanel content = new JPanel(new BorderLayout(20, 0));
-        content.setBackground(Color.WHITE);
-        content.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        content.add(imageLabel, BorderLayout.WEST);
-        content.add(infoPanel, BorderLayout.CENTER);
-        content.add(detailsButton, BorderLayout.EAST);
-
-        card.add(statutLabel, BorderLayout.NORTH);
-        card.add(content, BorderLayout.CENTER);
-
-        return card;
+        homePagePanel.revalidate();
+        homePagePanel.repaint();
     }
-
-    // Method to update the user information dynamically
-    //TODO: changer la method pour actualiser les donnés issues de la bdd (peut etre a decale dans le controleur aussi)
-    public void updateAccountPanel(String nomComplet, String email, String telephone, String adresse) {
-        JLabel userNameLabel = (JLabel) updateAccountPagePanel.getClientProperty("userNameLabel");
-        JLabel userEmailLabel = (JLabel) updateAccountPagePanel.getClientProperty("userEmailLabel");
-        JLabel userPhoneLabel = (JLabel) updateAccountPagePanel.getClientProperty("userPhoneLabel");
-        JLabel userAddressLabel = (JLabel) updateAccountPagePanel.getClientProperty("userAddressLabel");
-
-        if (userNameLabel != null) {
-            userNameLabel.setText("Nom : " + nomComplet);
-        }
-        if (userEmailLabel != null) {
-            userEmailLabel.setText("Email : " + email);
-        }
-        if (userPhoneLabel != null) {
-            userPhoneLabel.setText("Téléphone : " + telephone);
-        }
-        if (userAddressLabel != null) {
-            userAddressLabel.setText("Adresse : " + adresse);
-        }
-    }
-
 
     public void showPage(String name) {
         cardLayout.show(mainPanel, name);
@@ -670,29 +349,47 @@ public class ShoppingView {
         frame.setVisible(visible);
     }
 
-    public JFrame getFrame() { return frame; }
-    public JButton getHomeButton() { return homeButton; }
-    public JButton getAccountButton() { return accountButton; }
-    public JButton getPanierButton() { return panierButton; }
-    public JButton getLoginButton() { return loginButton; }
-    public JButton getRegisterButton() { return registerButton; }
-    public JButton getSubmitLoginButton() { return submitLoginButton; }
-    public JButton getSubmitRegisterButton() { return submitRegisterButton; }
-    public JButton getSearchButton() { return searchButton; }
-    public JButton getLogoutButton() { return logoutButton; }
+    public JButton getHomeButton() {
+        return homeButton;
+    }
 
+    public JButton getAccountButton() {
+        return accountButton;
+    }
 
-    public String getLoginEmail() { return emailField.getText(); }
-    public String getLoginPassword() { return new String(passwordField.getPassword()); }
-    public String getRegisterEmail() { return registerEmailField.getText(); }
-    public String getRegisterPassword() { return new String(registerPasswordField.getPassword()); }
-    public String getRegisterPrenom() { return registerPrenomField.getText(); }
-    public String getRegisterNom() { return registerNomField.getText(); }
-    public String getRegisterConfirmPassword() { return new String(registerConfirmPasswordField.getPassword()); }
+    public JButton getPanierButton() {
+        return panierButton;
+    }
 
-    public JPanel getPanierPagePanel() { return panierPagePanel; }
-    public JPanel getListPanel() { return listPanel; }
-    public Map<String, JLabel> getQuantiteLabels() { return quantiteLabels; }
+    public JButton getLoginButton() {
+        return loginButton;
+    }
 
+    public JButton getRegisterButton() {
+        return registerButton;
+    }
 
+    public JButton getSubmitLoginButton() {
+        return submitLoginButton;
+    }
+
+    public JButton getSubmitRegisterButton() {
+        return submitRegisterButton;
+    }
+
+    public JButton getLogoutButton() {
+        return logoutButton;
+    }
+
+    public JPanel getPanierPagePanel() {
+        return panierPagePanel;
+    }
+
+    public JPanel getListPanel() {
+        return listPanel;
+    }
+
+    public JPanel getMainPanel() {
+        return mainPanel;
+    }
 }

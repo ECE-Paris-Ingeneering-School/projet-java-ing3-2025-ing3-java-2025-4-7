@@ -3,212 +3,101 @@ package controleur;
 import vue.*;
 import modele.*;
 import DAO.*;
+import javax.swing.*;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 public class ShoppingController {
     private ShoppingView view;
-    private Utilisateur utilisateurConnecte; // Stocke l'utilisateur connecté
-    private UtilisateurDAOImpl utilisateurDAO; // DAO pour les utilisateurs
+    private Utilisateur utilisateurConnecte;
+    private UtilisateurDAOImpl utilisateurDAO;
     private DaoFactory daoFactory;
 
     public ShoppingController(ShoppingView view) {
-        System.out.println("Controller initialized");
         this.view = view;
-        this.utilisateurConnecte = null; // Au début, personne n'est connecté
-        this.daoFactory = DaoFactory.getInstance("projetshoppingjava","root","");
+        this.utilisateurConnecte = null;
+        this.daoFactory = DaoFactory.getInstance("projetshoppingjava", "root", "");
         this.utilisateurDAO = new UtilisateurDAOImpl(this.daoFactory);
 
+        initializeListeners();
+        afficherAccueil();
+    }
 
-
-        // Initialisation des listeners
-
-        //bouton de la page d'accueil
-        view.getHomeButton().addActionListener(e -> {
-            view.showPage("HomePage");
-        });
+    private void initializeListeners() {
+        view.getHomeButton().addActionListener(e -> view.showPage("HomePage"));
 
         view.getAccountButton().addActionListener(e -> {
             if (utilisateurConnecte != null) {
-                // MAJ des infos dynamiquement depuis la BDD
-                Utilisateur userBdd = utilisateurDAO.chercher(utilisateurConnecte.getId());
-                if (userBdd != null) {
-                    utilisateurConnecte = userBdd;
-                    String nomComplet = userBdd.getNom() + " " + userBdd.getPrenom();
-                    String tel = (userBdd.getTelephone() > 0) ? String.valueOf(userBdd.getTelephone()) : "Non renseigné";
-                    String adresse = (userBdd.getAdresse() != null && !userBdd.getAdresse().isEmpty()) ? userBdd.getAdresse() : "Non renseignée";
-
-                    view.updateAccountPanel(nomComplet, userBdd.getEmail(), tel, adresse);
-                }
 
                 view.showPage("UpdateAccount");
             } else {
-                view.showPage("Account"); // redirige vers page de connexion
+                view.showPage("Account");
             }
         });
 
-
-        view.getPanierButton().addActionListener(e -> {
-            view.showPage("Panier");
-            setupPanierListeners();
-        });
+        view.getPanierButton().addActionListener(e -> view.showPage("Panier"));
 
         view.getLoginButton().addActionListener(e -> view.showPage("Login"));
         view.getRegisterButton().addActionListener(e -> view.showPage("Register"));
 
-        // Gestion du bouton Logout
-        view.getLogoutButton().addActionListener(e -> {
-            // Déconnexion de l'utilisateur
-            utilisateurConnecte = null;
-            JOptionPane.showMessageDialog(null, "Vous êtes maintenant déconnecté.");
-            view.showPage("HomePage"); // Redirection vers la page d'accueil après déconnexion
-        });
+        view.getLogoutButton().addActionListener(e -> handleLogout());
 
-        // Gestion des boutons de la page de connexion et d'inscription
-        view.getSubmitLoginButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String email = view.getLoginEmail();
-                String password = view.getLoginPassword();
-                if (email.isEmpty() || password.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Veuillez remplir tous les champs.");
-                } else {
-                    try {
-                        utilisateurConnecte = utilisateurDAO.chercherLogin(email, password);
-                    } catch (Exception ex) {
-                        JOptionPane.showMessageDialog(null, "Erreur lors de la connexion. Veuillez réessayer.");
-                        return;
-                    }
-                    JOptionPane.showMessageDialog(null, "Bienvenue " + utilisateurConnecte.getEmail());
-                    view.showPage("HomePage");
-                }
-            }
-        });
-
-        view.getSubmitRegisterButton().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String prenom = view.getRegisterPrenom().trim();
-                String nom = view.getRegisterNom().trim();
-                String email = view.getRegisterEmail().trim();
-                String mdp = view.getRegisterPassword();
-                String confirmMdp = view.getRegisterConfirmPassword();
-
-                if (prenom.isEmpty() || nom.isEmpty() || email.isEmpty() || mdp.isEmpty() || confirmMdp.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Tous les champs sont obligatoires.");
-                    return;
-                }
-
-                if (!email.matches("^[\\w.-]+@[\\w.-]+\\.\\w+$")) {
-                    JOptionPane.showMessageDialog(null, "Adresse email invalide.");
-                    return;
-                }
-
-                if (!mdp.equals(confirmMdp)) {
-                    JOptionPane.showMessageDialog(null, "Les mots de passe ne correspondent pas.");
-                    return;
-                }
-
-                if (mdp.length() < 6) {
-                    JOptionPane.showMessageDialog(null, "Le mot de passe doit contenir au moins 6 caractères.");
-                    return;
-                }
-
-                // On peut simuler l'inscription ici
-                // Exemple d'un nouvel utilisateur
-                utilisateurConnecte = new Utilisateur(email, mdp, nom, prenom, "adresse", 1234567890, false);
-                try{
-                    boolean success = utilisateurDAO.ajouter(utilisateurConnecte);
-                    if (success) {
-                        JOptionPane.showMessageDialog(null, "Inscription réussie !");
-                        view.showPage("HomePage");
-                    }
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(null, "Erreur lors de l'inscription. Veuillez réessayer.");
-                }
-                JOptionPane.showMessageDialog(null, "Inscription réussie ! Bienvenue " + prenom + " " + nom + " !");
-                view.showPage("HomePage");
-            }
-        });
-
-        view.getLogoutButton().addActionListener(e -> {
-            // Déconnexion de l'utilisateur
-            utilisateurConnecte = null;
-            JOptionPane.showMessageDialog(null, "Vous êtes maintenant déconnecté.");
-            view.showPage("HomePage"); // Redirige vers la page d'accueil après déconnexion
-        });
-
-        afficherAccueil();
+        view.getSubmitLoginButton().addActionListener(e -> handleLogin());
+        view.getSubmitRegisterButton().addActionListener(e -> handleRegister());
+        view.getAccountButton().addActionListener(e -> afficherCompte());
     }
 
-    private void setupPanierListeners() {
-        JPanel panierPanel = view.getPanierPagePanel();
-        JScrollPane scrollPane = (JScrollPane) ((BorderLayout) panierPanel.getLayout()).getLayoutComponent(BorderLayout.CENTER);
-        JViewport viewport = scrollPane.getViewport();
-        JPanel listPanel = (JPanel) viewport.getView();
+    private void handleLogin() {
+        String email = JOptionPane.showInputDialog(null, "Entrez votre email :", "Connexion", JOptionPane.PLAIN_MESSAGE);
+        String password = JOptionPane.showInputDialog(null, "Entrez votre mot de passe :", "Connexion", JOptionPane.PLAIN_MESSAGE);
 
-        for (Component comp : listPanel.getComponents()) {
-            if (comp instanceof JPanel articlePanel) {
-                Component east = ((BorderLayout) articlePanel.getLayout()).getLayoutComponent(BorderLayout.EAST);
-                Component west = ((BorderLayout) articlePanel.getLayout()).getLayoutComponent(BorderLayout.WEST);
-
-                if (!(east instanceof JPanel buttonPanel) || !(west instanceof JLabel nomLabel)) continue;
-
-                String labelText = nomLabel.getText();
-                String articleName = labelText.split(" ")[0];
-
-                JButton minusButton = (JButton) buttonPanel.getComponent(0);
-                JButton plusButton = (JButton) buttonPanel.getComponent(1);
-                JButton deleteButton = (JButton) buttonPanel.getComponent(2);
-
-                for (ActionListener al : plusButton.getActionListeners()) plusButton.removeActionListener(al);
-                for (ActionListener al : minusButton.getActionListeners()) minusButton.removeActionListener(al);
-                for (ActionListener al : deleteButton.getActionListeners()) deleteButton.removeActionListener(al);
-
-                plusButton.addActionListener(e -> {
-                    int quantity = extractQuantity(nomLabel.getText());
-                    quantity++;
-                    nomLabel.setText(articleName + " (x" + quantity + ")");
-                });
-
-                minusButton.addActionListener(e -> {
-                    int quantity = extractQuantity(nomLabel.getText());
-                    if (quantity > 1) {
-                        quantity--;
-                        nomLabel.setText(articleName + " (x" + quantity + ")");
-                    }
-                });
-
-                deleteButton.addActionListener(e -> {
-                    listPanel.remove(articlePanel);
-                    listPanel.revalidate();
-                    listPanel.repaint();
-                });
-            }
+        if (email == null || email.isEmpty() || password == null || password.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Veuillez remplir tous les champs.");
+            return;
         }
 
-        JPanel bottomPanel = (JPanel) panierPanel.getComponent(1);
-        JButton commanderButton = (JButton) bottomPanel.getComponent(0);
-
-        for (ActionListener al : commanderButton.getActionListeners()) commanderButton.removeActionListener(al);
-        commanderButton.addActionListener(e -> view.showPage("Commande"));
+        try {
+            utilisateurConnecte = utilisateurDAO.chercherLogin(email, password);
+            if (utilisateurConnecte != null) {
+                JOptionPane.showMessageDialog(null, "Bienvenue " + utilisateurConnecte.getEmail());
+                view.showPage("HomePage");
+            } else {
+                JOptionPane.showMessageDialog(null, "Email ou mot de passe incorrect.");
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Erreur lors de la connexion. Veuillez réessayer.");
+        }
     }
 
-    private int extractQuantity(String labelText) {
+    private void handleRegister() {
+        String prenom = JOptionPane.showInputDialog(null, "Entrez votre prénom :", "Inscription", JOptionPane.PLAIN_MESSAGE);
+        String nom = JOptionPane.showInputDialog(null, "Entrez votre nom :", "Inscription", JOptionPane.PLAIN_MESSAGE);
+        String email = JOptionPane.showInputDialog(null, "Entrez votre email :", "Inscription", JOptionPane.PLAIN_MESSAGE);
+        String mdp = JOptionPane.showInputDialog(null, "Entrez votre mot de passe :", "Inscription", JOptionPane.PLAIN_MESSAGE);
+        String confirmMdp = JOptionPane.showInputDialog(null, "Confirmez votre mot de passe :", "Inscription", JOptionPane.PLAIN_MESSAGE);
+
+        if (prenom == null || prenom.isEmpty() || nom == null || nom.isEmpty() || email == null || email.isEmpty() ||
+                mdp == null || mdp.isEmpty() || confirmMdp == null || confirmMdp.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Tous les champs sont obligatoires.");
+            return;
+        }
+
+        if (!mdp.equals(confirmMdp)) {
+            JOptionPane.showMessageDialog(null, "Les mots de passe ne correspondent pas.");
+            return;
+        }
+
+        utilisateurConnecte = new Utilisateur(email, mdp, nom, prenom, "adresse", 1234567890, false);
         try {
-            int start = labelText.indexOf("(x") + 2;
-            int end = labelText.indexOf(")", start);
-            return Integer.parseInt(labelText.substring(start, end));
-        } catch (Exception e) {
-            return 1;
+            boolean success = utilisateurDAO.ajouter(utilisateurConnecte);
+            if (success) {
+                JOptionPane.showMessageDialog(null, "Inscription réussie !");
+                view.showPage("HomePage");
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Erreur lors de l'inscription. Veuillez réessayer.");
         }
     }
 
@@ -231,10 +120,33 @@ public class ShoppingController {
         view.showPage("HomePage");
     }
 
+    private void afficherCompte() {
+        if (utilisateurConnecte != null) {
+            String userName = utilisateurConnecte.getNom();
+            String userEmail = utilisateurConnecte.getEmail();
+
+            // Check if the panel already exists
+            if (view.getMainPanel().getComponentCount() == 0 ||
+                    !view.getMainPanel().isAncestorOf(view.createUpdateAccountPagePanel(userName, userEmail))) {
+                JPanel accountPanel = view.createUpdateAccountPagePanel(userName, userEmail);
+                view.getMainPanel().add(accountPanel, "UpdateAccount");
+            }
+
+            view.showPage("UpdateAccount");
+        } else {
+            JOptionPane.showMessageDialog(null, "Veuillez vous connecter pour accéder à votre compte.");
+            view.showPage("Login");
+        }
+    }
+
+    private void handleLogout() {
+        // Clear the connected user
+        utilisateurConnecte = null;
+
+        // Show a confirmation message
+        JOptionPane.showMessageDialog(null, "Vous êtes maintenant déconnecté.");
+
+        // Redirect to the home page
+        view.showPage("HomePage");
+    }
 }
-
-
-//Exemple de comment utiliser le dao:
-//        Utilisateur user = new Utilisateur("email", "password", "nom", "prenom", "adresse", 1234567890, false);
-//        this.utilisateurDAO.ajouter(user);
-//        this.utilisateurDAO.modifier(user, "bite", "password", "nom", "prenom", "adresse", 1234567890, false);
