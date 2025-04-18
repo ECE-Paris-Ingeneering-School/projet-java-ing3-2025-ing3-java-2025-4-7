@@ -1,161 +1,141 @@
 package DAO;
 
-// import des packages
-
 import modele.Commande;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
-/**
- * implémentation MySQL du stockage dans la base de données des méthodes définies dans l'interface
- * CommanderDao.
- */
 public class CommandeDAOImpl implements CommandeDAO {
-    // attribut privé pour l'objet du DaoFactoru
-    private DaoFactory daoFactory;
+    private final DaoFactory daoFactory;
 
-    // constructeur dépendant de la classe DaoFactory
     public CommandeDAOImpl(DaoFactory daoFactory) {
         this.daoFactory = daoFactory;
     }
 
     @Override
-    /**
-     * Récupérer de la base de données tous les objets des commandes des produits par les clients dans une liste
-     * @return : liste retournée des objets des produits récupérés
-     */
-    public ArrayList<Commande> getAll() {
-        ArrayList<Commande> listeCommandes = new ArrayList<Commande>();
+    public List<Commande> getAll() {
+        List<Commande> commandes = new ArrayList<>();
+        String sql = "SELECT * FROM commande_totale";
 
-        /*
-            Récupérer la liste des clients de la base de données dans listeProduits
-        */
-        try {
-            // connexion
-            Connection connexion = daoFactory.getConnection();
-            ;
-            Statement statement = connexion.createStatement();
+        try (Connection connexion = daoFactory.getConnection();
+             Statement statement = connexion.createStatement();
+             ResultSet resultats = statement.executeQuery(sql)) {
 
-            // récupération de l'ordre de la requete
-            ResultSet resultats = statement.executeQuery("select * from commander");
-
-            // récupération du résultat de l'ordre
-            ResultSetMetaData rsmd = resultats.getMetaData();
-
-            // 	Se déplacer sur le prochain enregistrement : retourne false si la fin est atteinte
             while (resultats.next()) {
-                // récupérer les 3 champs de la table commander
-                int clientId = resultats.getInt(1);
-                int produitId = resultats.getInt(2);
-                int quantite = resultats.getInt(3);
-
-                // instancier un objet de Produit
-                //Commande achat = new Commande(clientId, produitId, quantite);
-
-                // ajouter ce produit à listeProduits
-                //listeCommandes.add(achat);
+                Commande commande = map(resultats);
+                commandes.add(commande);
             }
         } catch (SQLException e) {
-            //traitement de l'exception
             e.printStackTrace();
-            System.out.println("Création de la liste des commandes impossible");
+            System.out.println("Erreur lors de la récupération des commandes.");
         }
 
-        return listeCommandes;
+        return commandes;
     }
 
     @Override
-    /**
-     Ajouter une nouvelle commande d'un produit par un client en paramètre dans la base de données
-     @params : achat = objet de la commande en paramètre à insérer dans la base de données
-     */
-    public void ajouter(Commande achat) {
-        try {
-            // connexion
-            Connection connexion = daoFactory.getConnection();
+    public void ajouter(Commande commande) {
+        String sql = "INSERT INTO commande_totale (utilisateurID, commandeDate, statut_commande, Liste_Id_articles, Liste_Quantite_articles, prix) VALUES (?, ?, ?, ?, ?, ?)";
 
-            // récupération du nom et prix de l'objet product en paramètre
-            //int vClientID = achat.getClientId();
-            //int vProduitID = achat.getProduitId();
-            //int vQuantite = achat.getQuantite();
+        try (Connection connexion = daoFactory.getConnection();
+             PreparedStatement preparedStatement = connexion.prepareStatement(sql)) {
 
-            // Exécution de la requête INSERT INTO de l'objet product en paramètre
-            //PreparedStatement preparedStatement = connexion.prepareStatement("INSERT INTO commander(clientID, produitID,quantité) VALUES ('" + vClientID + "','" + vProduitID + "','" + vQuantite + "')");
-            //preparedStatement.executeUpdate();
+            preparedStatement.setInt(1, commande.getUtilisateurID());
+            preparedStatement.setString(2, commande.getDate());
+            preparedStatement.setString(3, commande.getStatut());
+            preparedStatement.setString(4, commande.getListeID_Article());
+            preparedStatement.setString(5, commande.getListeQuantite_Article());
+            preparedStatement.setDouble(6, commande.getPrix());
 
+            preparedStatement.executeUpdate();
+            System.out.println("Commande ajoutée avec succès.");
         } catch (SQLException e) {
             e.printStackTrace();
-            System.out.println("Ajout du produit impossible");
+            System.out.println("Erreur lors de l'ajout de la commande.");
         }
     }
 
     @Override
-    /**
-     * Permet de chercher et récupérer un objet de Commander dans la base de données via ses clientID et produitID
-     * en paramètres
-     * @param : clientID et produitID
-     * @return : objet de commande cherché et retourné
-     */
-    public Commande chercher(int clientID, int produitID) {
-        Commande achat = null;
+    public Commande chercher(int id) {
+        Commande commande = null;
+        String sql = "SELECT * FROM commande_totale WHERE commandeID = ?";
 
-        try {
-            // connexion
-            Connection connexion = daoFactory.getConnection();
-            ;
-            Statement statement = connexion.createStatement();
+        try (Connection connexion = daoFactory.getConnection();
+             PreparedStatement preparedStatement = connexion.prepareStatement(sql)) {
 
-            // Exécution de la requête SELECT pour récupérer le produit de l'id dans la base de données
-            ResultSet resultats = statement.executeQuery("select * from commander where clientID=" + clientID);
+            preparedStatement.setInt(1, id);
 
-            // 	Se déplacer sur le prochain enregistrement : retourne false si la fin est atteinte
-            while (resultats.next()) {
-                // récupérer les 3 champs de la table produits dans la base de données
-                // récupération des 3 champs du produit de la base de données
-                int vClientId = resultats.getInt(1);
-                int vProduitID = resultats.getInt(2);
-                int vQuantité = resultats.getInt(3);
-
-                // Si l'id du produit est trouvé, l'instancier et sortir de la boucle
-                if (clientID == vClientId) {
-                    System.out.println("Produit  trouvé dans la base de données");
-                    // instanciation de l'objet de Produit avec ces 3 champs
-                    //achat = new Commande(vClientId, vProduitID, vQuantité);
-                    break;
+            try (ResultSet resultats = preparedStatement.executeQuery()) {
+                if (resultats.next()) {
+                    commande = map(resultats);
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            System.out.println("Produit non trouvé dans la base de données");
+            System.out.println("Erreur lors de la recherche de la commande.");
         }
-        return achat;
+
+        return commande;
     }
 
     @Override
-    /**
-     * Permet de modifier les données du nom de l'objet de la classe Commander en paramètre
-     * dans la base de données à partir de clientID et produitID de cet objet en paramètre
-     * @param : achat = objet en paramètre de la classe Commander à mettre à jour
-     * @return : objet achat en paramètre mis à jour  dans la base de données à retourner
-     */
-    public Commande modifier(Commande achat) {
-        /*
-            A COMPLETER
-         */
+    public Commande modifier(Commande commande) {
+        String sql = "UPDATE commande_totale SET statut_commande = ?, Liste_Id_articles = ?, Liste_Quantite_articles = ?, prix = ? WHERE commandeID = ?";
 
-        return achat;
+        try (Connection connexion = daoFactory.getConnection();
+             PreparedStatement preparedStatement = connexion.prepareStatement(sql)) {
+
+            preparedStatement.setString(1, commande.getStatut());
+            preparedStatement.setString(2, commande.getListeID_Article());
+            preparedStatement.setString(3, commande.getListeQuantite_Article());
+            preparedStatement.setDouble(4, commande.getPrix());
+            preparedStatement.setInt(5, commande.getId());
+
+            int rowsAffected = preparedStatement.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Commande mise à jour avec succès.");
+            } else {
+                System.out.println("Aucune commande trouvée avec l'ID sp��cifié.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Erreur lors de la mise à jour de la commande.");
+        }
+
+        return commande;
     }
 
     @Override
-    /**
-     Supprimer un objet de la classe Commander en paramètre dans la base de données
-     @params : product = objet de Produit en paramètre à supprimer de la base de données
-     */
-    public void supprimer(Commande achat) {
-        /*
-            A COMPLETER
-         */
+    public void supprimer(int id) {
+        String sql = "DELETE FROM commande_totale WHERE commandeID = ?";
 
+        try (Connection connexion = daoFactory.getConnection();
+             PreparedStatement preparedStatement = connexion.prepareStatement(sql)) {
+
+            preparedStatement.setInt(1, id);
+
+            int rowsAffected = preparedStatement.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Commande supprimée avec succès.");
+            } else {
+                System.out.println("Aucune commande trouvée avec l'ID spécifié.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Erreur lors de la suppression de la commande.");
+        }
+    }
+
+    private Commande map(ResultSet resultats) throws SQLException {
+        int id = resultats.getInt("commandeID");
+        int utilisateurID = resultats.getInt("utilisateurID");
+        String date = resultats.getString("commandeDate");
+        String statut = resultats.getString("statut_commande");
+        String listeID_Article = resultats.getString("Liste_Id_articles");
+        String listeQuantite_Article = resultats.getString("Liste_Quantite_articles");
+        double prix = resultats.getDouble("prix");
+
+        return new Commande(id, utilisateurID, date, statut, prix, listeID_Article, listeQuantite_Article);
     }
 }

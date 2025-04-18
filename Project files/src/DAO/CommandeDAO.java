@@ -1,47 +1,17 @@
 package DAO;
 
-// import des packages
-
 import modele.Commande;
 
-import java.util.ArrayList;
+import java.util.List;
 
-/**
- * On utilise une interface CommanderDao pour définir les méthodes d'accès aux données de la table commander,
- * indépendamment de la méthode de stockage. On indique juste des noms de méthodes ici.
- */
 public interface CommandeDAO {
-     /**
-     * Récupérer de la base de données tous les objets des commandes des produits par les clients dans une liste
-     * @return : liste retournée des objets des produits récupérés
-     */
-    public ArrayList<Commande> getAll();
+    List<Commande> getAll();
 
-    /**
-     Ajouter une nouvelle commande d'un produit par un client en paramètre dans la base de données
-     @params : achat = objet de la commande en paramètre à insérer dans la base de données
-     */
-    public void ajouter(Commande achat);
+    void ajouter(Commande commande);
 
-    /**
-     * Permet de chercher et récupérer un objet de Commander dans la base de données via ses clientID et produitID
-     * en paramètres
-     * @param : clientID et produitID
-     * @return : objet de commande cherché et retourné
-     */
-    public Commande chercher(int clientID, int produitID);
+    Commande chercher(int id);
 
-    /**
-     * Permet de modifier les données du nom de l'objet de la classe Commander en paramètre
-     * dans la base de données à partir de clientID et produitID de cet objet en paramètre
-     * @param : achat = objet en paramètre de la classe Commander à mettre à jour
-     * @return : objet achat en paramètre mis à jour dans la base de données à retourner
-     */
-    public Commande modifier(Commande achat);
+    Commande modifier(Commande commande);
 
-    /**
-     Supprimer un objet de la classe Commander en paramètre dans la base de données
-     @params : product = objet de Produit en paramètre à supprimer de la base de données
-     */
-    public void supprimer (Commande achat);
+    void supprimer(int id);
 }

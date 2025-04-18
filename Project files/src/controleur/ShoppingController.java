@@ -13,6 +13,7 @@ public class ShoppingController {
     private ShoppingView view;
     private Utilisateur utilisateurConnecte;
     private UtilisateurDAOImpl utilisateurDAO;
+    private CommandeDAOImpl commandeDAO;
     private DaoFactory daoFactory;
 
     public ShoppingController(ShoppingView view) {
@@ -20,6 +21,18 @@ public class ShoppingController {
         this.utilisateurConnecte = null;
         this.daoFactory = DaoFactory.getInstance("projetshoppingjava", "root", "");
         this.utilisateurDAO = new UtilisateurDAOImpl(this.daoFactory);
+        this.commandeDAO = new CommandeDAOImpl(this.daoFactory);
+
+        //Test des fonctions de commandedao
+        //print toutes les info:
+        List<Commande> commandes = commandeDAO.getAll();
+        for (Commande commande : commandes) {
+            System.out.println("ID: " + commande.getId() + ", Utilisateur ID: " + commande.getUtilisateurID() +
+                    ", Date: " + commande.getDate() + ", Statut: " + commande.getStatut() +
+                    ", Liste ID Articles: " + commande.getListeID_Article() +
+                    ", Liste Quantité Articles: " + commande.getListeQuantite_Article() +
+                    ", Prix: " + commande.getPrix());
+        }
 
         initializeListeners();
         afficherAccueil();
