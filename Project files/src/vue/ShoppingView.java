@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import controleur.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+
 
 public class ShoppingView {
     private JFrame frame;
@@ -316,30 +319,161 @@ public class ShoppingView {
     public void updateHomePageView(List<Map<String, String>> articles) {
         homePagePanel.removeAll(); // Clear existing content
 
-        JPanel articlesPanel = new JPanel();
-        articlesPanel.setLayout(new BoxLayout(articlesPanel, BoxLayout.Y_AXIS));
+        JPanel mainContainer = new JPanel();
+        mainContainer.setLayout(new BoxLayout(mainContainer, BoxLayout.Y_AXIS));
+        mainContainer.setBackground(Color.WHITE);
+        mainContainer.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30)); // Padding autour
 
+        Map<String, List<Map<String, String>>> articlesParMarque = new LinkedHashMap<>();
         for (Map<String, String> article : articles) {
-            JPanel articlePanel = new JPanel(new GridLayout(1, 3, 10, 10));
-            articlePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-            JLabel nameLabel = new JLabel("Nom: " + article.get("nom"));
-            JLabel brandLabel = new JLabel("Marque: " + article.get("marque"));
-            JLabel priceLabel = new JLabel("Prix: " + article.get("prix"));
-
-            articlePanel.add(nameLabel);
-            articlePanel.add(brandLabel);
-            articlePanel.add(priceLabel);
-
-            articlesPanel.add(articlePanel);
+            String marque = article.get("marque");
+            if (marque == null) marque = "Autres";
+            articlesParMarque.putIfAbsent(marque, new ArrayList<>());
+            articlesParMarque.get(marque).add(article);
         }
 
-        JScrollPane scrollPane = new JScrollPane(articlesPanel);
+        for (String marque : articlesParMarque.keySet()) {
+            JPanel sectionPanel = new JPanel();
+            sectionPanel.setLayout(new BoxLayout(sectionPanel, BoxLayout.Y_AXIS));
+            sectionPanel.setBackground(Color.WHITE);
+
+            // Titre de la marque, aligné à gauche
+            JLabel marqueLabel = new JLabel(marque.toUpperCase());
+            marqueLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
+            marqueLabel.setAlignmentX(Component.LEFT_ALIGNMENT); // Aligné à gauche
+            marqueLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 5, 0)); // Collé à la liste
+            sectionPanel.add(marqueLabel);
+
+            // Contenu ligne d'articles
+            JPanel ligneArticles = new JPanel();
+            ligneArticles.setLayout(new BoxLayout(ligneArticles, BoxLayout.X_AXIS));
+            ligneArticles.setBackground(Color.WHITE);
+
+            for (Map<String, String> article : articlesParMarque.get(marque)) {
+                JPanel card = new JPanel();
+                card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
+                card.setPreferredSize(new Dimension(180, 150));
+                card.setMaximumSize(new Dimension(180, 150));
+                card.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(new Color(220, 220, 220)),
+                        BorderFactory.createEmptyBorder(10, 10, 10, 10)
+                ));
+                card.setBackground(new Color(245, 245, 250));
+                card.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+                String nom = article.getOrDefault("nom", "Nom inconnu");
+                String prix = article.getOrDefault("prix", "N/A");
+
+                JLabel nomLabel = new JLabel(nom);
+                nomLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+
+                JLabel prixLabel = new JLabel("Prix : " + prix + " €");
+                prixLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
+                prixLabel.setForeground(new Color(34, 139, 34));
+
+                JButton ajouterBtn = new JButton("Ajouter au panier");
+                ajouterBtn.setFocusPainted(false);
+                ajouterBtn.setBackground(new Color(66, 133, 244));
+                ajouterBtn.setForeground(Color.WHITE);
+                ajouterBtn.setFont(new Font("SansSerif", Font.PLAIN, 12));
+                ajouterBtn.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+                card.add(nomLabel);
+                card.add(Box.createVerticalStrut(5));
+                card.add(prixLabel);
+                card.add(Box.createVerticalGlue());
+                card.add(ajouterBtn);
+
+                ligneArticles.add(card);
+                ligneArticles.add(Box.createHorizontalStrut(10));
+            }
+
+            // Scroll horizontal
+            JScrollPane ligneScroll = new JScrollPane(ligneArticles);
+            ligneScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS); // Activation du scroll horizontal
+            ligneScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+            ligneScroll.getHorizontalScrollBar().setPreferredSize(new Dimension(0, 0));
+            ligneScroll.getViewport().setScrollMode(JViewport.BLIT_SCROLL_MODE);
+            ligneScroll.setBorder(BorderFactory.createEmptyBorder());
+            ligneScroll.setPreferredSize(new Dimension(0, 180));
+
+            // Propager scroll molette
+            ligneScroll.addMouseWheelListener(e -> {
+                JScrollPane scrollParent = (JScrollPane) SwingUtilities.getAncestorOfClass(JScrollPane.class, homePagePanel);
+                if (scrollParent != null) {
+                    scrollParent.dispatchEvent(SwingUtilities.convertMouseEvent(e.getComponent(), e, scrollParent));
+                }
+            });
+
+            // Wrapper avec boutons gauche/droite
+            JPanel scrollAvecBoutons = new JPanel(new BorderLayout());
+            scrollAvecBoutons.setBackground(Color.WHITE);
+            scrollAvecBoutons.setMaximumSize(new Dimension(Integer.MAX_VALUE, 190));
+
+            // Boutons avec emoji flèche et taille réduite (carré)
+            JButton btnGauche = new JButton("◁");  // Flèche gauche
+            JButton btnDroite = new JButton("▷"); // Flèche droite
+            Dimension btnSize = new Dimension(40, 40);  // Taille carrée des boutons
+            btnGauche.setPreferredSize(btnSize);
+            btnDroite.setPreferredSize(btnSize);
+
+            // Style des boutons
+            btnGauche.setFont(new Font("SansSerif", Font.PLAIN, 20));  // Emoji flèche
+            btnDroite.setFont(new Font("SansSerif", Font.PLAIN, 20));
+
+            btnGauche.setBackground(new Color(240, 240, 240));
+            btnDroite.setBackground(new Color(240, 240, 240));
+
+            btnGauche.setFocusable(false);
+            btnDroite.setFocusable(false);
+
+            // Déplacement gauche/droite
+            btnGauche.addActionListener(e -> {
+                JViewport view = ligneScroll.getViewport();
+                Point p = view.getViewPosition();
+                int newX = Math.max(0, p.x - 200);
+                view.setViewPosition(new Point(newX, p.y));
+            });
+
+            btnDroite.addActionListener(e -> {
+                JViewport view = ligneScroll.getViewport();
+                Point p = view.getViewPosition();
+                int maxX = ligneArticles.getWidth() - view.getWidth();
+                int newX = Math.min(maxX, p.x + 200);
+                view.setViewPosition(new Point(newX, p.y));
+            });
+
+            // Ajouter les boutons et le scroll horizontal
+            scrollAvecBoutons.add(btnGauche, BorderLayout.WEST);
+            scrollAvecBoutons.add(ligneScroll, BorderLayout.CENTER);
+            scrollAvecBoutons.add(btnDroite, BorderLayout.EAST);
+
+            sectionPanel.add(scrollAvecBoutons);
+            sectionPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+            mainContainer.add(sectionPanel);
+        }
+
+        JScrollPane scrollPane = new JScrollPane(mainContainer);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setBorder(null);
+
+        homePagePanel.setLayout(new BorderLayout());
         homePagePanel.add(scrollPane, BorderLayout.CENTER);
 
         homePagePanel.revalidate();
         homePagePanel.repaint();
     }
+
+
+
+
+
+
+
+
+
 
     public void showPage(String name) {
         cardLayout.show(mainPanel, name);

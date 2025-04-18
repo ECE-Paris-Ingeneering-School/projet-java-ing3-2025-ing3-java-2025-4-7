@@ -62,6 +62,7 @@ public class ShoppingController {
         view.getAccountButton().addActionListener(e -> afficherCompte());
     }
 
+    //TODO : enlever ces notifs de merde
     private void handleLogin() {
         String email = JOptionPane.showInputDialog(null, "Entrez votre email :", "Connexion", JOptionPane.PLAIN_MESSAGE);
         String password = JOptionPane.showInputDialog(null, "Entrez votre mot de passe :", "Connexion", JOptionPane.PLAIN_MESSAGE);
@@ -84,6 +85,7 @@ public class ShoppingController {
         }
     }
 
+    //TODO : enlever ces notifs de merde
     private void handleRegister() {
         String prenom = JOptionPane.showInputDialog(null, "Entrez votre prénom :", "Inscription", JOptionPane.PLAIN_MESSAGE);
         String nom = JOptionPane.showInputDialog(null, "Entrez votre nom :", "Inscription", JOptionPane.PLAIN_MESSAGE);
@@ -147,7 +149,6 @@ public class ShoppingController {
 
             view.showPage("UpdateAccount");
         } else {
-            JOptionPane.showMessageDialog(null, "Veuillez vous connecter pour accéder à votre compte.");
             view.showPage("Login");
         }
     }
