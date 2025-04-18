@@ -193,7 +193,7 @@ public class ShoppingView {
         return panel;
     }
 
-    private JPanel createRegisterPagePanel() {
+    public JPanel createRegisterPagePanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
 
@@ -201,6 +201,7 @@ public class ShoppingView {
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         panel.add(titleLabel, BorderLayout.NORTH);
 
+        // Formulaire
         JPanel formPanel = new JPanel(new GridLayout(6, 2, 10, 10));
         formPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
 
@@ -224,6 +225,13 @@ public class ShoppingView {
         registerConfirmPasswordField = new JPasswordField();
         formPanel.add(registerConfirmPasswordField);
 
+        // Label d'erreur
+        errorMessageLabel = new JLabel("", SwingConstants.CENTER);
+        errorMessageLabel.setForeground(Color.RED);
+        errorMessageLabel.setFont(new Font("Arial", Font.ITALIC, 12));
+        errorMessageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Bouton
         submitRegisterButton = new JButton("S'inscrire");
         submitRegisterButton.setFont(new Font("Arial", Font.BOLD, 16));
         submitRegisterButton.setBackground(new Color(34, 139, 34));
@@ -233,11 +241,19 @@ public class ShoppingView {
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(submitRegisterButton);
 
-        panel.add(formPanel, BorderLayout.CENTER);
-        panel.add(buttonPanel, BorderLayout.SOUTH);
+        // Nouveau wrapper pour form + erreur + bouton
+        JPanel formWrapperPanel = new JPanel();
+        formWrapperPanel.setLayout(new BoxLayout(formWrapperPanel, BoxLayout.Y_AXIS));
+        formWrapperPanel.add(formPanel);
+        formWrapperPanel.add(Box.createVerticalStrut(5));
+        formWrapperPanel.add(errorMessageLabel);
+        formWrapperPanel.add(Box.createVerticalStrut(10));
+        formWrapperPanel.add(buttonPanel);
 
+        panel.add(formWrapperPanel, BorderLayout.CENTER);
         return panel;
     }
+
 
     private JPanel createCommandePagePanel() {
         JPanel panel = new JPanel(new BorderLayout());
@@ -511,6 +527,30 @@ public class ShoppingView {
 
     public JButton getLoginButton() {
         return loginButton;
+    }
+    // Getter pour prenomField
+    public JTextField getRegisterPrenomField() {
+        return registerPrenomField;
+    }
+
+    // Getter pour nomField
+    public JTextField getRegisterNomField() {
+        return registerNomField;
+    }
+
+    // Getter pour emailField
+    public JTextField getRegisterEmailField() {
+        return registerEmailField;
+    }
+
+    // Getter pour passwordField
+    public JPasswordField getRegisterPasswordField() {
+        return registerPasswordField;
+    }
+
+    // Getter pour confirmPasswordField
+    public JPasswordField getRegisterConfirmPasswordField() {
+        return registerConfirmPasswordField;
     }
 
     public JButton getRegisterButton() {

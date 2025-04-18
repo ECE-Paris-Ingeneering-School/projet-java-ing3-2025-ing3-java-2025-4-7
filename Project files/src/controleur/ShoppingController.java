@@ -96,36 +96,56 @@ public class ShoppingController {
 
 
 
-    //TODO : enlever ces notifs de merde
     private void handleRegister() {
-        String prenom = JOptionPane.showInputDialog(null, "Entrez votre prénom :", "Inscription", JOptionPane.PLAIN_MESSAGE);
-        String nom = JOptionPane.showInputDialog(null, "Entrez votre nom :", "Inscription", JOptionPane.PLAIN_MESSAGE);
-        String email = JOptionPane.showInputDialog(null, "Entrez votre email :", "Inscription", JOptionPane.PLAIN_MESSAGE);
-        String mdp = JOptionPane.showInputDialog(null, "Entrez votre mot de passe :", "Inscription", JOptionPane.PLAIN_MESSAGE);
-        String confirmMdp = JOptionPane.showInputDialog(null, "Confirmez votre mot de passe :", "Inscription", JOptionPane.PLAIN_MESSAGE);
+        String prenom = view.getRegisterPrenomField().getText().trim();
+        String nom = view.getRegisterNomField().getText().trim();
+        String email = view.getRegisterEmailField().getText().trim();
+        String mdp = new String(view.getRegisterPasswordField().getPassword());
+        String confirmMdp = new String(view.getRegisterConfirmPasswordField().getPassword());
 
-        if (prenom == null || prenom.isEmpty() || nom == null || nom.isEmpty() || email == null || email.isEmpty() ||
-                mdp == null || mdp.isEmpty() || confirmMdp == null || confirmMdp.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Tous les champs sont obligatoires.");
+        if (prenom.isEmpty() || nom.isEmpty() || email.isEmpty() || mdp.isEmpty() || confirmMdp.isEmpty()) {
+            view.getErrorMessageLabel().setText("Tous les champs sont obligatoires.");
+            return;
+        }
+
+        if (!email.matches("^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+            view.getErrorMessageLabel().setText("Adresse email invalide.");
             return;
         }
 
         if (!mdp.equals(confirmMdp)) {
-            JOptionPane.showMessageDialog(null, "Les mots de passe ne correspondent pas.");
+            view.getErrorMessageLabel().setText("Les mots de passe ne correspondent pas.");
             return;
         }
 
-        utilisateurConnecte = new Utilisateur(email, mdp, nom, prenom, "adresse", 1234567890, false);
+        if (mdp.length() < 8) {
+            view.getErrorMessageLabel().setText("Le mot de passe doit contenir au moins 8 caractères.");
+            return;
+        }
+
         try {
+            // ✅ Vérification si email déjà utilisé
+            Utilisateur existingUser = utilisateurDAO.chercherParEmail(email);
+            if (existingUser != null) {
+                view.getErrorMessageLabel().setText("Cet email est déjà utilisé.");
+                return;
+            }
+
+            utilisateurConnecte = new Utilisateur(email, mdp, nom, prenom, "adresse", 1234567890, false);
             boolean success = utilisateurDAO.ajouter(utilisateurConnecte);
             if (success) {
-                JOptionPane.showMessageDialog(null, "Inscription réussie !");
+                view.getErrorMessageLabel().setText(""); // Nettoyer les erreurs
                 view.showPage("HomePage");
+            } else {
+                view.getErrorMessageLabel().setText("Erreur lors de l'inscription. Veuillez réessayer.");
             }
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "Erreur lors de l'inscription. Veuillez réessayer.");
+            view.getErrorMessageLabel().setText("Erreur technique. Veuillez réessayer.");
         }
     }
+
+
+
 
     public void afficherAccueil() {
         ArticleDAO articleDAO = new ArticleDAOImpl(daoFactory);

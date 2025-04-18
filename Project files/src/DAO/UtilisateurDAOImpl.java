@@ -300,6 +300,38 @@ public class UtilisateurDAOImpl implements UtilisateurDAO {
         }
     }
 
+    public Utilisateur chercherParEmail(String email) {
+        Utilisateur user = null;
+
+        String sql = "SELECT * FROM utilisateurs WHERE utilisateurMail = ?";
+
+        try (Connection connexion = daoFactory.getConnection();
+             PreparedStatement statement = connexion.prepareStatement(sql)) {
+
+            statement.setString(1, email);
+            try (ResultSet resultats = statement.executeQuery()) {
+                if (resultats.next()) {
+                    user = new Utilisateur(
+                            resultats.getInt("utilisateurID"),
+                            resultats.getString("utilisateurMail"),
+                            resultats.getString("utilisateurMDP"),
+                            resultats.getString("utilisateurNom"),
+                            resultats.getString("utilisateurPrenom"),
+                            resultats.getString("utilisateurAdresse"),
+                            resultats.getInt("utilisateurTel"),
+                            resultats.getBoolean("utilisateurIsAdmin")
+                    );
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Erreur lors de la recherche par email.");
+        }
+
+        return user;
+    }
+
 }
 
 
