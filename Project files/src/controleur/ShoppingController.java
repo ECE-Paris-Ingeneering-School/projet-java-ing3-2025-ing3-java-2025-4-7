@@ -63,11 +63,14 @@ public class ShoppingController {
     }
 
     private void handleLogin() {
-        String email = view.getEmailField().getText();
-        String password = new String(view.getPasswordField().getPassword());
+        String email = view.getEmailField().getText().trim();
+        String password = new String(view.getPasswordField().getPassword()).trim();
+
+        // Obtention du label d'erreur spécifique à la connexion
+        JLabel loginErrorMessageLabel = (JLabel) view.getLoginErrorMessageLabel();
 
         if (email.isEmpty() || password.isEmpty()) {
-            view.getErrorMessageLabel().setText("Veuillez remplir tous les champs.");
+            loginErrorMessageLabel.setText("Veuillez remplir tous les champs.");
             return;
         }
 
@@ -77,20 +80,15 @@ public class ShoppingController {
 
             if (utilisateurConnecte != null) {
                 // Une fois l'utilisateur authentifié, afficher ses informations
-                view.getErrorMessageLabel().setText("");
-
-                // Appel pour afficher la page du compte avec les infos de l'utilisateur
-                // Passer les informations de l'utilisateur à la vue pour créer la page de compte
-                String userName = utilisateurConnecte.getPrenom() + " " + utilisateurConnecte.getNom(); // Nom complet
-                String userEmail = utilisateurConnecte.getEmail(); // Récupérer l'email de l'utilisateur
+                loginErrorMessageLabel.setText(""); // Nettoyer le message d'erreur
 
                 // Redirection vers la page "Mon Compte"
                 view.showPage("HomePage");
             } else {
-                view.getErrorMessageLabel().setText("Email ou mot de passe incorrect.");
+                loginErrorMessageLabel.setText("Email ou mot de passe incorrect.");
             }
         } catch (Exception ex) {
-            view.getErrorMessageLabel().setText("Erreur lors de la connexion. Veuillez réessayer.");
+            loginErrorMessageLabel.setText("Erreur lors de la connexion. Veuillez réessayer.");
         }
     }
 
@@ -104,22 +102,22 @@ public class ShoppingController {
         String confirmMdp = new String(view.getRegisterConfirmPasswordField().getPassword());
 
         if (prenom.isEmpty() || nom.isEmpty() || email.isEmpty() || mdp.isEmpty() || confirmMdp.isEmpty()) {
-            view.getErrorMessageLabel().setText("Tous les champs sont obligatoires.");
+            view.getRegisterErrorMessageLabel().setText("Tous les champs sont obligatoires.");
             return;
         }
 
         if (!email.matches("^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
-            view.getErrorMessageLabel().setText("Adresse email invalide.");
+            view.getRegisterErrorMessageLabel().setText("Adresse email invalide.");
             return;
         }
 
         if (!mdp.equals(confirmMdp)) {
-            view.getErrorMessageLabel().setText("Les mots de passe ne correspondent pas.");
+            view.getRegisterErrorMessageLabel().setText("Les mots de passe ne correspondent pas.");
             return;
         }
 
         if (mdp.length() < 8) {
-            view.getErrorMessageLabel().setText("Le mot de passe doit contenir au moins 8 caractères.");
+            view.getRegisterErrorMessageLabel().setText("Le mot de passe doit contenir au moins 8 caractères.");
             return;
         }
 
@@ -127,20 +125,20 @@ public class ShoppingController {
             // ✅ Vérification si email déjà utilisé
             Utilisateur existingUser = utilisateurDAO.chercherParEmail(email);
             if (existingUser != null) {
-                view.getErrorMessageLabel().setText("Cet email est déjà utilisé.");
+                view.getRegisterErrorMessageLabel().setText("Cet email est déjà utilisé.");
                 return;
             }
 
             utilisateurConnecte = new Utilisateur(email, mdp, nom, prenom, "adresse", 1234567890, false);
             boolean success = utilisateurDAO.ajouter(utilisateurConnecte);
             if (success) {
-                view.getErrorMessageLabel().setText(""); // Nettoyer les erreurs
+                view.getRegisterErrorMessageLabel().setText(""); // Nettoyer les erreurs
                 view.showPage("HomePage");
             } else {
-                view.getErrorMessageLabel().setText("Erreur lors de l'inscription. Veuillez réessayer.");
+                view.getRegisterErrorMessageLabel().setText("Erreur lors de l'inscription. Veuillez réessayer.");
             }
         } catch (Exception ex) {
-            view.getErrorMessageLabel().setText("Erreur technique. Veuillez réessayer.");
+            view.getRegisterErrorMessageLabel().setText("Erreur technique. Veuillez réessayer.");
         }
     }
 

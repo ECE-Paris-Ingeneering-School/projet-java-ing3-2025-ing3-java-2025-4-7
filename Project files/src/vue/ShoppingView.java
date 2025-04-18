@@ -5,7 +5,6 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
-import controleur.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
@@ -22,7 +21,8 @@ public class ShoppingView {
     private JPanel homePagePanel, accountPagePanel, panierPagePanel, loginPagePanel, registerPagePanel, commandePagePanel, updateAccountPagePanel;
     private JPanel listPanel; // Class-level field for listPanel
     private Map<String, JLabel> quantiteLabels;
-    private JLabel errorMessageLabel;
+    private JLabel registerErrorMessageLabel;
+    private JLabel loginErrorMessageLabel;
 
     public ShoppingView() {
         frame = new JFrame("Shopping App");
@@ -97,36 +97,54 @@ public class ShoppingView {
     }
 
     private JPanel createAccountPagePanel() {
-        JPanel panel = new JPanel(new BorderLayout());
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
+
+        JPanel container = new JPanel(new GridBagLayout());
+        container.setBackground(Color.WHITE);
+        container.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(200, 200, 200), 1),
+                BorderFactory.createEmptyBorder(30, 30, 30, 30)
+        ));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(20, 20, 20, 20);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
 
         JLabel label = new JLabel("Mon Compte", SwingConstants.CENTER);
-        label.setFont(new Font("Arial", Font.BOLD, 24));
-        label.setBorder(BorderFactory.createEmptyBorder(40, 0, 20, 0));
-        panel.add(label, BorderLayout.NORTH);
+        label.setFont(new Font("Arial", Font.BOLD, 26));
+        container.add(label, gbc);
 
-        JPanel buttonsPanel = new JPanel();
-        buttonsPanel.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(15, 20, 15, 20);
-
-        loginButton = new JButton("Se connecter");
-        loginButton.setPreferredSize(new Dimension(160, 40));
-        loginButton.setFont(new Font("Arial", Font.PLAIN, 16));
-
-        registerButton = new JButton("S'inscrire");
-        registerButton.setPreferredSize(new Dimension(160, 40));
-        registerButton.setFont(new Font("Arial", Font.PLAIN, 16));
-
+        // Bouton Se connecter
+        gbc.gridwidth = 1;
+        gbc.gridy++;
         gbc.gridx = 0;
-        buttonsPanel.add(loginButton, gbc);
+        loginButton = new JButton("Se connecter");
+        loginButton.setPreferredSize(new Dimension(160, 45));
+        loginButton.setFont(new Font("Arial", Font.BOLD, 16));
+        loginButton.setBackground(new Color(70, 130, 180)); // Bleu doux
+        loginButton.setForeground(Color.WHITE);
+        loginButton.setFocusPainted(false);
+        loginButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        container.add(loginButton, gbc);
 
+        // Bouton S'inscrire
         gbc.gridx = 1;
-        buttonsPanel.add(registerButton, gbc);
+        registerButton = new JButton("S'inscrire");
+        registerButton.setPreferredSize(new Dimension(160, 45));
+        registerButton.setFont(new Font("Arial", Font.BOLD, 16));
+        registerButton.setBackground(new Color(34, 139, 34)); // Vert doux
+        registerButton.setForeground(Color.WHITE);
+        registerButton.setFocusPainted(false);
+        registerButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        container.add(registerButton, gbc);
 
-        panel.add(buttonsPanel, BorderLayout.CENTER);
-
+        panel.add(container);
         return panel;
     }
+
 
     private JPanel createPanierPagePanel() {
         JPanel panel = new JPanel(new BorderLayout());
@@ -154,105 +172,161 @@ public class ShoppingView {
     }
 
 
-    private JPanel createLoginPagePanel() {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
+    public JPanel createLoginPagePanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
 
+        JPanel formContainer = new JPanel();
+        formContainer.setLayout(new GridBagLayout());
+        formContainer.setBackground(Color.WHITE);
+        formContainer.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(200, 200, 200), 1),
+                BorderFactory.createEmptyBorder(30, 30, 30, 30)
+        ));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+
+        // Titre de la page
         JLabel titleLabel = new JLabel("Connexion", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        panel.add(titleLabel, BorderLayout.NORTH);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 26));
+        formContainer.add(titleLabel, gbc);
 
-        JPanel formPanel = new JPanel(new GridLayout(3, 2, 10, 10));
-        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+        // Champs Email
+        gbc.gridwidth = 1;
+        gbc.gridy++;
+        formContainer.add(new JLabel("Email :"), gbc);
+        gbc.gridx = 1;
+        emailField = new JTextField(20);
+        formContainer.add(emailField, gbc);
 
-        formPanel.add(new JLabel("Email :"));
-        emailField = new JTextField();
-        formPanel.add(emailField);
+        // Champs Mot de passe
+        gbc.gridx = 0;
+        gbc.gridy++;
+        formContainer.add(new JLabel("Mot de passe :"), gbc);
+        gbc.gridx = 1;
+        passwordField = new JPasswordField(20);
+        formContainer.add(passwordField, gbc);
 
-        formPanel.add(new JLabel("Mot de passe :"));
-        passwordField = new JPasswordField();
-        formPanel.add(passwordField);
+        // Message d'erreur
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        loginErrorMessageLabel = new JLabel("", SwingConstants.CENTER); // Initialisation du label d'erreur
+        loginErrorMessageLabel.setForeground(Color.RED);
+        loginErrorMessageLabel.setFont(new Font("Arial", Font.ITALIC, 12));
+        formContainer.add(loginErrorMessageLabel, gbc);
 
-        // Label pour afficher des messages d'erreur ou d'information sous les champs
-        errorMessageLabel = new JLabel();
-        errorMessageLabel.setForeground(Color.RED); // Message d'erreur en rouge
-        formPanel.add(errorMessageLabel);  // Ajout du label d'erreur à la fin du formulaire
-
+        // Bouton de connexion
+        gbc.gridy++;
         submitLoginButton = new JButton("Se connecter");
         submitLoginButton.setFont(new Font("Arial", Font.BOLD, 16));
-        submitLoginButton.setBackground(new Color(70, 130, 180));
+        submitLoginButton.setBackground(new Color(70, 130, 180)); // Bleu doux
         submitLoginButton.setForeground(Color.WHITE);
         submitLoginButton.setFocusPainted(false);
+        submitLoginButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        formContainer.add(submitLoginButton, gbc);
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(submitLoginButton);
-
-        panel.add(formPanel, BorderLayout.CENTER);
-        panel.add(buttonPanel, BorderLayout.SOUTH);
+        // Ajouter le formulaire au panel principal
+        panel.add(formContainer);
 
         return panel;
     }
+
+
+
 
     public JPanel createRegisterPagePanel() {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
+
+        JPanel formContainer = new JPanel();
+        formContainer.setLayout(new GridBagLayout());
+        formContainer.setBackground(Color.WHITE);
+        formContainer.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(200, 200, 200), 1),
+                BorderFactory.createEmptyBorder(30, 30, 30, 30)
+        ));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
 
         JLabel titleLabel = new JLabel("Inscription", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        panel.add(titleLabel, BorderLayout.NORTH);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 26));
+        formContainer.add(titleLabel, gbc);
 
-        // Formulaire
-        JPanel formPanel = new JPanel(new GridLayout(6, 2, 10, 10));
-        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+        gbc.gridwidth = 1;
+        gbc.gridy++;
 
-        formPanel.add(new JLabel("Prénom :"));
-        registerPrenomField = new JTextField();
-        formPanel.add(registerPrenomField);
+        // Prénom
+        formContainer.add(new JLabel("Prénom :"), gbc);
+        gbc.gridx = 1;
+        registerPrenomField = new JTextField(20);
+        formContainer.add(registerPrenomField, gbc);
 
-        formPanel.add(new JLabel("Nom :"));
-        registerNomField = new JTextField();
-        formPanel.add(registerNomField);
+        // Nom
+        gbc.gridx = 0;
+        gbc.gridy++;
+        formContainer.add(new JLabel("Nom :"), gbc);
+        gbc.gridx = 1;
+        registerNomField = new JTextField(20);
+        formContainer.add(registerNomField, gbc);
 
-        formPanel.add(new JLabel("Email :"));
-        registerEmailField = new JTextField();
-        formPanel.add(registerEmailField);
+        // Email
+        gbc.gridx = 0;
+        gbc.gridy++;
+        formContainer.add(new JLabel("Email :"), gbc);
+        gbc.gridx = 1;
+        registerEmailField = new JTextField(20);
+        formContainer.add(registerEmailField, gbc);
 
-        formPanel.add(new JLabel("Mot de passe :"));
-        registerPasswordField = new JPasswordField();
-        formPanel.add(registerPasswordField);
+        // Mot de passe
+        gbc.gridx = 0;
+        gbc.gridy++;
+        formContainer.add(new JLabel("Mot de passe :"), gbc);
+        gbc.gridx = 1;
+        registerPasswordField = new JPasswordField(20);
+        formContainer.add(registerPasswordField, gbc);
 
-        formPanel.add(new JLabel("Confirmer le mot de passe :"));
-        registerConfirmPasswordField = new JPasswordField();
-        formPanel.add(registerConfirmPasswordField);
+        // Confirmation mot de passe
+        gbc.gridx = 0;
+        gbc.gridy++;
+        formContainer.add(new JLabel("Confirmer le mot de passe :"), gbc);
+        gbc.gridx = 1;
+        registerConfirmPasswordField = new JPasswordField(20);
+        formContainer.add(registerConfirmPasswordField, gbc);
 
-        // Label d'erreur
-        errorMessageLabel = new JLabel("", SwingConstants.CENTER);
-        errorMessageLabel.setForeground(Color.RED);
-        errorMessageLabel.setFont(new Font("Arial", Font.ITALIC, 12));
-        errorMessageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        // Message d'erreur
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        registerErrorMessageLabel = new JLabel("", SwingConstants.CENTER);
+        registerErrorMessageLabel.setForeground(Color.RED);
+        registerErrorMessageLabel.setFont(new Font("Arial", Font.ITALIC, 12));
+        formContainer.add(registerErrorMessageLabel, gbc);
 
         // Bouton
+        gbc.gridy++;
         submitRegisterButton = new JButton("S'inscrire");
         submitRegisterButton.setFont(new Font("Arial", Font.BOLD, 16));
-        submitRegisterButton.setBackground(new Color(34, 139, 34));
+        submitRegisterButton.setBackground(new Color(34, 139, 34)); // Vert doux
         submitRegisterButton.setForeground(Color.WHITE);
         submitRegisterButton.setFocusPainted(false);
+        submitRegisterButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        formContainer.add(submitRegisterButton, gbc);
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(submitRegisterButton);
-
-        // Nouveau wrapper pour form + erreur + bouton
-        JPanel formWrapperPanel = new JPanel();
-        formWrapperPanel.setLayout(new BoxLayout(formWrapperPanel, BoxLayout.Y_AXIS));
-        formWrapperPanel.add(formPanel);
-        formWrapperPanel.add(Box.createVerticalStrut(5));
-        formWrapperPanel.add(errorMessageLabel);
-        formWrapperPanel.add(Box.createVerticalStrut(10));
-        formWrapperPanel.add(buttonPanel);
-
-        panel.add(formWrapperPanel, BorderLayout.CENTER);
+        panel.add(formContainer);
         return panel;
     }
+
 
 
     private JPanel createCommandePagePanel() {
@@ -501,8 +575,8 @@ public class ShoppingView {
         return passwordField;
     }
 
-    public JLabel getErrorMessageLabel() {
-        return errorMessageLabel;
+    public JLabel getRegisterErrorMessageLabel() {
+        return registerErrorMessageLabel;
     }
 
     public void showPage(String name) {
@@ -579,5 +653,9 @@ public class ShoppingView {
 
     public JPanel getMainPanel() {
         return mainPanel;
+    }
+
+    public JLabel getLoginErrorMessageLabel() {
+        return loginErrorMessageLabel;
     }
 }
