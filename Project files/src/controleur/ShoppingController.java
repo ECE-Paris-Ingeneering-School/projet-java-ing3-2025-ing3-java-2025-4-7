@@ -62,28 +62,39 @@ public class ShoppingController {
         view.getAccountButton().addActionListener(e -> afficherCompte());
     }
 
-    //TODO : enlever ces notifs de merde
     private void handleLogin() {
-        String email = JOptionPane.showInputDialog(null, "Entrez votre email :", "Connexion", JOptionPane.PLAIN_MESSAGE);
-        String password = JOptionPane.showInputDialog(null, "Entrez votre mot de passe :", "Connexion", JOptionPane.PLAIN_MESSAGE);
+        String email = view.getEmailField().getText();
+        String password = new String(view.getPasswordField().getPassword());
 
-        if (email == null || email.isEmpty() || password == null || password.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Veuillez remplir tous les champs.");
+        if (email.isEmpty() || password.isEmpty()) {
+            view.getErrorMessageLabel().setText("Veuillez remplir tous les champs.");
             return;
         }
 
         try {
+            // Chercher l'utilisateur dans la base de données
             utilisateurConnecte = utilisateurDAO.chercherLogin(email, password);
+
             if (utilisateurConnecte != null) {
-                JOptionPane.showMessageDialog(null, "Bienvenue " + utilisateurConnecte.getEmail());
+                // Une fois l'utilisateur authentifié, afficher ses informations
+                view.getErrorMessageLabel().setText("");
+
+                // Appel pour afficher la page du compte avec les infos de l'utilisateur
+                // Passer les informations de l'utilisateur à la vue pour créer la page de compte
+                String userName = utilisateurConnecte.getPrenom() + " " + utilisateurConnecte.getNom(); // Nom complet
+                String userEmail = utilisateurConnecte.getEmail(); // Récupérer l'email de l'utilisateur
+
+                // Redirection vers la page "Mon Compte"
                 view.showPage("HomePage");
             } else {
-                JOptionPane.showMessageDialog(null, "Email ou mot de passe incorrect.");
+                view.getErrorMessageLabel().setText("Email ou mot de passe incorrect.");
             }
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "Erreur lors de la connexion. Veuillez réessayer.");
+            view.getErrorMessageLabel().setText("Erreur lors de la connexion. Veuillez réessayer.");
         }
     }
+
+
 
     //TODO : enlever ces notifs de merde
     private void handleRegister() {

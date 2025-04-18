@@ -22,6 +22,7 @@ public class ShoppingView {
     private JPanel homePagePanel, accountPagePanel, panierPagePanel, loginPagePanel, registerPagePanel, commandePagePanel, updateAccountPagePanel;
     private JPanel listPanel; // Class-level field for listPanel
     private Map<String, JLabel> quantiteLabels;
+    private JLabel errorMessageLabel;
 
     public ShoppingView() {
         frame = new JFrame("Shopping App");
@@ -171,6 +172,11 @@ public class ShoppingView {
         formPanel.add(new JLabel("Mot de passe :"));
         passwordField = new JPasswordField();
         formPanel.add(passwordField);
+
+        // Label pour afficher des messages d'erreur ou d'information sous les champs
+        errorMessageLabel = new JLabel();
+        errorMessageLabel.setForeground(Color.RED); // Message d'erreur en rouge
+        formPanel.add(errorMessageLabel);  // Ajout du label d'erreur à la fin du formulaire
 
         submitLoginButton = new JButton("Se connecter");
         submitLoginButton.setFont(new Font("Arial", Font.BOLD, 16));
@@ -471,9 +477,17 @@ public class ShoppingView {
 
 
 
+    public JTextField getEmailField() {
+        return emailField;
+    }
 
+    public JPasswordField getPasswordField() {
+        return passwordField;
+    }
 
-
+    public JLabel getErrorMessageLabel() {
+        return errorMessageLabel;
+    }
 
     public void showPage(String name) {
         cardLayout.show(mainPanel, name);
