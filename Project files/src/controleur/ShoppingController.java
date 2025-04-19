@@ -145,24 +145,34 @@ public class ShoppingController {
 
 
 
-    public void afficherAccueil() {
+    private void afficherAccueil() {
+        // Crée une instance de ArticleDAO pour récupérer tous les articles
         ArticleDAO articleDAO = new ArticleDAOImpl(daoFactory);
-        List<Article> articles = articleDAO.getAll();
+        List<Article> articles = articleDAO.getAll();  // Liste de tous les articles depuis la base de données
 
+        // Création d'une liste pour stocker les articles disponibles formatés
         List<Map<String, String>> articlesFormates = new ArrayList<>();
+
+        // Parcours de chaque article pour vérifier sa disponibilité et son stock
         for (Article article : articles) {
-            if (article.getIsAvailable()) {
+            if (article.getIsAvailable() && article.getStock() > 0) {  // Si l'article est disponible et a du stock
                 Map<String, String> data = new HashMap<>();
-                data.put("nom", article.getNom());
-                data.put("marque", article.getMarque());
-                data.put("prix", String.format("%.2f €", article.getPrixUnitaire()));
+                data.put("nom", article.getNom());  // Nom de l'article
+                data.put("marque", article.getMarque());  // Marque de l'article
+                data.put("prix", String.format("%.2f €", article.getPrixUnitaire()));  // Prix unitaire
+                data.put("stock", String.valueOf(article.getStock()));  // Stock restant
+
+                // Ajout de l'article formaté à la liste
                 articlesFormates.add(data);
             }
         }
 
+        // Mise à jour de la vue avec les articles filtrés
         view.updateHomePageView(articlesFormates);
-        view.showPage("HomePage");
+        view.showPage("HomePage");  // Affichage de la page d'accueil
     }
+
+
 
     private void afficherCompte() {
         if (utilisateurConnecte != null) {

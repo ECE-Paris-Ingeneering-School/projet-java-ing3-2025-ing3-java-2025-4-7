@@ -127,7 +127,15 @@ INSERT INTO `article` (`articleID`, `articleNom`, `articleMarque`,`articlePrix_u
                                                                                                                                                     (17,'chaussettes', 'nike', 3 ,2.5 ,100 ,1000 ,true),
                                                                                                                                                     (18,'cravate', 'adidas', 12.5 ,10 ,15 ,150 ,true),
                                                                                                                                                     (19,'ceinture', 'nike', 20, 15, 20, 200, true),
-                                                                                                                                                    (20,'montre connectée', 'adidas', 150, 120, 1, 10, true);
+                                                                                                                                                    (20,'montre connectée', 'adidas', 150, 120, 1, 10, true),
+                                                                                                                                                    (21,'bracelet', 'nike', 25, 20, 5, 50, true),
+                                                                                                                                                    (23,'collier', 'nike', 40, 35, 2, 20, true),
+                                                                                                                                                    (24,'bague', 'adidas', 50, 40, 3, 30, true),
+                                                                                                                                                    (25,'broche', 'nike', 15, 12, 8, 80, true),
+                                                                                                                                                    (26,'CACA', 'adidas', 100, 80, 1, -10, true),
+                                                                                                                                                    (27,'CACA', 'nike', 60, 50, 5, -5, true),
+                                                                                                                                                    (28,'CACA', 'adidas', 20 ,15 ,10 ,0 ,true),
+                                                                                                                                                    (29,'CACA', 'nike', 200 ,150 ,1 ,10 ,true);
 
 COMMIT;
 
