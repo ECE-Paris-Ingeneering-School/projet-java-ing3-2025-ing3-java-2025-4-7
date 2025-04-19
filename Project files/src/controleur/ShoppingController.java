@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class ShoppingController {
     private ShoppingView view;
@@ -60,6 +62,14 @@ public class ShoppingController {
         view.getSubmitLoginButton().addActionListener(e -> handleLogin());
         view.getSubmitRegisterButton().addActionListener(e -> handleRegister());
         view.getAccountButton().addActionListener(e -> afficherCompte());
+
+        view.getSearchButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String searchText = view.getSearchText();  // Récupère le texte de la zone de recherche
+                filterArticles(searchText);  // Filtrer les articles en fonction du texte de recherche
+            }
+        });
     }
 
     private void handleLogin() {
@@ -143,6 +153,36 @@ public class ShoppingController {
     }
 
 
+    private void filterArticles(String searchText) {
+        // Récupérer tous les articles depuis la base de données
+        ArticleDAO articleDAO = new ArticleDAOImpl(daoFactory);
+        List<Article> articles = articleDAO.getAll();
+
+        // Création d'une liste pour stocker les articles filtrés
+        List<Map<String, String>> articlesFiltrés = new ArrayList<>();
+
+        // Filtrage des articles en fonction du nom, de la marque, de la disponibilité et du stock
+        for (Article article : articles) {
+            // Vérifier si le texte de recherche correspond soit au nom ou à la marque de l'article
+            boolean matchesName = article.getNom().toLowerCase().contains(searchText.toLowerCase());
+            boolean matchesBrand = article.getMarque().toLowerCase().contains(searchText.toLowerCase());
+            boolean isAvailable = article.getIsAvailable() && article.getStock() > 0;
+
+            if ((matchesName || matchesBrand) && isAvailable) {
+                Map<String, String> data = new HashMap<>();
+                data.put("nom", article.getNom());
+                data.put("marque", article.getMarque());
+                data.put("prix", String.format("%.2f €", article.getPrixUnitaire()));
+                data.put("stock", String.valueOf(article.getStock()));
+
+                articlesFiltrés.add(data);
+            }
+        }
+
+        // Mettre à jour la vue avec les articles filtrés
+        view.updateHomePageView(articlesFiltrés);
+        view.showPage("HomePage");
+    }
 
 
     private void afficherAccueil() {

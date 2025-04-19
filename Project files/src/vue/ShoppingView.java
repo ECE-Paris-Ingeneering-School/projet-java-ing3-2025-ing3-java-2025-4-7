@@ -70,7 +70,7 @@ public class ShoppingView {
         JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         centerPanel.setOpaque(false);
         searchField = new JTextField(15);
-        searchButton = new JButton("Rechercher");
+        searchButton = new JButton("\uD83D\uDD0D");
         centerPanel.add(searchField);
         centerPanel.add(searchButton);
 
@@ -595,6 +595,14 @@ public class ShoppingView {
     }
     public JPanel getHomePagePanel() {
         return homePagePanel;
+    }
+
+    public JButton getSearchButton() {
+        return searchButton;
+    }
+
+    public String getSearchText() {
+        return searchField.getText();
     }
 
     public JLabel getLoginErrorMessageLabel() {
