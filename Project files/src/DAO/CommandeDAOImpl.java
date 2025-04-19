@@ -127,6 +127,30 @@ public class CommandeDAOImpl implements CommandeDAO {
         }
     }
 
+    public List<Commande> getCommandesParUtilisateur(int utilisateurID) {
+        List<Commande> commandes = new ArrayList<>();
+        String sql = "SELECT * FROM commande_totale WHERE utilisateurID = ?";
+
+        try (Connection connexion = daoFactory.getConnection();
+             PreparedStatement preparedStatement = connexion.prepareStatement(sql)) {
+
+            preparedStatement.setInt(1, utilisateurID);
+
+            try (ResultSet resultats = preparedStatement.executeQuery()) {
+                while (resultats.next()) {
+                    Commande commande = map(resultats);
+                    commandes.add(commande);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Erreur lors de la récupération des commandes de l'utilisateur.");
+        }
+
+        return commandes;
+    }
+
+
     private Commande map(ResultSet resultats) throws SQLException {
         int id = resultats.getInt("commandeID");
         int utilisateurID = resultats.getInt("utilisateurID");
@@ -135,7 +159,8 @@ public class CommandeDAOImpl implements CommandeDAO {
         String listeID_Article = resultats.getString("Liste_Id_articles");
         String listeQuantite_Article = resultats.getString("Liste_Quantite_articles");
         double prix = resultats.getDouble("prix");
+        String adresseLivraison = resultats.getString("adresseLivraison"); // 👈 nouveau champ
 
-        return new Commande(id, utilisateurID, date, statut, prix, listeID_Article, listeQuantite_Article);
+        return new Commande(id, utilisateurID, date, statut, prix, listeID_Article, listeQuantite_Article, adresseLivraison);
     }
 }

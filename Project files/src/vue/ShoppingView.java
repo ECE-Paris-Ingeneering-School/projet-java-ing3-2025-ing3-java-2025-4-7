@@ -40,7 +40,7 @@ public class ShoppingView {
         loginPagePanel = createLoginPagePanel();
         registerPagePanel = createRegisterPagePanel();
         commandePagePanel = createCommandePagePanel();
-        updateAccountPagePanel = createUpdateAccountPagePanel("","");
+        updateAccountPagePanel = null;
 
         mainPanel.add(homePagePanel, "HomePage");
         mainPanel.add(accountPagePanel, "Account");
@@ -48,7 +48,6 @@ public class ShoppingView {
         mainPanel.add(loginPagePanel, "Login");
         mainPanel.add(registerPagePanel, "Register");
         mainPanel.add(commandePagePanel, "Commande");
-        mainPanel.add(updateAccountPagePanel, "UpdateAccount");
 
         JPanel globalPanel = new JPanel(new BorderLayout());
         globalPanel.add(createHeaderPanel(), BorderLayout.NORTH);
@@ -370,47 +369,119 @@ public class ShoppingView {
         return panel;
     }
 
-    public JPanel createUpdateAccountPagePanel(String userName, String userEmail) {
+    public JPanel createUpdateAccountPagePanel(String userName, String userEmail, String userPhone, String userAddress, List<String[]> commandes) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(new Color(245, 245, 245));
 
+        // Titre
         JLabel titleLabel = new JLabel("Mon Compte", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 26));
         titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
         panel.add(titleLabel, BorderLayout.NORTH);
 
-        JPanel userInfoPanel = new JPanel(new GridLayout(2, 2, 10, 10));
-        userInfoPanel.setBorder(BorderFactory.createTitledBorder("Informations utilisateur"));
+        // Infos utilisateur
+        JPanel userInfoPanel = new JPanel(new GridLayout(4, 2, 10, 10));
+        userInfoPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY), "Informations utilisateur"));
         userInfoPanel.setBackground(Color.WHITE);
+        userInfoPanel.setPreferredSize(new Dimension(500, 200));
 
-        JLabel userNameLabel = new JLabel("Nom :");
-        JLabel userNameValue = new JLabel(userName); // Display the user's name
-        JLabel userEmailLabel = new JLabel("Email :");
-        JLabel userEmailValue = new JLabel(userEmail); // Display the user's email
+        userInfoPanel.add(new JLabel("Nom :"));
+        userInfoPanel.add(new JLabel(userName));
+        userInfoPanel.add(new JLabel("Email :"));
+        userInfoPanel.add(new JLabel(userEmail));
+        userInfoPanel.add(new JLabel("Téléphone :"));
+        userInfoPanel.add(new JLabel(userPhone));
+        userInfoPanel.add(new JLabel("Adresse :"));
+        userInfoPanel.add(new JLabel(userAddress));
 
-        userInfoPanel.add(userNameLabel);
-        userInfoPanel.add(userNameValue);
-        userInfoPanel.add(userEmailLabel);
-        userInfoPanel.add(userEmailValue);
+        // Panel commandes
+        JPanel commandesPanel = new JPanel();
+        commandesPanel.setLayout(new BoxLayout(commandesPanel, BoxLayout.Y_AXIS));
+        commandesPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY), "Historique des commandes"));
+        commandesPanel.setBackground(Color.WHITE);
 
-        // Use the existing logoutButton instance
+        for (String[] infos : commandes) {
+            String id = infos[0];
+            String date = infos[1];
+            String adresse = infos[2];
+            String prix = infos[3];
+            String statut = infos[4];
+
+            JPanel cardPanel = new JPanel(new BorderLayout(10, 10));
+            cardPanel.setBackground(Color.WHITE);
+            cardPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+            cardPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 150));
+
+            JPanel topLeftPanel = new JPanel(new GridLayout(5, 1));
+            topLeftPanel.setBackground(Color.WHITE);
+
+            JLabel statusLabel = new JLabel("Statut : " + statut);
+            statusLabel.setFont(new Font("Arial", Font.BOLD, 12));
+            statusLabel.setForeground(new Color(0, 123, 255));
+
+            JLabel numeroLabel = new JLabel("Commande n°" + id);
+            JLabel dateLabel = new JLabel("Date : " + date);
+            JLabel adresseLabel = new JLabel("Adresse : " + adresse);
+            JLabel prixLabel = new JLabel("Prix : " + prix + " €");
+
+            topLeftPanel.add(statusLabel);
+            topLeftPanel.add(numeroLabel);
+            topLeftPanel.add(dateLabel);
+            topLeftPanel.add(adresseLabel);
+            topLeftPanel.add(prixLabel);
+
+            cardPanel.add(topLeftPanel, BorderLayout.CENTER);
+
+            JButton viewDetailsButton = new JButton("Voir détails");
+            viewDetailsButton.setFont(new Font("Arial", Font.PLAIN, 12));
+            viewDetailsButton.setBackground(new Color(0, 123, 255));
+            viewDetailsButton.setForeground(Color.WHITE);
+            viewDetailsButton.setFocusPainted(false);
+            viewDetailsButton.setPreferredSize(new Dimension(120, 40));
+
+            JPanel bottomRightPanel = new JPanel(new BorderLayout());
+            bottomRightPanel.setBackground(Color.WHITE);
+            bottomRightPanel.add(viewDetailsButton, BorderLayout.EAST);
+
+            cardPanel.add(bottomRightPanel, BorderLayout.SOUTH);
+            commandesPanel.add(cardPanel);
+        }
+
+        JScrollPane commandesScrollPane = new JScrollPane(commandesPanel);
+        commandesScrollPane.setBorder(null);
+        commandesPanel.setPreferredSize(new Dimension(600, 300));
+
         if (logoutButton == null) {
             logoutButton = new JButton("Se déconnecter");
             logoutButton.setFont(new Font("Arial", Font.BOLD, 14));
             logoutButton.setBackground(new Color(220, 53, 69));
             logoutButton.setForeground(Color.WHITE);
             logoutButton.setFocusPainted(false);
+            logoutButton.setPreferredSize(new Dimension(150, 40));
         }
 
         JPanel logoutPanel = new JPanel();
         logoutPanel.setBackground(new Color(245, 245, 245));
         logoutPanel.add(logoutButton);
 
-        panel.add(userInfoPanel, BorderLayout.CENTER);
+        JPanel centerPanel = new JPanel(new BorderLayout(10, 10));
+        centerPanel.setBackground(new Color(245, 245, 245));
+        centerPanel.add(userInfoPanel, BorderLayout.NORTH);
+        centerPanel.add(commandesScrollPane, BorderLayout.CENTER);
+
+        panel.add(centerPanel, BorderLayout.CENTER);
         panel.add(logoutPanel, BorderLayout.SOUTH);
 
         return panel;
     }
+
+
+
+
+
+
+
+
 
     public void updateHomePageView(List<Map<String, String>> articles) {
         homePagePanel.removeAll();  // On vide le panneau existant
@@ -501,7 +572,15 @@ public class ShoppingView {
     }
 
 
+    public void afficherPageCompte(String nom, String email, String tel, String adresse, List<String[]> historique) {
+        if (updateAccountPagePanel != null) {
+            mainPanel.remove(updateAccountPagePanel);
+        }
 
+        updateAccountPagePanel = createUpdateAccountPagePanel(nom, email, tel, adresse, historique);
+        mainPanel.add(updateAccountPagePanel, "UpdateAccount");
+        cardLayout.show(mainPanel, "UpdateAccount");
+    }
 
 
 

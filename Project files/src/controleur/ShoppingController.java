@@ -57,7 +57,6 @@ public class ShoppingController {
         view.getLoginButton().addActionListener(e -> view.showPage("Login"));
         view.getRegisterButton().addActionListener(e -> view.showPage("Register"));
 
-        view.getLogoutButton().addActionListener(e -> handleLogout());
 
         view.getSubmitLoginButton().addActionListener(e -> handleLogin());
         view.getSubmitRegisterButton().addActionListener(e -> handleRegister());
@@ -216,21 +215,43 @@ public class ShoppingController {
 
     private void afficherCompte() {
         if (utilisateurConnecte != null) {
+            // Récupérer les informations personnelles de l'utilisateur
             String userName = utilisateurConnecte.getNom();
             String userEmail = utilisateurConnecte.getEmail();
+            String userTel = String.valueOf(utilisateurConnecte.getTelephone());
+            String userAddress = utilisateurConnecte.getAdresse();
 
-            // Check if the panel already exists
-            if (view.getMainPanel().getComponentCount() == 0 ||
-                    !view.getMainPanel().isAncestorOf(view.createUpdateAccountPagePanel(userName, userEmail))) {
-                JPanel accountPanel = view.createUpdateAccountPagePanel(userName, userEmail);
-                view.getMainPanel().add(accountPanel, "UpdateAccount");
+            // Récupérer l'historique des commandes en utilisant l'utilisateurID
+            List<Commande> commandes = commandeDAO.getCommandesParUtilisateur(utilisateurConnecte.getId());
+
+            // Préparer les données à envoyer à la vue
+            List<String[]> historiqueCommandes = new ArrayList<>();
+            for (Commande commande : commandes) {
+                String[] infos = new String[]{
+                        String.valueOf(commande.getId()),
+                        commande.getDate().toString(),
+                        commande.getAdresseLivraison(),
+                        String.format("%.2f", commande.getPrix()),
+                        commande.getStatut()
+                };
+                historiqueCommandes.add(infos);
             }
 
-            view.showPage("UpdateAccount");
+            // Afficher côté console pour debug si besoin
+            System.out.println("Nom : " + userName);
+            System.out.println("Email : " + userEmail);
+            System.out.println("Téléphone : " + userTel);
+            System.out.println("Adresse : " + userAddress);
+            System.out.println("Commandes : " + historiqueCommandes.size());
+
+            view.afficherPageCompte(userName, userEmail, userTel, userAddress, historiqueCommandes);
         } else {
             view.showPage("Login");
         }
     }
+
+
+
 
     private void handleLogout() {
         // Clear the connected user
