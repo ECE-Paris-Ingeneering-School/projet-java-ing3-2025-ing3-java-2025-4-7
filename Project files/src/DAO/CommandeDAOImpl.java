@@ -129,7 +129,7 @@ public class CommandeDAOImpl implements CommandeDAO {
 
     public List<Commande> getCommandesParUtilisateur(int utilisateurID) {
         List<Commande> commandes = new ArrayList<>();
-        String sql = "SELECT * FROM commande_totale WHERE utilisateurID = ?";
+        String sql = "SELECT * FROM commande_totale WHERE utilisateurID = ? ORDER BY commandeDate DESC";  // Tri par date décroissante
 
         try (Connection connexion = daoFactory.getConnection();
              PreparedStatement preparedStatement = connexion.prepareStatement(sql)) {
@@ -149,6 +149,7 @@ public class CommandeDAOImpl implements CommandeDAO {
 
         return commandes;
     }
+
 
 
     private Commande map(ResultSet resultats) throws SQLException {
