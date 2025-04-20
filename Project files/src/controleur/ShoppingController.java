@@ -134,7 +134,7 @@ public class ShoppingController {
         }
 
         try {
-            // ✅ Vérification si email déjà utilisé
+            // Vérification si email déjà utilisé
             Utilisateur existingUser = utilisateurDAO.chercherParEmail(email);
             if (existingUser != null) {
                 view.getRegisterErrorMessageLabel().setText("Cet email est déjà utilisé.");
