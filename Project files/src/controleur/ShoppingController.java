@@ -16,6 +16,7 @@ public class ShoppingController {
     private Utilisateur utilisateurConnecte;
     private UtilisateurDAOImpl utilisateurDAO;
     private CommandeDAOImpl commandeDAO;
+    private ArticleDAOImpl articleDAO;
     private DaoFactory daoFactory;
 
     public ShoppingController(ShoppingView view) {
@@ -24,6 +25,7 @@ public class ShoppingController {
         this.daoFactory = DaoFactory.getInstance("projetshoppingjava", "root", "");
         this.utilisateurDAO = new UtilisateurDAOImpl(this.daoFactory);
         this.commandeDAO = new CommandeDAOImpl(this.daoFactory);
+        this.articleDAO = new ArticleDAOImpl(this.daoFactory);
 
         //Test des fonctions de commandedao
         //print toutes les info:
@@ -69,6 +71,7 @@ public class ShoppingController {
                 filterArticles(searchText);  // Filtrer les articles en fonction du texte de recherche
             }
         });
+//        view.getCommanderButton().addActionListener(e -> handleCommander());
     }
 
     private void handleLogin() {
@@ -262,5 +265,42 @@ public class ShoppingController {
 
         // Redirect to the home page
         view.showPage("HomePage");
+    }
+
+    private void handleCommander() {
+        if (utilisateurConnecte == null) {
+            JOptionPane.showMessageDialog(null, "Veuillez vous connecter pour passer une commande.");
+            view.showPage("Login");
+            return;
+        }
+
+        try {
+            // Récupérer les articles du panier
+            List<Commande> commandeUtilisateur = new ArrayList<>();
+            commandeUtilisateur = commandeDAO.getCommandesParUtilisateur(utilisateurConnecte.getId());
+            for (Commande commande : commandeUtilisateur) {
+                // Convertir les listes d'IDs et de quantités en chaînes formatées
+                String listeID_Article = commande.getListeID_Article();
+                String listeQuantite_Article = commande.getListeQuantite_Article();
+                String[] listeID = listeID_Article.split("-");
+                String[] listeQuantite = listeQuantite_Article.split("-");
+                int [] quantites = new int[listeQuantite.length];
+                for (int i = 0; i < listeQuantite.length; i++) {
+                    quantites[i] = Integer.parseInt(listeQuantite[i]);
+                }
+                double prixTotal = 0.0;
+                for (int i = 0; i < listeID.length; i++) {
+                    int idArticle = Integer.parseInt(listeID[i]);
+                    Article article = articleDAO.chercher(idArticle);
+                    if (article != null) {
+                        prixTotal += article.getPrixUnitaire() * quantites[i];
+                    }
+                }
+            }
+
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Erreur technique : " + ex.getMessage());
+        }
     }
 }

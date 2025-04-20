@@ -687,4 +687,5 @@ public class ShoppingView {
     public JLabel getLoginErrorMessageLabel() {
         return loginErrorMessageLabel;
     }
+
 }

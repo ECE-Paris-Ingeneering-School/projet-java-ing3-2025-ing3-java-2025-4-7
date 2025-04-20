@@ -14,4 +14,5 @@ public interface CommandeDAO {
     Commande modifier(Commande commande);
 
     void supprimer(int id);
+
 }

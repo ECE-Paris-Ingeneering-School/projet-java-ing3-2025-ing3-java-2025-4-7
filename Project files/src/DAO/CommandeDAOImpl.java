@@ -164,4 +164,5 @@ public class CommandeDAOImpl implements CommandeDAO {
 
         return new Commande(id, utilisateurID, date, statut, prix, listeID_Article, listeQuantite_Article, adresseLivraison);
     }
+
 }
