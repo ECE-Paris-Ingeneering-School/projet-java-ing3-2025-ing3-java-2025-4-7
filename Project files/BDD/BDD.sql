@@ -95,7 +95,7 @@ INSERT INTO `utilisateurs` (`utilisateurID`, `utilisateurPrenom`, `utilisateurNo
 -- Déchargement des données de la table `commande_totale`
 --
 
-INSERT INTO `commande_totale` (`commandeID`, `utilisateurID`, `commandeDate`,`Liste_Id_articles`,`Liste_Quantite_articles`,`statut_commande`,`prix`) VALUES
+INSERT INTO `commande_totale` (`commandeID`, `utilisateurID`, `commandeDate`,`Liste_Id_articles`,`Liste_Quantite_articles`,`commandeStatut`,`commandePrix`) VALUES
                                                                                                                                                     (1, 1, '2023-11-11', '0-1-2','0-4-2','en cours', 0),
                                                                                                                                                     (2, 2, '2023-11-12', '0-1','0-4','en cours', 0),
                                                                                                                                                     (3, 3, '2023-11-13', '0-1-2','0-4-2','en cours', 0),
