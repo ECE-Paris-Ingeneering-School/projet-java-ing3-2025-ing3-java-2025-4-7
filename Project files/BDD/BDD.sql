@@ -66,12 +66,13 @@ CREATE TABLE IF NOT EXISTS `article` (
 -- Structure de la table `commande_totale`
 --
 
-DROP TABLE IF EXISTS `commande_totale`;
-CREATE TABLE IF NOT EXISTS `commande_totale` (
+DROP TABLE IF EXISTS `commandes`;
+CREATE TABLE IF NOT EXISTS `commandes` (
                                                  `commandeID` int NOT NULL AUTO_INCREMENT,
                                                  `utilisateurID` int NOT NULL,
                                                  `commandeDate` DATE NOT NULL,
                                                  `commandeStatut`varchar(20) NOT NULL,
+                                                 `commandeAdresse` varchar(50) NOT NULL,
                                                  `Liste_Id_articles` VARCHAR(255) NOT NULL,
                                                  `Liste_Quantite_articles` VARCHAR(255) NOT NULL,
                                                  `commandePrix` FLOAT NOT NULL,
@@ -95,13 +96,13 @@ INSERT INTO `utilisateurs` (`utilisateurID`, `utilisateurPrenom`, `utilisateurNo
 -- Déchargement des données de la table `commande_totale`
 --
 
-INSERT INTO `commande_totale` (`commandeID`, `utilisateurID`, `commandeDate`,`Liste_Id_articles`,`Liste_Quantite_articles`,`commandeStatut`,`commandePrix`) VALUES
-                                                                                                                                                    (1, 1, '2023-11-11', '0-1-2','0-4-2','en cours', 0),
-                                                                                                                                                    (2, 2, '2023-11-12', '0-1','0-4','en cours', 0),
-                                                                                                                                                    (3, 3, '2023-11-13', '0-1-2','0-4-2','en cours', 0),
-                                                                                                                                                    (4, 1, '2023-11-14', '0-1','0-4','en cours', 0),
-                                                                                                                                                    (5, 2, '2023-11-15', '0-1','0-4','en cours', 0),
-                                                                                                                                                    (6, 3, '2023-11-16', '0-1','0-4','en cours', 0);
+INSERT INTO `commandes` (`commandeID`, `utilisateurID`, `commandeDate`,`Liste_Id_articles`,`Liste_Quantite_articles`,`commandeStatut`,`commandePrix`, commandeAdresse) VALUES
+                                                                                                                                                    (1, 1, '2023-11-11', '0-1-2','0-4-2','en cours', 0, '3 rue du Loup'),
+                                                                                                                                                    (2, 2, '2023-11-12', '0-1','0-4','en cours', 0, '35 boulevard Raspail'),
+                                                                                                                                                    (3, 3, '2023-11-13', '0-1-2','0-4-2','en cours', 0, '3 avenue du General Leclerc'),
+                                                                                                                                                    (4, 1, '2023-11-14', '0-1','0-4','en cours', 0, '3 rue du Loup'),
+                                                                                                                                                    (5, 2, '2023-11-15', '0-1','0-4','en cours', 0, '35 boulevard Raspail'),
+                                                                                                                                                    (6, 3, '2023-11-16', '0-1','0-4','en cours', 0, '3 avenue du General Leclerc');
 
 --
 -- Déchargement des données de la table `articles`

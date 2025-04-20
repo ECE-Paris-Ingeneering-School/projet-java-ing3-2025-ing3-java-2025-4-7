@@ -16,7 +16,7 @@ public class CommandeDAOImpl implements CommandeDAO {
     @Override
     public List<Commande> getAll() {
         List<Commande> commandes = new ArrayList<>();
-        String sql = "SELECT * FROM commande_totale";
+        String sql = "SELECT * FROM commandes";
 
         try (Connection connexion = daoFactory.getConnection();
              Statement statement = connexion.createStatement();
@@ -36,7 +36,7 @@ public class CommandeDAOImpl implements CommandeDAO {
 
     @Override
     public void ajouter(Commande commande) {
-        String sql = "INSERT INTO commande_totale (utilisateurID, commandeDate, statut_commande, Liste_Id_articles, Liste_Quantite_articles, prix) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO commandes (utilisateurID, commandeDate, commandeStatut, Liste_Id_articles, Liste_Quantite_articles, commandePrix) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection connexion = daoFactory.getConnection();
              PreparedStatement preparedStatement = connexion.prepareStatement(sql)) {
@@ -59,7 +59,7 @@ public class CommandeDAOImpl implements CommandeDAO {
     @Override
     public Commande chercher(int id) {
         Commande commande = null;
-        String sql = "SELECT * FROM commande_totale WHERE commandeID = ?";
+        String sql = "SELECT * FROM commandes WHERE commandeID = ?";
 
         try (Connection connexion = daoFactory.getConnection();
              PreparedStatement preparedStatement = connexion.prepareStatement(sql)) {
@@ -81,7 +81,7 @@ public class CommandeDAOImpl implements CommandeDAO {
 
     @Override
     public Commande modifier(Commande commande) {
-        String sql = "UPDATE commande_totale SET statut_commande = ?, Liste_Id_articles = ?, Liste_Quantite_articles = ?, prix = ? WHERE commandeID = ?";
+        String sql = "UPDATE commandes SET commandeStatut = ?, Liste_Id_articles = ?, Liste_Quantite_articles = ?, prix = ? WHERE commandeID = ?";
 
         try (Connection connexion = daoFactory.getConnection();
              PreparedStatement preparedStatement = connexion.prepareStatement(sql)) {
@@ -160,7 +160,7 @@ public class CommandeDAOImpl implements CommandeDAO {
         String listeID_Article = resultats.getString("Liste_Id_articles");
         String listeQuantite_Article = resultats.getString("Liste_Quantite_articles");
         double prix = resultats.getDouble("prix");
-        String adresseLivraison = resultats.getString("adresseLivraison"); // 👈 nouveau champ
+        String adresseLivraison = resultats.getString("adresseLivraison");
 
         return new Commande(id, utilisateurID, date, statut, prix, listeID_Article, listeQuantite_Article, adresseLivraison);
     }
