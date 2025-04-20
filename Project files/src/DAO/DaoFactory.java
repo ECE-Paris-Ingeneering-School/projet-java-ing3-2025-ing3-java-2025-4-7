@@ -81,7 +81,7 @@ public class DaoFactory {
      * Récupération du Dao pour le produit
      * @return : objet de la classe ProduitDAOImpl
      */
-    public ArticleDAO getProduitDAO() {
+    public ArticleDAO getArticle() {
         // Retourner un objet de ProduitDAOImpl qui implémente ProduitDAO
         return new ArticleDAOImpl(this);
     }
@@ -90,7 +90,7 @@ public class DaoFactory {
      * Récupération du Dao pour les clients
      * @return : objet de la classe ClientDAOImpl
      */
-    public UtilisateurDAO getClientDAO() {
+    public UtilisateurDAO getUtilisateur() {
         // Retourner un objet de ClientDAOImpl qui implémente ClientDAO
         return new UtilisateurDAOImpl(this);
     }
@@ -99,7 +99,7 @@ public class DaoFactory {
      * Récupération du Dao pour les commandes
      * @return : objet de la classe CommanderDAOImpl
      */
-    public CommandeDAO getCommanderDAO() {
+    public CommandeDAO getCommandeDAO() {
         // Retourner un objet de CommanderDAOImpl qui implémente CommanderDAO
         return new CommandeDAOImpl(this);
     }
