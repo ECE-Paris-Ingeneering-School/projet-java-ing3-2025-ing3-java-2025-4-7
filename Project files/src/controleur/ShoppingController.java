@@ -248,6 +248,10 @@ public class ShoppingController {
             System.out.println("Commandes : " + historiqueCommandes.size());
 
             view.afficherPageCompte(userName, userEmail, userTel, userAddress, historiqueCommandes);
+
+            if (view.getLogoutButton() != null) {
+                view.getLogoutButton().addActionListener(e -> handleLogout());
+            }
         } else {
             view.showPage("Login");
         }
