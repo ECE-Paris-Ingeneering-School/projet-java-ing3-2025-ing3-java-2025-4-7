@@ -88,8 +88,9 @@ CREATE TABLE IF NOT EXISTS `commandes` (
 
 INSERT INTO `utilisateurs` (`utilisateurID`, `utilisateurPrenom`, `utilisateurNom`,`utilisateurMail`,`utilisateurMDP`,`utilisateurAdresse`,`utilisateurTel`,`utilisateurIsAdmin` ) VALUES
                                                                                                                                                                                        (1, 'Jade', 'Parrilla', 'jade.parrilla', 'Jade1234', '1 rue de la paix, 75000 Paris', '0606060606', 0),
-                                                                                                                                                                                       (2, 'Julienne', 'Palasi', 'julienne.palasi', 'Julienne1234', '2 rue de la paix, 75000 Paris', '0707070707', 0),
-                                                                                                                                                                                       (3, 'Admin', 'Admin', 'admin.admin', 'Admin1234', '3 rue de la paix, 75000 Paris', '0808080808', 1);
+                                                                                                                                                                                       (2, 'Theo', 'Melly', 'theo.melly', 'Theo1234', '2 rue de la paix, 75000 Paris', '0707070707', 0),
+                                                                                                                                                                                       (3, 'Nicholas', 'Duzan', 'nicholas.duzan', 'Nicholas1234', '3 rue de la paix, 75000 Paris', '0808080808', 1),
+                                                                                                                                                                                       (4, 'Matheo', 'Leon', 'matheo.leon', 'Matheo1234', '4 rue de la paix, 75000 Paris', '0909090909', 1);
 
 
 --
