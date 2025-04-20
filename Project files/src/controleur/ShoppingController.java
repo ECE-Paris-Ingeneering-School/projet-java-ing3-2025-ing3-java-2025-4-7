@@ -14,10 +14,10 @@ import java.awt.event.ActionListener;
 public class ShoppingController {
     private ShoppingView view;
     private Utilisateur utilisateurConnecte;
-    private UtilisateurDAOImpl utilisateurDAO;
-    private CommandeDAOImpl commandeDAO;
-    private ArticleDAOImpl articleDAO;
-    private DaoFactory daoFactory;
+    private final UtilisateurDAOImpl utilisateurDAO;
+    private final CommandeDAOImpl commandeDAO;
+    private final ArticleDAOImpl articleDAO;
+    private final DaoFactory daoFactory;
 
     public ShoppingController(ShoppingView view) {
         this.view = view;
@@ -161,7 +161,7 @@ public class ShoppingController {
         List<Article> articles = articleDAO.getAll();
 
         // Création d'une liste pour stocker les articles filtrés
-        List<Map<String, String>> articlesFiltrés = new ArrayList<>();
+        List<Map<String, String>> articlesFiltres = new ArrayList<>();
 
         // Filtrage des articles en fonction du nom, de la marque, de la disponibilité et du stock
         for (Article article : articles) {
@@ -177,12 +177,12 @@ public class ShoppingController {
                 data.put("prix", String.format("%.2f €", article.getPrixUnitaire()));
                 data.put("stock", String.valueOf(article.getStock()));
 
-                articlesFiltrés.add(data);
+                articlesFiltres.add(data);
             }
         }
 
         // Mettre à jour la vue avec les articles filtrés
-        view.updateHomePageView(articlesFiltrés);
+        view.updateHomePageView(articlesFiltres);
         view.showPage("HomePage");
     }
 
