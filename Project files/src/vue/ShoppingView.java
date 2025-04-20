@@ -2,6 +2,7 @@ package vue;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
@@ -14,7 +15,7 @@ public class ShoppingView {
     private JPanel mainPanel;
     private CardLayout cardLayout;
 
-    private JButton homeButton, accountButton, panierButton, loginButton, registerButton, searchButton, submitLoginButton, submitRegisterButton, logoutButton;
+    private JButton homeButton, accountButton, panierButton, loginButton, registerButton, searchButton, submitLoginButton, submitRegisterButton, logoutButton, commanderButton, ajouterButton;
     private JTextField searchField, emailField, registerEmailField, registerPrenomField, registerNomField;
     private JPasswordField passwordField, registerPasswordField, registerConfirmPasswordField;
 
@@ -155,7 +156,7 @@ public class ShoppingView {
         JScrollPane scrollPane = new JScrollPane(listPanel);
         panel.add(scrollPane, BorderLayout.CENTER);
 
-        JButton commanderButton = new JButton("Commander");
+        commanderButton = new JButton("Commander");
         commanderButton.setFont(new Font("Arial", Font.BOLD, 16));
         commanderButton.setBackground(new Color(70, 130, 180));
         commanderButton.setForeground(Color.WHITE);
@@ -483,7 +484,7 @@ public class ShoppingView {
 
 
 
-    public void updateHomePageView(List<Map<String, String>> articles) {
+    public void updateHomePageView(List<Map<String, String>> articles, ActionListener ajouterPanierListener) {
         homePagePanel.removeAll();  // On vide le panneau existant
 
         JPanel mainContainer = new JPanel();
@@ -495,6 +496,7 @@ public class ShoppingView {
         Map<String, List<Map<String, String>>> articlesParMarque = new LinkedHashMap<>();
         for (Map<String, String> articleData : articles) {
             String marque = articleData.get("marque");
+            System.out.println(articleData.get("id"));
             if (marque == null) marque = "Autres";
             articlesParMarque.putIfAbsent(marque, new ArrayList<>());
             articlesParMarque.get(marque).add(articleData);
@@ -536,18 +538,23 @@ public class ShoppingView {
                 prixLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
                 prixLabel.setForeground(new Color(34, 139, 34));
 
-                JButton ajouterBtn = new JButton("Ajouter au panier");
-                ajouterBtn.setFocusPainted(false);
-                ajouterBtn.setBackground(new Color(66, 133, 244));
-                ajouterBtn.setForeground(Color.WHITE);
-                ajouterBtn.setFont(new Font("SansSerif", Font.PLAIN, 12));
-                ajouterBtn.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+                JButton ajouterButton = new JButton("Ajouter au panier");
+                ajouterButton.setFocusPainted(false);
+                ajouterButton.setBackground(new Color(66, 133, 244));
+                ajouterButton.setForeground(Color.WHITE);
+                ajouterButton.setFont(new Font("SansSerif", Font.PLAIN, 12));
+                ajouterButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+                // Définir l'ID de l'article comme ActionCommand
+                ajouterButton.setActionCommand(articleData.get("id"));
+                // Attacher l'ActionListener passé depuis le contrôleur
+                ajouterButton.addActionListener(ajouterPanierListener);
 
                 card.add(nomLabel);
                 card.add(Box.createVerticalStrut(5));
                 card.add(prixLabel);
                 card.add(Box.createVerticalGlue());
-                card.add(ajouterBtn);
+                card.add(ajouterButton);
 
                 ligneArticles.add(card);
                 ligneArticles.add(Box.createHorizontalStrut(10));
@@ -687,5 +694,9 @@ public class ShoppingView {
     public JLabel getLoginErrorMessageLabel() {
         return loginErrorMessageLabel;
     }
+
+    public JButton getCommanderButton() {return commanderButton;}
+
+    public JButton getAjouterButton() {return ajouterButton;}
 
 }

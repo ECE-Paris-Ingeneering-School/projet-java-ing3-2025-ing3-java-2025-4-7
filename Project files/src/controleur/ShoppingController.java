@@ -14,10 +14,10 @@ import java.awt.event.ActionListener;
 public class ShoppingController {
     private ShoppingView view;
     private Utilisateur utilisateurConnecte;
-    private final UtilisateurDAOImpl utilisateurDAO;
-    private final CommandeDAOImpl commandeDAO;
-    private final ArticleDAOImpl articleDAO;
-    private final DaoFactory daoFactory;
+    private UtilisateurDAOImpl utilisateurDAO;
+    private CommandeDAOImpl commandeDAO;
+    private ArticleDAOImpl articleDAO;
+    private DaoFactory daoFactory;
 
     public ShoppingController(ShoppingView view) {
         this.view = view;
@@ -134,7 +134,7 @@ public class ShoppingController {
         }
 
         try {
-            // Vérification si email déjà utilisé
+            // ✅ Vérification si email déjà utilisé
             Utilisateur existingUser = utilisateurDAO.chercherParEmail(email);
             if (existingUser != null) {
                 view.getRegisterErrorMessageLabel().setText("Cet email est déjà utilisé.");
@@ -161,7 +161,7 @@ public class ShoppingController {
         List<Article> articles = articleDAO.getAll();
 
         // Création d'une liste pour stocker les articles filtrés
-        List<Map<String, String>> articlesFiltres = new ArrayList<>();
+        List<Map<String, String>> articlesFiltrés = new ArrayList<>();
 
         // Filtrage des articles en fonction du nom, de la marque, de la disponibilité et du stock
         for (Article article : articles) {
@@ -177,12 +177,12 @@ public class ShoppingController {
                 data.put("prix", String.format("%.2f €", article.getPrixUnitaire()));
                 data.put("stock", String.valueOf(article.getStock()));
 
-                articlesFiltres.add(data);
+                articlesFiltrés.add(data);
             }
         }
 
         // Mettre à jour la vue avec les articles filtrés
-        view.updateHomePageView(articlesFiltres);
+        view.updateHomePageView(articlesFiltrés);
         view.showPage("HomePage");
     }
 
@@ -248,10 +248,6 @@ public class ShoppingController {
             System.out.println("Commandes : " + historiqueCommandes.size());
 
             view.afficherPageCompte(userName, userEmail, userTel, userAddress, historiqueCommandes);
-
-            if (view.getLogoutButton() != null) {
-                view.getLogoutButton().addActionListener(e -> handleLogout());
-            }
         } else {
             view.showPage("Login");
         }
