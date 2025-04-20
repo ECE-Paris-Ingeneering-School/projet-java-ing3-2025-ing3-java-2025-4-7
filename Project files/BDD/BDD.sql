@@ -48,8 +48,8 @@ CREATE TABLE IF NOT EXISTS `utilisateurs` (
 -- Structure de la table `articles`
 --
 
-DROP TABLE IF EXISTS `article`;
-CREATE TABLE IF NOT EXISTS `article` (
+DROP TABLE IF EXISTS `articles`;
+CREATE TABLE IF NOT EXISTS `articles` (
                                          `articleID` int NOT NULL AUTO_INCREMENT,
                                          `articleNom` varchar(50) NOT NULL,
                                          `articleMarque` varchar(50) NOT NULL,
@@ -108,7 +108,7 @@ INSERT INTO `commandes` (`commandeID`, `utilisateurID`, `commandeDate`,`Liste_Id
 -- Déchargement des données de la table `articles`
 --
 
-INSERT INTO `article` (`articleID`, `articleNom`, `articleMarque`,`articlePrix_unitaire`,`articlePrix_vrac`,`articleSeuil_vrac`,`articleStock`, `articleIsAvailable`) VALUES
+INSERT INTO `articles` (`articleID`, `articleNom`, `articleMarque`,`articlePrix_unitaire`,`articlePrix_vrac`,`articleSeuil_vrac`,`articleStock`, `articleIsAvailable`) VALUES
                                                                                                                                                     (1, 'pantalons', 'adidas', 20, 15, 10, 100, true),
                                                                                                                                                     (2, 'chemise', 'adidas', 30, 25, 5, 50, true),
                                                                                                                                                     (3, 'chaussures', 'adidas', 50, 40, 2, 20, true);

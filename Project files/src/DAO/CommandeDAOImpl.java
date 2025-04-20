@@ -158,11 +158,11 @@ public class CommandeDAOImpl implements CommandeDAO {
         int id = resultats.getInt("commandeID");
         int utilisateurID = resultats.getInt("utilisateurID");
         String date = resultats.getString("commandeDate");
-        String statut = resultats.getString("statut_commande");
+        String statut = resultats.getString("commandeStatut");
         String listeID_Article = resultats.getString("Liste_Id_articles");
         String listeQuantite_Article = resultats.getString("Liste_Quantite_articles");
-        double prix = resultats.getDouble("prix");
-        String adresseLivraison = resultats.getString("adresseLivraison");
+        double prix = resultats.getDouble("commandePrix");
+        String adresseLivraison = resultats.getString("commandeAdresse");
 
         return new Commande(id, utilisateurID, date, statut, prix, listeID_Article, listeQuantite_Article, adresseLivraison);
     }
