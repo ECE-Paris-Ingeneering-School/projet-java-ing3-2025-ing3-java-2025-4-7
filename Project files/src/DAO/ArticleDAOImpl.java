@@ -37,7 +37,7 @@ public class ArticleDAOImpl implements ArticleDAO {
             Statement statement = connexion.createStatement();
 
             // récupération des produits de la base de données avec la requete SELECT
-            ResultSet resultats = statement.executeQuery("select * from article");
+            ResultSet resultats = statement.executeQuery("select * from articles");
 
             // 	Se déplacer sur le prochain enregistrement : retourne false si la fin est atteinte
             while (resultats.next()) {
@@ -86,7 +86,7 @@ public class ArticleDAOImpl implements ArticleDAO {
         boolean vArticleIsAvailable = article.getIsAvailable();
 
         // Construction de la requête SQL avec RETURN_GENERATED_KEYS
-        String sql = "INSERT INTO article (articleNom, articleMarque, articlePrix_unitaire, articlePrix_vrac, articleSeuil_vrac, articleStock, articleIsAvailable) " +
+        String sql = "INSERT INTO articles (articleNom, articleMarque, articlePrix_unitaire, articlePrix_vrac, articleSeuil_vrac, articleStock, articleIsAvailable) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try {
@@ -153,7 +153,7 @@ public class ArticleDAOImpl implements ArticleDAO {
             Statement statement = connexion.createStatement();
 
             // Exécution de la requête SELECT pour récupérer le produit de l'id dans la base de données
-            ResultSet resultats = statement.executeQuery("select * from article where articleID="+id);
+            ResultSet resultats = statement.executeQuery("select * from articles where articleID="+id);
 
             // 	Se déplacer sur le prochain enregistrement : retourne false si la fin est atteinte
             while (resultats.next()) {
@@ -217,7 +217,7 @@ public class ArticleDAOImpl implements ArticleDAO {
             int id = article.getId();
 
             // Correction de la requête SQL (virgule en trop enlevée)
-            String sql = "UPDATE article SET articleIsAvailable = false WHERE articleID = ?";
+            String sql = "UPDATE articles SET articleIsAvailable = false WHERE articleID = ?";
 
             try (PreparedStatement statement = connexion.prepareStatement(sql)) {
                 statement.setInt(1, id);

@@ -36,7 +36,7 @@ public class CommandeDAOImpl implements CommandeDAO {
 
     @Override
     public void ajouter(Commande commande) {
-        String sql = "INSERT INTO commandes (utilisateurID, commandeDate, commandeStatut, Liste_Id_articles, Liste_Quantite_articles, commandePrix) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO commandes (utilisateurID, commandeDate, commandeStatut, Liste_Id_articles, Liste_Quantite_articles, commandePrix, commandeAdresse) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection connexion = daoFactory.getConnection();
              PreparedStatement preparedStatement = connexion.prepareStatement(sql)) {
@@ -47,6 +47,7 @@ public class CommandeDAOImpl implements CommandeDAO {
             preparedStatement.setString(4, commande.getListeID_Article());
             preparedStatement.setString(5, commande.getListeQuantite_Article());
             preparedStatement.setDouble(6, commande.getPrix());
+            preparedStatement.setString(7, commande.getAdresseLivraison());
 
             preparedStatement.executeUpdate();
             System.out.println("Commande ajoutée avec succès.");
@@ -81,7 +82,7 @@ public class CommandeDAOImpl implements CommandeDAO {
 
     @Override
     public Commande modifier(Commande commande) {
-        String sql = "UPDATE commandes SET commandeStatut = ?, Liste_Id_articles = ?, Liste_Quantite_articles = ?, prix = ? WHERE commandeID = ?";
+        String sql = "UPDATE commandes SET commandeStatut = ?, Liste_Id_articles = ?, Liste_Quantite_articles = ?, commandePrix = ?, commandeAdresse = ? WHERE commandeID = ?";
 
         try (Connection connexion = daoFactory.getConnection();
              PreparedStatement preparedStatement = connexion.prepareStatement(sql)) {
@@ -90,7 +91,8 @@ public class CommandeDAOImpl implements CommandeDAO {
             preparedStatement.setString(2, commande.getListeID_Article());
             preparedStatement.setString(3, commande.getListeQuantite_Article());
             preparedStatement.setDouble(4, commande.getPrix());
-            preparedStatement.setInt(5, commande.getId());
+            preparedStatement.setString(5, commande.getAdresseLivraison());
+            preparedStatement.setInt(6, commande.getId());
 
             int rowsAffected = preparedStatement.executeUpdate();
             if (rowsAffected > 0) {
@@ -108,7 +110,7 @@ public class CommandeDAOImpl implements CommandeDAO {
 
     @Override
     public void supprimer(int id) {
-        String sql = "DELETE FROM commande_totale WHERE commandeID = ?";
+        String sql = "DELETE FROM commandes WHERE commandeID = ?";
 
         try (Connection connexion = daoFactory.getConnection();
              PreparedStatement preparedStatement = connexion.prepareStatement(sql)) {
@@ -129,7 +131,7 @@ public class CommandeDAOImpl implements CommandeDAO {
 
     public List<Commande> getCommandesParUtilisateur(int utilisateurID) {
         List<Commande> commandes = new ArrayList<>();
-        String sql = "SELECT * FROM commande_totale WHERE utilisateurID = ? ORDER BY commandeDate DESC";  // Tri par date décroissante
+        String sql = "SELECT * FROM commandes WHERE utilisateurID = ? ORDER BY commandeDate DESC";  // Tri par date décroissante
 
         try (Connection connexion = daoFactory.getConnection();
              PreparedStatement preparedStatement = connexion.prepareStatement(sql)) {

@@ -1,14 +1,14 @@
 package modele;
 
 public class Commande {
-    private final int id;
+    private int id;
     private final int utilisateurID;
-    private final String date;
+    private String date;
     private String statut;
-    private final double prix;
-    private final String listeID_Article;
-    private final String listeQuantite_Article;
-    private final String adresseLivraison; // 👈 Nouveau champ
+    private double prix;
+    private String listeID_Article;
+    private String listeQuantite_Article;
+    private String adresseLivraison; // 👈 Nouveau champ
 
     public Commande(int id, int utilisateurID, String date, String statut, double prix,
                     String listeID_Article, String listeQuantite_Article, String adresseLivraison) {
@@ -19,7 +19,7 @@ public class Commande {
         this.prix = prix;
         this.listeID_Article = listeID_Article;
         this.listeQuantite_Article = listeQuantite_Article;
-        this.adresseLivraison = adresseLivraison; // 👈 Ajout au constructeur
+        this.adresseLivraison = adresseLivraison;
     }
 
     public int getId() { return id; }
@@ -36,7 +36,19 @@ public class Commande {
 
     public String getListeQuantite_Article() { return listeQuantite_Article; }
 
-    public String getAdresseLivraison() { return adresseLivraison; } // 👈 Getter correct
+    public String getAdresseLivraison() { return adresseLivraison; }
+
+    public void setId(int id) { this.id = id; }
+
+    public void setDate(String date) { this.date = date; }
+
+    public void setPrix(double prix) { this.prix = prix; }
+
+    public void setListeID_Article(String listeID_Article) { this.listeID_Article = listeID_Article; }
+
+    public void setListeQuantite_Article(String listeQuantite_Article) {this.listeQuantite_Article = listeQuantite_Article; }
+
+    public void setAdresseLivraison(String adresseLivraison) { this.adresseLivraison = adresseLivraison; };
 
     public void setStatut(String statut) { this.statut = statut; }
 }
