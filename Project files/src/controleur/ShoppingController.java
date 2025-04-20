@@ -72,7 +72,7 @@ public class ShoppingController {
                 filterArticles(searchText);  // Filtrer les articles en fonction du texte de recherche
             }
         });
-//        view.getCommanderButton().addActionListener(e -> handleCommander());
+        view.getLogoutButton().addActionListener(e -> handleLogout());
     }
 
     private void handleLogin() {

@@ -43,6 +43,15 @@ public class ShoppingView {
         commandePagePanel = createCommandePagePanel();
         updateAccountPagePanel = null;
 
+        if (logoutButton == null) {
+            logoutButton = new JButton("Se déconnecter");
+            logoutButton.setFont(new Font("Arial", Font.BOLD, 14));
+            logoutButton.setBackground(new Color(220, 53, 69));
+            logoutButton.setForeground(Color.WHITE);
+            logoutButton.setFocusPainted(false);
+            logoutButton.setPreferredSize(new Dimension(150, 40));
+        }
+
         mainPanel.add(homePagePanel, "HomePage");
         mainPanel.add(accountPagePanel, "Account");
         mainPanel.add(panierPagePanel, "Panier");
@@ -452,14 +461,7 @@ public class ShoppingView {
         commandesScrollPane.setBorder(null);
         commandesPanel.setPreferredSize(new Dimension(600, 300));
 
-        if (logoutButton == null) {
-            logoutButton = new JButton("Se déconnecter");
-            logoutButton.setFont(new Font("Arial", Font.BOLD, 14));
-            logoutButton.setBackground(new Color(220, 53, 69));
-            logoutButton.setForeground(Color.WHITE);
-            logoutButton.setFocusPainted(false);
-            logoutButton.setPreferredSize(new Dimension(150, 40));
-        }
+
 
         JPanel logoutPanel = new JPanel();
         logoutPanel.setBackground(new Color(245, 245, 245));
