@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
 
 public class ShoppingController {
     private ShoppingView view;
@@ -182,7 +183,7 @@ public class ShoppingController {
         }
 
         // Mettre à jour la vue avec les articles filtrés
-        view.updateHomePageView(articlesFiltrés);
+        view.updateHomePageView(articlesFiltrés, e -> handleCommander(e.getActionCommand()));
         view.showPage("HomePage");
     }
 
@@ -199,6 +200,7 @@ public class ShoppingController {
         for (Article article : articles) {
             if (article.getIsAvailable() && article.getStock() > 0) {  // Si l'article est disponible et a du stock
                 Map<String, String> data = new HashMap<>();
+                data.put("id",String.valueOf(article.getId()));  // ID de l'article
                 data.put("nom", article.getNom());  // Nom de l'article
                 data.put("marque", article.getMarque());  // Marque de l'article
                 data.put("prix", String.format("%.2f €", article.getPrixUnitaire()));  // Prix unitaire
@@ -210,7 +212,7 @@ public class ShoppingController {
         }
 
         // Mise à jour de la vue avec les articles filtrés
-        view.updateHomePageView(articlesFormates);
+        view.updateHomePageView(articlesFormates, e -> handleCommander(e.getActionCommand()));
         view.showPage("HomePage");  // Affichage de la page d'accueil
     }
 
@@ -267,7 +269,7 @@ public class ShoppingController {
         view.showPage("HomePage");
     }
 
-    private void handleCommander() {
+    private void handleCommander(String articleId) {
         if (utilisateurConnecte == null) {
             JOptionPane.showMessageDialog(null, "Veuillez vous connecter pour passer une commande.");
             view.showPage("Login");
@@ -278,26 +280,43 @@ public class ShoppingController {
             // Récupérer les articles du panier
             List<Commande> commandeUtilisateur = new ArrayList<>();
             commandeUtilisateur = commandeDAO.getCommandesParUtilisateur(utilisateurConnecte.getId());
-            for (Commande commande : commandeUtilisateur) {
-                // Convertir les listes d'IDs et de quantités en chaînes formatées
-                String listeID_Article = commande.getListeID_Article();
-                String listeQuantite_Article = commande.getListeQuantite_Article();
-                String[] listeID = listeID_Article.split("-");
-                String[] listeQuantite = listeQuantite_Article.split("-");
-                int [] quantites = new int[listeQuantite.length];
-                for (int i = 0; i < listeQuantite.length; i++) {
-                    quantites[i] = Integer.parseInt(listeQuantite[i]);
-                }
-                double prixTotal = 0.0;
-                for (int i = 0; i < listeID.length; i++) {
-                    int idArticle = Integer.parseInt(listeID[i]);
-                    Article article = articleDAO.chercher(idArticle);
-                    if (article != null) {
-                        prixTotal += article.getPrixUnitaire() * quantites[i];
-                    }
-                }
+            if(commandeUtilisateur.isEmpty()) {
+                //Crée une nouvelle commande
+                //Prendre la date d'aujourd'hui
+                LocalDate today = LocalDate.now();
+                String date = today.toString();
+                //Trouver l'article correspondant avec l'id
+                Article article = articleDAO.chercher(Integer.parseInt(articleId));
+                //Créer une nouvelle commande
+                Commande nouvelleCommande = new Commande(0, utilisateurConnecte.getId(), date, "en cours", article.getPrixUnitaire(), String.valueOf(article.getId()), "1", utilisateurConnecte.getAdresse());
+                //Ajouter la commande à la base de données
+                commandeDAO.ajouter(nouvelleCommande);
             }
-
+            else
+            {
+                //Récupérer la dernière commande
+                Commande derniereCommande = commandeUtilisateur.get(commandeUtilisateur.size() - 1);
+                //Ajouter l'article à la commande
+                String listeID_Article = derniereCommande.getListeID_Article();
+                String listeQuantite_Article = derniereCommande.getListeQuantite_Article();
+                listeID_Article += "-" + articleId;
+                listeQuantite_Article += "-1";
+                //Modifier le prix total
+                double prixTotal = 0;
+                String[] listeID_ArticleSplit = listeID_Article.split("-");
+                String[] listeQuantite_ArticleSplit = listeQuantite_Article.split("-");
+                for (int i = 0; i < listeID_ArticleSplit.length; i++) {
+                    int idArticle = Integer.parseInt(listeID_ArticleSplit[i]);
+                    Article article = articleDAO.chercher(idArticle);
+                    int quantite = Integer.parseInt(listeQuantite_ArticleSplit[i]);
+                    prixTotal += article.getPrixUnitaire() * quantite;
+                }
+                //Mettre à jour la commande
+                derniereCommande.setListeID_Article(listeID_Article);
+                derniereCommande.setListeQuantite_Article(listeQuantite_Article);
+                derniereCommande.setPrix(prixTotal);
+                commandeDAO.modifier(derniereCommande);
+            }
 
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, "Erreur technique : " + ex.getMessage());
