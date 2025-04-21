@@ -55,7 +55,7 @@ public class ShoppingController {
             }
         });
 
-        view.getPanierButton().addActionListener(e -> view.showPage("Panier"));
+        view.getPanierButton().addActionListener(e -> afficherPanier());
 
         view.getLoginButton().addActionListener(e -> view.showPage("Login"));
         view.getRegisterButton().addActionListener(e -> view.showPage("Register"));
@@ -73,6 +73,7 @@ public class ShoppingController {
             }
         });
         view.getLogoutButton().addActionListener(e -> handleLogout());
+        view.getCommanderButton().addActionListener(e -> handleCommanderButton());
     }
 
     private void handleLogin() {
@@ -277,47 +278,177 @@ public class ShoppingController {
         }
 
         try {
-            // Récupérer les articles du panier
-            List<Commande> commandeUtilisateur = new ArrayList<>();
-            commandeUtilisateur = commandeDAO.getCommandesParUtilisateur(utilisateurConnecte.getId());
-            if(commandeUtilisateur.isEmpty()) {
-                //Crée une nouvelle commande
-                //Prendre la date d'aujourd'hui
-                LocalDate today = LocalDate.now();
-                String date = today.toString();
-                //Trouver l'article correspondant avec l'id
-                Article article = articleDAO.chercher(Integer.parseInt(articleId));
-                //Créer une nouvelle commande
-                Commande nouvelleCommande = new Commande(0, utilisateurConnecte.getId(), date, "en cours", article.getPrixUnitaire(), String.valueOf(article.getId()), "1", utilisateurConnecte.getAdresse());
-                //Ajouter la commande à la base de données
-                commandeDAO.ajouter(nouvelleCommande);
-            }
-            else
-            {
-                //Récupérer la dernière commande
-                Commande derniereCommande = commandeUtilisateur.get(commandeUtilisateur.size() - 1);
-                //Ajouter l'article à la commande
-                String listeID_Article = derniereCommande.getListeID_Article();
-                String listeQuantite_Article = derniereCommande.getListeQuantite_Article();
-                listeID_Article += "-" + articleId;
-                listeQuantite_Article += "-1";
-                //Modifier le prix total
-                double prixTotal = 0;
-                String[] listeID_ArticleSplit = listeID_Article.split("-");
-                String[] listeQuantite_ArticleSplit = listeQuantite_Article.split("-");
-                for (int i = 0; i < listeID_ArticleSplit.length; i++) {
-                    int idArticle = Integer.parseInt(listeID_ArticleSplit[i]);
-                    Article article = articleDAO.chercher(idArticle);
-                    int quantite = Integer.parseInt(listeQuantite_ArticleSplit[i]);
-                    prixTotal += article.getPrixUnitaire() * quantite;
+            // Récupérer la commande "en cours" pour l'utilisateur
+            List<Commande> commandes = commandeDAO.getCommandesParUtilisateur(utilisateurConnecte.getId());
+            Commande commandeEnCours = null;
+
+            for (Commande commande : commandes) {
+                if ("en cours".equals(commande.getStatut())) {
+                    commandeEnCours = commande;
+                    break;
                 }
-                //Mettre à jour la commande
-                derniereCommande.setListeID_Article(listeID_Article);
-                derniereCommande.setListeQuantite_Article(listeQuantite_Article);
-                derniereCommande.setPrix(prixTotal);
-                commandeDAO.modifier(derniereCommande);
             }
 
+            // Si aucune commande "en cours" n'existe, en créer une nouvelle
+            if (commandeEnCours == null) {
+                LocalDate today = LocalDate.now();
+                Article article = articleDAO.chercher(Integer.parseInt(articleId));
+                commandeEnCours = new Commande(
+                        0, // ID auto-généré
+                        utilisateurConnecte.getId(),
+                        today.toString(),
+                        "en cours",
+                        article.getPrixUnitaire(),
+                        String.valueOf(article.getId()),
+                        "1",
+                        utilisateurConnecte.getAdresse()
+                );
+                commandeDAO.ajouter(commandeEnCours);
+            } else {
+                // Ajouter l'article à la commande existante
+                //S'il y a pas d'article encore dans la commande:
+                if (commandeEnCours.getListeID_Article().isEmpty()) {
+                    commandeEnCours.setListeID_Article(articleId);
+                    commandeEnCours.setListeQuantite_Article("1");
+                    // Recalculer le prix total
+                    double prixTotal = 0;
+                    String[] listeID_ArticleSplit = commandeEnCours.getListeID_Article().split("-");
+                    String[] listeQuantite_ArticleSplit = commandeEnCours.getListeQuantite_Article().split("-");
+                    for (int i = 0; i < listeID_ArticleSplit.length; i++) {
+                        int idArticle = Integer.parseInt(listeID_ArticleSplit[i]);
+                        Article article = articleDAO.chercher(idArticle);
+                        int quantite = Integer.parseInt(listeQuantite_ArticleSplit[i]);
+                        prixTotal += article.getPrixUnitaire() * quantite;
+                    }
+                    commandeEnCours.setPrix(prixTotal);
+                    commandeDAO.modifier(commandeEnCours);
+                } else {
+                    String listeID_Article = commandeEnCours.getListeID_Article();
+                    String listeQuantite_Article = commandeEnCours.getListeQuantite_Article();
+
+                    listeID_Article += "-" + articleId;
+                    listeQuantite_Article += "-1";
+
+                    // Recalculer le prix total
+                    double prixTotal = 0;
+                    String[] listeID_ArticleSplit = listeID_Article.split("-");
+                    String[] listeQuantite_ArticleSplit = listeQuantite_Article.split("-");
+                    for (int i = 0; i < listeID_ArticleSplit.length; i++) {
+                        int idArticle = Integer.parseInt(listeID_ArticleSplit[i]);
+                        Article article = articleDAO.chercher(idArticle);
+                        int quantite = Integer.parseInt(listeQuantite_ArticleSplit[i]);
+                        prixTotal += article.getPrixUnitaire() * quantite;
+                    }
+                    // Mettre à jour la commande
+                    commandeEnCours.setListeID_Article(listeID_Article);
+                    commandeEnCours.setListeQuantite_Article(listeQuantite_Article);
+                    commandeEnCours.setPrix(prixTotal);
+                    commandeDAO.modifier(commandeEnCours);
+                }
+
+
+            }
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Erreur technique : " + ex.getMessage());
+        }
+    }
+    private void afficherPanier() {
+        if (utilisateurConnecte == null) {
+            JOptionPane.showMessageDialog(null, "Veuillez vous connecter pour accéder à votre panier.");
+            view.showPage("Login");
+            return;
+        }
+
+        try {
+            // Retrieve the user's current order
+            List<Commande> commandeUtilisateur = new ArrayList<>();
+            commandeUtilisateur = commandeDAO.getCommandesParUtilisateur(utilisateurConnecte.getId());
+            Commande commandeEnCours = null;
+
+            for (Commande commande : commandeUtilisateur) {
+                if ("en cours".equals(commande.getStatut())) {
+                    commandeEnCours = commande;
+                    break;
+                }
+            }
+
+            if (commandeEnCours == null ||
+                    commandeEnCours.getListeID_Article() == null ||
+                    commandeEnCours.getListeID_Article().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Votre panier est vide.");
+                return;
+            }
+
+            // Extract article details
+            String[] listeID_Article = commandeEnCours.getListeID_Article().split("-");
+            String[] listeQuantite_Article = commandeEnCours.getListeQuantite_Article().split("-");
+            List<Map<String, String>> articlesPanier = new ArrayList<>();
+
+            for (int i = 0; i < listeID_Article.length; i++) {
+                int idArticle = Integer.parseInt(listeID_Article[i]);
+                Article article = articleDAO.chercher(idArticle);
+                int quantite = Integer.parseInt(listeQuantite_Article[i]);
+
+                Map<String, String> data = new HashMap<>();
+                data.put("nom", article.getNom());
+                data.put("marque", article.getMarque());
+                data.put("prix", String.format("%.2f €", article.getPrixUnitaire()));
+                data.put("quantite", String.valueOf(quantite));
+                articlesPanier.add(data);
+            }
+
+            // Update the view with the articles
+            view.updatePanierPageView(articlesPanier);
+            view.showPage("Panier");
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Erreur technique : " + ex.getMessage());
+        }
+    }
+    private void handleCommanderButton() {
+        if (utilisateurConnecte == null) {
+            JOptionPane.showMessageDialog(null, "Veuillez vous connecter pour passer une commande.");
+            view.showPage("Login");
+            return;
+        }
+
+        try {
+            // Retrieve the user's current order
+            List<Commande> commandes = commandeDAO.getCommandesParUtilisateur(utilisateurConnecte.getId());
+            Commande commandeEnCours = null;
+
+            for (Commande commande : commandes) {
+                if ("en cours".equals(commande.getStatut())) {
+                    commandeEnCours = commande;
+                    break;
+                }
+            }
+
+            if (commandeEnCours == null) {
+                JOptionPane.showMessageDialog(null, "Votre panier est vide.");
+                return;
+            }
+
+            // Update the status of the current order
+            commandeEnCours.setStatut("commande passé");
+            commandeDAO.modifier(commandeEnCours);
+
+            // Create a new "en cours" order
+            LocalDate today = LocalDate.now();
+            Commande nouvelleCommande = new Commande(
+                    0, // ID will be auto-generated
+                    utilisateurConnecte.getId(),
+                    today.toString(),
+                    "en cours",
+                    0.0, // Initial price is 0
+                    "",  // No articles yet
+                    "",  // No quantities yet
+                    utilisateurConnecte.getAdresse()
+            );
+            commandeDAO.ajouter(nouvelleCommande);
+
+            JOptionPane.showMessageDialog(null, "Votre commande a été passée avec succès !");
+            view.showPage("HomePage");
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, "Erreur technique : " + ex.getMessage());
         }

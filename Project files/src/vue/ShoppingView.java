@@ -591,6 +591,56 @@ public class ShoppingView {
         cardLayout.show(mainPanel, "UpdateAccount");
     }
 
+    public void updatePanierPageView(List<Map<String, String>> articles) {
+        panierPagePanel.removeAll();  // Clear the existing panel
+
+        JPanel mainContainer = new JPanel();
+        mainContainer.setLayout(new BoxLayout(mainContainer, BoxLayout.Y_AXIS));
+        mainContainer.setBackground(Color.WHITE);
+        mainContainer.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
+
+        for (Map<String, String> articleData : articles) {
+            JPanel articlePanel = new JPanel();
+            articlePanel.setLayout(new BoxLayout(articlePanel, BoxLayout.X_AXIS));
+            articlePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            articlePanel.setBackground(new Color(245, 245, 250));
+
+            JLabel nomLabel = new JLabel(articleData.get("nom"));
+            nomLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+
+            JLabel quantiteLabel = new JLabel("Quantité: " + articleData.get("quantite"));
+            quantiteLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
+
+            JLabel prixLabel = new JLabel("Prix: " + articleData.get("prix"));
+            prixLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
+            prixLabel.setForeground(new Color(34, 139, 34));
+
+            articlePanel.add(nomLabel);
+            articlePanel.add(Box.createHorizontalStrut(20));
+            articlePanel.add(quantiteLabel);
+            articlePanel.add(Box.createHorizontalStrut(20));
+            articlePanel.add(prixLabel);
+
+            mainContainer.add(articlePanel);
+            mainContainer.add(Box.createVerticalStrut(10));
+        }
+
+        JScrollPane scrollPane = new JScrollPane(mainContainer);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+
+        panierPagePanel.add(scrollPane, BorderLayout.CENTER);
+
+        // Ajouter le bouton "Commander" en bas
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
+        bottomPanel.add(commanderButton);
+        panierPagePanel.add(bottomPanel, BorderLayout.SOUTH);
+
+        panierPagePanel.revalidate();
+        panierPagePanel.repaint();
+    }
 
 
 
