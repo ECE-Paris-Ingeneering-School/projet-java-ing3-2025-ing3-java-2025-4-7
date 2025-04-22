@@ -184,18 +184,56 @@ public class ArticleDAOImpl implements ArticleDAO {
         return product;
     }
 
-    @Override
+
     /**
      * Permet de modifier les données du nom de l'objet de la classe Produit en paramètre
      * dans la base de données à partir de l'id de cet objet en paramètre
      * @param : product = objet en paramètre de la classe Produit à mettre à jour
      * @return : objet product en paramètre mis à jour  dans la base de données à retourner
       */
-    public Article modifier(Article article, String nom, String marque, double prixUnitaire, double prixVrac, int seuilVrac, int stock) {
-        Article newArticle = new Article(nom, marque, prixUnitaire, prixVrac, seuilVrac, stock, true);
-        newArticle = ajouter(newArticle);
-        supprimer(article);
-        return newArticle;
+    @Override
+    public Article modifier(Article article) {
+        String checkQuery = "SELECT COUNT(*) FROM articles WHERE id = ?";
+        String updateQuery = "UPDATE articles SET nom = ?, marque = ?, prix_unitaire = ?, prix_vrac = ?, seuil_vrac = ?, stock = ?, is_available = ? WHERE id = ?";
+        String insertQuery = "INSERT INTO articles (id, nom, marque, prix_unitaire, prix_vrac, seuil_vrac, stock, is_available) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try (Connection connection = daoFactory.getConnection();
+             PreparedStatement checkStmt = connection.prepareStatement(checkQuery)) {
+
+            checkStmt.setInt(1, article.getId());
+            ResultSet rs = checkStmt.executeQuery();
+            rs.next();
+            boolean exists = rs.getInt(1) > 0;
+
+            if (exists) {
+                try (PreparedStatement updateStmt = connection.prepareStatement(updateQuery)) {
+                    updateStmt.setString(1, article.getNom());
+                    updateStmt.setString(2, article.getMarque());
+                    updateStmt.setDouble(3, article.getPrixUnitaire());
+                    updateStmt.setDouble(4, article.getPrixVrac());
+                    updateStmt.setInt(5, article.getSeuilVrac());
+                    updateStmt.setInt(6, article.getStock());
+                    updateStmt.setBoolean(7, article.getIsAvailable());
+                    updateStmt.setInt(8, article.getId());
+                    updateStmt.executeUpdate();
+                }
+            } else {
+                try (PreparedStatement insertStmt = connection.prepareStatement(insertQuery)) {
+                    insertStmt.setInt(1, article.getId());
+                    insertStmt.setString(2, article.getNom());
+                    insertStmt.setString(3, article.getMarque());
+                    insertStmt.setDouble(4, article.getPrixUnitaire());
+                    insertStmt.setDouble(5, article.getPrixVrac());
+                    insertStmt.setInt(6, article.getSeuilVrac());
+                    insertStmt.setInt(7, article.getStock());
+                    insertStmt.setBoolean(8, article.getIsAvailable());
+                    insertStmt.executeUpdate();
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return article;
     }
 
     @Override

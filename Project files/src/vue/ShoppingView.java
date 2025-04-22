@@ -1,6 +1,7 @@
 package vue;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
@@ -14,12 +15,12 @@ public class ShoppingView {
     private JFrame frame;
     private JPanel mainPanel;
     private CardLayout cardLayout;
-
-    private JButton homeButton, accountButton, panierButton, loginButton, registerButton, searchButton, submitLoginButton, submitRegisterButton, logoutButton, commanderButton, ajouterButton;
+    private JTable adminTable;
+    private JButton homeButton, accountButton, panierButton, loginButton, registerButton, searchButton, submitLoginButton, submitRegisterButton, logoutButton, commanderButton, ajouterButton, adminButton, saveButton;
     private JTextField searchField, emailField, registerEmailField, registerPrenomField, registerNomField;
     private JPasswordField passwordField, registerPasswordField, registerConfirmPasswordField;
 
-    private JPanel homePagePanel, accountPagePanel, panierPagePanel, loginPagePanel, registerPagePanel, commandePagePanel, updateAccountPagePanel;
+    private JPanel homePagePanel, accountPagePanel, panierPagePanel, loginPagePanel, registerPagePanel, commandePagePanel, updateAccountPagePanel, adminPagePanel;
     private JPanel listPanel; // Class-level field for listPanel
     private Map<String, JLabel> quantiteLabels;
     private JLabel registerErrorMessageLabel;
@@ -42,6 +43,7 @@ public class ShoppingView {
         registerPagePanel = createRegisterPagePanel();
         commandePagePanel = createCommandePagePanel();
         updateAccountPagePanel = null;
+        adminPagePanel = createAdminPagePanel();
 
         if (logoutButton == null) {
             logoutButton = new JButton("Se déconnecter");
@@ -52,12 +54,16 @@ public class ShoppingView {
             logoutButton.setPreferredSize(new Dimension(150, 40));
         }
 
+
+
         mainPanel.add(homePagePanel, "HomePage");
         mainPanel.add(accountPagePanel, "Account");
         mainPanel.add(panierPagePanel, "Panier");
         mainPanel.add(loginPagePanel, "Login");
         mainPanel.add(registerPagePanel, "Register");
         mainPanel.add(commandePagePanel, "Commande");
+        mainPanel.add(adminPagePanel, "AdminPage");
+
 
         JPanel globalPanel = new JPanel(new BorderLayout());
         globalPanel.add(createHeaderPanel(), BorderLayout.NORTH);
@@ -87,8 +93,16 @@ public class ShoppingView {
         rightPanel.setOpaque(false);
         accountButton = new JButton("Mon compte");
         panierButton = new JButton("Panier");
+        adminButton = new JButton("Admin"); // Initialize the admin button
+        adminButton.setFocusPainted(false);
+        adminButton.setBackground(new Color(255, 87, 34));
+        adminButton.setForeground(Color.WHITE);
+        adminButton.setFont(new Font("Arial", Font.BOLD, 14));
+        adminButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        adminButton.setVisible(false); // Initially hidden
         rightPanel.add(accountButton);
         rightPanel.add(panierButton);
+        rightPanel.add(adminButton); // Add the admin button to the right panel
 
         header.add(leftPanel, BorderLayout.WEST);
         header.add(centerPanel, BorderLayout.CENTER);
@@ -478,6 +492,35 @@ public class ShoppingView {
         return panel;
     }
 
+    public JPanel createAdminPagePanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JLabel titleLabel = new JLabel("Gestion des Articles", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        panel.add(titleLabel, BorderLayout.NORTH);
+
+        // Initialize the admin table with all fields
+        String[] columnNames = {"ID", "Nom", "Marque", "Prix Unitaire", "Prix Vrac", "Seuil Vrac", "Stock", "Disponible", "Modifier"};
+        adminTable = new JTable(new DefaultTableModel(columnNames, 0));
+        JScrollPane scrollPane = new JScrollPane(adminTable);
+        panel.add(scrollPane, BorderLayout.CENTER);
+
+        // Initialize the save button
+        saveButton = new JButton("Enregistrer les modifications");
+        saveButton.setFont(new Font("Arial", Font.BOLD, 16));
+        saveButton.setBackground(new Color(34, 139, 34));
+        saveButton.setForeground(Color.WHITE);
+        saveButton.setFocusPainted(false);
+        saveButton.setPreferredSize(new Dimension(250, 40));
+
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.add(saveButton);
+        panel.add(bottomPanel, BorderLayout.SOUTH);
+
+        return panel;
+    }
+
 
 
 
@@ -750,5 +793,17 @@ public class ShoppingView {
     public JButton getCommanderButton() {return commanderButton;}
 
     public JButton getAjouterButton() {return ajouterButton;}
+
+    public JButton getAdminButton(){return adminButton;}
+
+    // Getter for the admin table
+    public JTable getAdminTable() {
+        return adminTable;
+    }
+
+    // Getter for the save button
+    public JButton getSaveButton() {
+        return saveButton;
+    }
 
 }

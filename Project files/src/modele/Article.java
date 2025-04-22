@@ -10,17 +10,6 @@ public class Article {
     private int stock;
     private boolean isAvailable;
 
-    public Article() {
-        this.id = -1;
-        this.nom = "INCONNU";
-        this.marque = "INCONNU";
-        this.prixUnitaire = -1;
-        this.prixVrac = -1;
-        this.seuilVrac = -1;
-        this.stock = -1;
-        this.isAvailable = false;
-    }
-
     public Article(String nom, String marque, double prixUnitaire, double prixVrac, int seuilVrac, int stock, boolean isAvailable) {
         this.id = 0;
         this.nom = nom;

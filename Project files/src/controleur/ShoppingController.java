@@ -4,6 +4,7 @@ import vue.*;
 import modele.*;
 import DAO.*;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
@@ -44,7 +45,7 @@ public class ShoppingController {
     }
 
     private void initializeListeners() {
-        view.getHomeButton().addActionListener(e -> view.showPage("HomePage"));
+        view.getHomeButton().addActionListener(e -> {afficherAccueil();});
 
         view.getAccountButton().addActionListener(e -> {
             if (utilisateurConnecte != null) {
@@ -74,6 +75,33 @@ public class ShoppingController {
         });
         view.getLogoutButton().addActionListener(e -> handleLogout());
         view.getCommanderButton().addActionListener(e -> handleCommanderButton());
+        view.getAdminButton().addActionListener(e -> afficherPageAdmin());
+        view.getSaveButton().addActionListener(e -> {
+            JTable table = view.getAdminTable();
+            DefaultTableModel model = (DefaultTableModel) table.getModel();
+
+            for (int i = 0; i < model.getRowCount(); i++) {
+                try {
+                    int id = parseInteger(model.getValueAt(i, 0));
+                    String nom = model.getValueAt(i, 1).toString();
+                    String marque = model.getValueAt(i, 2).toString();
+                    double prixUnitaire = parseDouble(model.getValueAt(i, 3));
+                    double prixVrac = parseDouble(model.getValueAt(i, 4));
+                    int seuilVrac = parseInteger(model.getValueAt(i, 5));
+                    int stock = parseInteger(model.getValueAt(i, 6));
+                    boolean isAvailable = Boolean.parseBoolean(model.getValueAt(i, 7).toString());
+
+                    // Create an Article object and update it in the database
+                    Article article = new Article(id, nom, marque, prixUnitaire, prixVrac, seuilVrac, stock, isAvailable);
+                    articleDAO.modifier(article);
+                } catch (NumberFormatException ex) {
+                    System.err.println("Invalid data in table row " + i + ": " + ex.getMessage());
+                }
+            }
+
+            JOptionPane.showMessageDialog(null, "Modifications enregistrées avec succès !");
+        });
+
     }
 
     private void handleLogin() {
@@ -97,7 +125,7 @@ public class ShoppingController {
                 loginErrorMessageLabel.setText(""); // Nettoyer le message d'erreur
 
                 // Redirection vers la page "Mon Compte"
-                view.showPage("HomePage");
+                afficherAccueil();
             } else {
                 loginErrorMessageLabel.setText("Email ou mot de passe incorrect.");
             }
@@ -147,7 +175,7 @@ public class ShoppingController {
             boolean success = utilisateurDAO.ajouter(utilisateurConnecte);
             if (success) {
                 view.getRegisterErrorMessageLabel().setText(""); // Nettoyer les erreurs
-                view.showPage("HomePage");
+                afficherAccueil();
             } else {
                 view.getRegisterErrorMessageLabel().setText("Erreur lors de l'inscription. Veuillez réessayer.");
             }
@@ -185,11 +213,20 @@ public class ShoppingController {
 
         // Mettre à jour la vue avec les articles filtrés
         view.updateHomePageView(articlesFiltrés, e -> handleCommander(e.getActionCommand()));
-        view.showPage("HomePage");
+        afficherAccueil();
     }
 
 
     private void afficherAccueil() {
+        // Check if the connected user is an admin
+        // Hide the admin button
+        if(utilisateurConnecte != null && utilisateurConnecte.getIsAdmin()) {
+            view.getAdminButton().setVisible(true); // Show the admin button
+            System.out.println("Admin Button Visible: " + view.getAdminButton().isVisible());
+        } else {
+            view.getAdminButton().setVisible(false); // Hide the admin button
+            System.out.println("tedvhb");
+        }
         // Crée une instance de ArticleDAO pour récupérer tous les articles
         ArticleDAO articleDAO = new ArticleDAOImpl(daoFactory);
         List<Article> articles = articleDAO.getAll();  // Liste de tous les articles depuis la base de données
@@ -267,7 +304,7 @@ public class ShoppingController {
         JOptionPane.showMessageDialog(null, "Vous êtes maintenant déconnecté.");
 
         // Redirect to the home page
-        view.showPage("HomePage");
+        afficherAccueil();
     }
 
     private void handleCommander(String articleId) {
@@ -448,9 +485,45 @@ public class ShoppingController {
             commandeDAO.ajouter(nouvelleCommande);
 
             JOptionPane.showMessageDialog(null, "Votre commande a été passée avec succès !");
-            view.showPage("HomePage");
+            afficherAccueil();
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, "Erreur technique : " + ex.getMessage());
         }
+    }
+    private void afficherPageAdmin() {
+        if (utilisateurConnecte != null && utilisateurConnecte.getIsAdmin()) {
+            // Load articles into the table
+            List<Article> articles = articleDAO.getAll();
+            DefaultTableModel model = (DefaultTableModel) view.getAdminTable().getModel();
+            model.setRowCount(0); // Clear existing rows
+
+            for (Article article : articles) {
+                model.addRow(new Object[]{
+                        article.getId(),
+                        article.getNom(),
+                        article.getMarque(),
+                        article.getPrixUnitaire(),
+                        article.getStock(),
+                        "Modifier"
+                });
+            }
+
+            view.showPage("AdminPage");
+        } else {
+            JOptionPane.showMessageDialog(null, "Accès refusé. Vous n'êtes pas administrateur.");
+        }
+    }
+    private double parseDouble(Object value) {
+        if (value == null || value.toString().trim().isEmpty()) {
+            return 0.0; // Default value for doubles
+        }
+        return Double.parseDouble(value.toString());
+    }
+
+    private int parseInteger(Object value) {
+        if (value == null || value.toString().trim().isEmpty()) {
+            return 0; // Default value for integers
+        }
+        return Integer.parseInt(value.toString());
     }
 }
