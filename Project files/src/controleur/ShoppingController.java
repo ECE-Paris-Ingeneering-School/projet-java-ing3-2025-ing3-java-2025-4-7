@@ -503,7 +503,10 @@ public class ShoppingController {
                         article.getNom(),
                         article.getMarque(),
                         article.getPrixUnitaire(),
+                        article.getPrixVrac(),
+                        article.getSeuilVrac(),
                         article.getStock(),
+                        article.getIsAvailable(),
                         "Modifier"
                 });
             }
