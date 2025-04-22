@@ -193,20 +193,18 @@ public class ArticleDAOImpl implements ArticleDAO {
       */
     @Override
     public Article modifier(Article article) {
-        String checkQuery = "SELECT COUNT(*) FROM articles WHERE articleID = ?";
-        String updateQuery = "UPDATE articles SET articleNom = ?, articleMarque = ?, articlePrix_unitaire = ?, articlePrix_vrac = ?, articleSeuil_vrac = ?, articleStock = ?, articleIsAvailable = ? WHERE articleID = ?";
-        String insertQuery = "INSERT INTO articles (articleID, articleNom, articleMarque, articlePrix_unitaire, articlePrix_vrac, articleSeuil_vrac, articleStock, articleIsAvailable) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try {
+            System.out.println("Debug: Début de la méthode modifier");
+            System.out.println("Debug: Article ID = " + article.getId());
 
-        try (Connection connection = daoFactory.getConnection();
-             PreparedStatement checkStmt = connection.prepareStatement(checkQuery)) {
-
-            checkStmt.setInt(1, article.getId());
-            ResultSet rs = checkStmt.executeQuery();
-            rs.next();
-            boolean exists = rs.getInt(1) > 0;
-
-            if (exists) {
-                try (PreparedStatement updateStmt = connection.prepareStatement(updateQuery)) {
+            // Check if the article exists using the DAO's chercher method
+            Article existingArticle = chercher(article.getId());
+            if (existingArticle != null) {
+                System.out.println("Debug: L'article existe déjà. Mise à jour en cours...");
+                // Update the article using the DAO's update logic
+                String updateQuery = "UPDATE articles SET articleNom = ?, articleMarque = ?, articlePrix_unitaire = ?, articlePrix_vrac = ?, articleSeuil_vrac = ?, articleStock = ?, articleIsAvailable = ? WHERE articleID = ?";
+                try (Connection connection = daoFactory.getConnection();
+                     PreparedStatement updateStmt = connection.prepareStatement(updateQuery)) {
                     updateStmt.setString(1, article.getNom());
                     updateStmt.setString(2, article.getMarque());
                     updateStmt.setDouble(3, article.getPrixUnitaire());
@@ -218,21 +216,15 @@ public class ArticleDAOImpl implements ArticleDAO {
                     updateStmt.executeUpdate();
                 }
             } else {
-                try (PreparedStatement insertStmt = connection.prepareStatement(insertQuery)) {
-                    insertStmt.setInt(1, article.getId());
-                    insertStmt.setString(2, article.getNom());
-                    insertStmt.setString(3, article.getMarque());
-                    insertStmt.setDouble(4, article.getPrixUnitaire());
-                    insertStmt.setDouble(5, article.getPrixVrac());
-                    insertStmt.setInt(6, article.getSeuilVrac());
-                    insertStmt.setInt(7, article.getStock());
-                    insertStmt.setBoolean(8, article.getIsAvailable());
-                    insertStmt.executeUpdate();
-                }
+                System.out.println("Debug: L'article n'existe pas. Insertion en cours...");
+                ajouter(article); // Use the DAO's ajouter method to insert the article
             }
         } catch (SQLException e) {
+            System.out.println("Debug: Erreur SQL - " + e.getMessage());
             e.printStackTrace();
         }
+
+        System.out.println("Debug: Fin de la méthode modifier");
         return article;
     }
 

@@ -93,6 +93,7 @@ public class ShoppingController {
 
                     // Create an Article object and update it in the database
                     Article article = new Article(id, nom, marque, prixUnitaire, prixVrac, seuilVrac, stock, isAvailable);
+                    System.out.println(article.getIsAvailable());
                     articleDAO.modifier(article);
                 } catch (NumberFormatException ex) {
                     System.err.println("Invalid data in table row " + i + ": " + ex.getMessage());
