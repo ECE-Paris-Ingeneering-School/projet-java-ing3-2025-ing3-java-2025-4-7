@@ -583,6 +583,21 @@ public class ShoppingView {
                 prixLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
                 prixLabel.setForeground(new Color(34, 139, 34));
 
+                JLabel stockLabel = new JLabel("Stock : " + articleData.get("stock"));
+                stockLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
+                stockLabel.setForeground(new Color(255, 69, 0));
+                stockLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+                JLabel prixVracLabel = new JLabel("Prix Vrac : " + articleData.get("prixVrac"));
+                prixVracLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
+                prixVracLabel.setForeground(new Color(255, 69, 0));
+                prixVracLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+                JLabel seuilVracLabel = new JLabel("Seuil Vrac : " + articleData.get("seuilVrac"));
+                seuilVracLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
+                seuilVracLabel.setForeground(new Color(255, 69, 0));
+                seuilVracLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
                 JButton ajouterButton = new JButton("Ajouter au panier");
                 ajouterButton.setFocusPainted(false);
                 ajouterButton.setBackground(new Color(66, 133, 244));
@@ -595,9 +610,17 @@ public class ShoppingView {
                 // Attacher l'ActionListener passé depuis le contrôleur
                 ajouterButton.addActionListener(ajouterPanierListener);
 
+                // Ajouter les composants au panneau de carte
                 card.add(nomLabel);
                 card.add(Box.createVerticalStrut(5));
                 card.add(prixLabel);
+                card.add(Box.createVerticalStrut(5));
+                card.add(stockLabel);
+                card.add(Box.createVerticalStrut(5));
+                card.add(prixVracLabel);
+                card.add(Box.createVerticalStrut(5));
+                card.add(seuilVracLabel);
+                card.add(Box.createVerticalStrut(5));
                 card.add(Box.createVerticalGlue());
                 card.add(ajouterButton);
 

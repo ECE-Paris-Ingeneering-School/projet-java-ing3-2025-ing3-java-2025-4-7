@@ -243,6 +243,8 @@ public class ShoppingController {
                 data.put("nom", article.getNom());  // Nom de l'article
                 data.put("marque", article.getMarque());  // Marque de l'article
                 data.put("prix", String.format("%.2f €", article.getPrixUnitaire()));  // Prix unitaire
+                data.put("prixVrac", String.format("%.2f €", article.getPrixVrac()));  // Prix en vrac
+                data.put("seuilVrac", String.valueOf(article.getSeuilVrac()));  // Seuil de vrac
                 data.put("stock", String.valueOf(article.getStock()));  // Stock restant
 
                 // Ajout de l'article formaté à la liste
@@ -316,7 +318,25 @@ public class ShoppingController {
         }
 
         try {
-            // Récupérer la commande "en cours" pour l'utilisateur
+            // Prompt the user for the quantity
+            String input = JOptionPane.showInputDialog(null, "Entrez la quantité souhaitée :", "Quantité", JOptionPane.PLAIN_MESSAGE);
+            if (input == null || input.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Commande annulée.");
+                return;
+            }
+
+            int quantity = Integer.parseInt(input.trim());
+            if (quantity <= 0) {
+                JOptionPane.showMessageDialog(null, "La quantité doit être un entier positif.");
+                return;
+            }
+
+            // Retrieve the article details
+            Article article = articleDAO.chercher(Integer.parseInt(articleId));
+            double pricePerUnit = (quantity >= article.getSeuilVrac()) ? article.getPrixVrac() : article.getPrixUnitaire();
+            double totalPrice = pricePerUnit * quantity;
+
+            // Retrieve the current order for the user
             List<Commande> commandes = commandeDAO.getCommandesParUtilisateur(utilisateurConnecte.getId());
             Commande commandeEnCours = null;
 
@@ -327,66 +347,50 @@ public class ShoppingController {
                 }
             }
 
-            // Si aucune commande "en cours" n'existe, en créer une nouvelle
+            // If no "in progress" order exists, create a new one
             if (commandeEnCours == null) {
                 LocalDate today = LocalDate.now();
-                Article article = articleDAO.chercher(Integer.parseInt(articleId));
                 commandeEnCours = new Commande(
-                        0, // ID auto-généré
+                        0, // Auto-generated ID
                         utilisateurConnecte.getId(),
                         today.toString(),
                         "en cours",
-                        article.getPrixUnitaire(),
+                        totalPrice,
                         String.valueOf(article.getId()),
-                        "1",
+                        String.valueOf(quantity),
                         utilisateurConnecte.getAdresse()
                 );
                 commandeDAO.ajouter(commandeEnCours);
             } else {
-                // Ajouter l'article à la commande existante
-                //S'il y a pas d'article encore dans la commande:
-                if (commandeEnCours.getListeID_Article().isEmpty()) {
-                    commandeEnCours.setListeID_Article(articleId);
-                    commandeEnCours.setListeQuantite_Article("1");
-                    // Recalculer le prix total
-                    double prixTotal = 0;
-                    String[] listeID_ArticleSplit = commandeEnCours.getListeID_Article().split("-");
-                    String[] listeQuantite_ArticleSplit = commandeEnCours.getListeQuantite_Article().split("-");
-                    for (int i = 0; i < listeID_ArticleSplit.length; i++) {
-                        int idArticle = Integer.parseInt(listeID_ArticleSplit[i]);
-                        Article article = articleDAO.chercher(idArticle);
-                        int quantite = Integer.parseInt(listeQuantite_ArticleSplit[i]);
-                        prixTotal += article.getPrixUnitaire() * quantite;
-                    }
-                    commandeEnCours.setPrix(prixTotal);
-                    commandeDAO.modifier(commandeEnCours);
-                } else {
-                    String listeID_Article = commandeEnCours.getListeID_Article();
-                    String listeQuantite_Article = commandeEnCours.getListeQuantite_Article();
+                // Add the article to the existing order
+                String listeID_Article = commandeEnCours.getListeID_Article();
+                String listeQuantite_Article = commandeEnCours.getListeQuantite_Article();
 
-                    listeID_Article += "-" + articleId;
-                    listeQuantite_Article += "-1";
+                listeID_Article += (listeID_Article.isEmpty() ? "" : "-") + articleId;
+                listeQuantite_Article += (listeQuantite_Article.isEmpty() ? "" : "-") + quantity;
 
-                    // Recalculer le prix total
-                    double prixTotal = 0;
-                    String[] listeID_ArticleSplit = listeID_Article.split("-");
-                    String[] listeQuantite_ArticleSplit = listeQuantite_Article.split("-");
-                    for (int i = 0; i < listeID_ArticleSplit.length; i++) {
-                        int idArticle = Integer.parseInt(listeID_ArticleSplit[i]);
-                        Article article = articleDAO.chercher(idArticle);
-                        int quantite = Integer.parseInt(listeQuantite_ArticleSplit[i]);
-                        prixTotal += article.getPrixUnitaire() * quantite;
-                    }
-                    // Mettre à jour la commande
-                    commandeEnCours.setListeID_Article(listeID_Article);
-                    commandeEnCours.setListeQuantite_Article(listeQuantite_Article);
-                    commandeEnCours.setPrix(prixTotal);
-                    commandeDAO.modifier(commandeEnCours);
+                // Recalculate the total price
+                double prixTotal = 0;
+                String[] listeID_ArticleSplit = listeID_Article.split("-");
+                String[] listeQuantite_ArticleSplit = listeQuantite_Article.split("-");
+                for (int i = 0; i < listeID_ArticleSplit.length; i++) {
+                    int idArticle = Integer.parseInt(listeID_ArticleSplit[i]);
+                    Article currentArticle = articleDAO.chercher(idArticle);
+                    int quantite = Integer.parseInt(listeQuantite_ArticleSplit[i]);
+                    double currentPricePerUnit = (quantite >= currentArticle.getSeuilVrac()) ? currentArticle.getPrixVrac() : currentArticle.getPrixUnitaire();
+                    prixTotal += currentPricePerUnit * quantite;
                 }
 
-
+                // Update the order
+                commandeEnCours.setListeID_Article(listeID_Article);
+                commandeEnCours.setListeQuantite_Article(listeQuantite_Article);
+                commandeEnCours.setPrix(prixTotal);
+                commandeDAO.modifier(commandeEnCours);
             }
 
+            JOptionPane.showMessageDialog(null, "Article ajouté au panier avec succès !");
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(null, "Quantité invalide. Veuillez entrer un entier positif.");
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, "Erreur technique : " + ex.getMessage());
         }
@@ -400,8 +404,7 @@ public class ShoppingController {
 
         try {
             // Retrieve the user's current order
-            List<Commande> commandeUtilisateur = new ArrayList<>();
-            commandeUtilisateur = commandeDAO.getCommandesParUtilisateur(utilisateurConnecte.getId());
+            List<Commande> commandeUtilisateur = commandeDAO.getCommandesParUtilisateur(utilisateurConnecte.getId());
             Commande commandeEnCours = null;
 
             for (Commande commande : commandeUtilisateur) {
@@ -428,10 +431,13 @@ public class ShoppingController {
                 Article article = articleDAO.chercher(idArticle);
                 int quantite = Integer.parseInt(listeQuantite_Article[i]);
 
+                // Determine the price to display based on the quantity
+                double prixAffiche = (quantite >= article.getSeuilVrac()) ? article.getPrixVrac() : article.getPrixUnitaire();
+
                 Map<String, String> data = new HashMap<>();
                 data.put("nom", article.getNom());
                 data.put("marque", article.getMarque());
-                data.put("prix", String.format("%.2f €", article.getPrixUnitaire()));
+                data.put("prix", String.format("%.2f €", prixAffiche));
                 data.put("quantite", String.valueOf(quantite));
                 articlesPanier.add(data);
             }
