@@ -193,9 +193,9 @@ public class ArticleDAOImpl implements ArticleDAO {
       */
     @Override
     public Article modifier(Article article) {
-        String checkQuery = "SELECT COUNT(*) FROM articles WHERE id = ?";
-        String updateQuery = "UPDATE articles SET nom = ?, marque = ?, prix_unitaire = ?, prix_vrac = ?, seuil_vrac = ?, stock = ?, is_available = ? WHERE id = ?";
-        String insertQuery = "INSERT INTO articles (id, nom, marque, prix_unitaire, prix_vrac, seuil_vrac, stock, is_available) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String checkQuery = "SELECT COUNT(*) FROM articles WHERE articleID = ?";
+        String updateQuery = "UPDATE articles SET articleNom = ?, articleMarque = ?, articlePrix_unitaire = ?, articlePrix_vrac = ?, articleSeuil_vrac = ?, articleStock = ?, articleIsAvailable = ? WHERE articleID = ?";
+        String insertQuery = "INSERT INTO articles (articleID, articleNom, articleMarque, articlePrix_unitaire, articlePrix_vrac, articleSeuil_vrac, articleStock, articleIsAvailable) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection connection = daoFactory.getConnection();
              PreparedStatement checkStmt = connection.prepareStatement(checkQuery)) {
