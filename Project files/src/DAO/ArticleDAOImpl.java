@@ -1,47 +1,32 @@
 package DAO;
 
-// import des packages
-
 import modele.Article;
-
 import java.sql.*;
 import java.util.ArrayList;
 
 /**
- * implémentation MySQL du stockage dans la base de données des méthodes définies dans l'interface
- * ProduitDao.
+ * Implémentation MySQL du stockage dans la base de données des méthodes définies dans l'interface ProduitDao.
  */
 public class ArticleDAOImpl implements ArticleDAO {
-    // attribut privé pour l'objet du DaoFactoru
     private DaoFactory daoFactory;
 
-    // constructeur dépendant de la classe DaoFactory
     public ArticleDAOImpl(DaoFactory daoFactory) {
         this.daoFactory = daoFactory;
     }
 
     @Override
-    /**
-     * Récupérer de la base de données tous les objets des produits dans une liste
-     * @return : liste retournée des objets des produits récupérés
-     */
     public ArrayList<Article> getAll() {
         ArrayList<Article> listeArticle = new ArrayList<Article>();
 
-        /*
-            Récupérer la liste des produits de la base de données dans listeProduits
-        */
         try {
-            // connexion
+            // Connexion à la base de données
             Connection connexion = daoFactory.getConnection();
             Statement statement = connexion.createStatement();
 
-            // récupération des produits de la base de données avec la requete SELECT
-            ResultSet resultats = statement.executeQuery("select * from articles");
+            // Modification de la requête SQL pour utiliser 'articleImageURL' au lieu de 'imageURL'
+            ResultSet resultats = statement.executeQuery("SELECT articleID, articleNom, articleMarque, articlePrix_unitaire, articlePrix_vrac, articleSeuil_vrac, articleStock, articleIsAvailable, articleImageURL FROM articles");
 
-            // 	Se déplacer sur le prochain enregistrement : retourne false si la fin est atteinte
             while (resultats.next()) {
-                // récupérer les 7 champs de la table produits dans la base de données
                 int articleID = resultats.getInt(1);
                 String articleNom = resultats.getString(2);
                 String articleMarque = resultats.getString(3);
@@ -50,28 +35,23 @@ public class ArticleDAOImpl implements ArticleDAO {
                 int articleSeuil = resultats.getInt(6);
                 int articleStock = resultats.getInt(7);
                 boolean articleIsAvailable = resultats.getBoolean(8);
+                String articleImageURL = resultats.getString(9);  // Utilisation de 'articleImageURL'
 
-                // instancier un objet de Produit avec ces 3 champs en paramètres
-                Article article = new Article(articleID, articleNom, articleMarque, articlePrixUnitaire, articlePrixVrac, articleSeuil, articleStock, articleIsAvailable);
+                // Création de l'objet Article avec l'URL de l'image
+                Article article = new Article(articleID, articleNom, articleMarque, articlePrixUnitaire, articlePrixVrac, articleSeuil, articleStock, articleIsAvailable, articleImageURL);
 
-                // ajouter ce produit à listeProduits
+                // Ajout de l'article à la liste
                 listeArticle.add(article);
             }
-        }
-        catch (SQLException e) {
-            //traitement de l'exception
+        } catch (SQLException e) {
             e.printStackTrace();
-            System.out.println("Création de la liste d'article impossible");
+            System.out.println("Création de la liste d'articles impossible");
         }
 
         return listeArticle;
     }
 
     @Override
-    /**
-     Ajouter un nouveau produit en paramètre dans la base de données
-     @params : product = objet du Produit en paramètre à insérer dans la base de données
-     */
     public Article ajouter(Article article) {
         Connection connexion = null;
         PreparedStatement pStatement = null;
@@ -84,18 +64,16 @@ public class ArticleDAOImpl implements ArticleDAO {
         int vArticleSeuilVrac = article.getSeuilVrac();
         int vArticleStock = article.getStock();
         boolean vArticleIsAvailable = article.getIsAvailable();
+        String vArticleImageURL = article.getImageUrl();  // Utilisation de 'articleImageURL'
 
-        // Construction de la requête SQL avec RETURN_GENERATED_KEYS
-        String sql = "INSERT INTO articles (articleNom, articleMarque, articlePrix_unitaire, articlePrix_vrac, articleSeuil_vrac, articleStock, articleIsAvailable) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        // Modification de la requête SQL pour utiliser 'articleImageURL' au lieu de 'imageURL'
+        String sql = "INSERT INTO articles (articleNom, articleMarque, articlePrix_unitaire, articlePrix_vrac, articleSeuil_vrac, articleStock, articleIsAvailable, articleImageURL) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try {
-            // Connexion à la base de données
             connexion = daoFactory.getConnection();
-            // Préparation de la requête avec la possibilité de récupérer les clés générées
             pStatement = connexion.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
-            // Note: Les paramètres commencent à 1, pas à 2
             pStatement.setString(1, vArticleNom);
             pStatement.setString(2, vArticleMarque);
             pStatement.setDouble(3, vArticlePrixUnique);
@@ -103,19 +81,18 @@ public class ArticleDAOImpl implements ArticleDAO {
             pStatement.setInt(5, vArticleSeuilVrac);
             pStatement.setInt(6, vArticleStock);
             pStatement.setBoolean(7, vArticleIsAvailable);
+            pStatement.setString(8, vArticleImageURL);  // Utilisation de 'articleImageURL'
 
-            // Exécution de la requête
             int affectedRows = pStatement.executeUpdate();
 
             if (affectedRows == 0) {
                 throw new SQLException("L'insertion a échoué, aucune ligne affectée.");
             }
 
-            // Récupération de l'ID généré
             generatedKeys = pStatement.getGeneratedKeys();
             if (generatedKeys.next()) {
                 int generatedId = generatedKeys.getInt(1);
-                article.setId(generatedId); // Supposons que votre classe Article a une méthode setId()
+                article.setId(generatedId);
             } else {
                 throw new SQLException("L'insertion a échoué, aucun ID généré.");
             }
@@ -127,7 +104,6 @@ public class ArticleDAOImpl implements ArticleDAO {
             System.out.println("Erreur lors de l'ajout de l'article dans la base de données");
             return null;
         } finally {
-            // Fermeture des ressources dans le bloc finally
             try {
                 if (generatedKeys != null) generatedKeys.close();
                 if (pStatement != null) pStatement.close();
@@ -139,26 +115,17 @@ public class ArticleDAOImpl implements ArticleDAO {
     }
 
     @Override
-    /**
-     * Permet de chercher et récupérer un objet de Produit dans la base de données via son id en paramètre
-     * @param : id
-     * @return : objet de Produit cherché et retourné
-     */
-    public Article chercher(int id){
+    public Article chercher(int id) {
         Article product = null;
 
         try {
-            // connexion
-            Connection connexion = daoFactory.getConnection();;
+            Connection connexion = daoFactory.getConnection();
             Statement statement = connexion.createStatement();
 
-            // Exécution de la requête SELECT pour récupérer le produit de l'id dans la base de données
-            ResultSet resultats = statement.executeQuery("select * from articles where articleID="+id);
+            // Modification de la requête SQL pour utiliser 'articleImageURL' au lieu de 'imageURL'
+            ResultSet resultats = statement.executeQuery("SELECT articleID, articleNom, articleMarque, articlePrix_unitaire, articlePrix_vrac, articleSeuil_vrac, articleStock, articleIsAvailable, articleImageURL FROM articles WHERE articleID=" + id);
 
-            // 	Se déplacer sur le prochain enregistrement : retourne false si la fin est atteinte
             while (resultats.next()) {
-                // récupérer les 3 champs de la table produits dans la base de données
-                // récupération des 3 champs du produit de la base de données
                 int vArticleId = resultats.getInt(1);
                 String vArticleNom = resultats.getString(2);
                 String vArticleMarque = resultats.getString(3);
@@ -167,22 +134,21 @@ public class ArticleDAOImpl implements ArticleDAO {
                 int vArticleSeuilVrac = resultats.getInt(6);
                 int vArticleStock = resultats.getInt(7);
                 boolean vArticleIsAvailable = resultats.getBoolean(8);
+                String vArticleImageURL = resultats.getString(9);  // Utilisation de 'articleImageURL'
 
-                // Si l'id du produit est trouvé, l'instancier et sortir de la boucle
                 if (id == vArticleId) {
-                    // instanciation de l'objet de Produit avec ces 3 champs
-                    product = new Article(vArticleId, vArticleNom, vArticleMarque, vArticlePrixUnique, vArticlePrixVrac, vArticleSeuilVrac, vArticleStock, vArticleIsAvailable);
+                    product = new Article(vArticleId, vArticleNom, vArticleMarque, vArticlePrixUnique, vArticlePrixVrac, vArticleSeuilVrac, vArticleStock, vArticleIsAvailable, vArticleImageURL);
                     break;
                 }
             }
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("Produit non trouvé dans la base de données");
         }
 
         return product;
     }
+
 
 
     /**

@@ -90,9 +90,10 @@ public class ShoppingController {
                     int seuilVrac = parseInteger(model.getValueAt(i, 5));
                     int stock = parseInteger(model.getValueAt(i, 6));
                     boolean isAvailable = Boolean.parseBoolean(model.getValueAt(i, 7).toString());
+                    String imageURL = model.getValueAt(i, 8).toString();
 
                     // Create an Article object and update it in the database
-                    Article article = new Article(id, nom, marque, prixUnitaire, prixVrac, seuilVrac, stock, isAvailable);
+                    Article article = new Article(id, nom, marque, prixUnitaire, prixVrac, seuilVrac, stock, isAvailable, imageURL);
                     System.out.println(article.getIsAvailable());
                     articleDAO.modifier(article);
                 } catch (NumberFormatException ex) {
@@ -246,6 +247,7 @@ public class ShoppingController {
                 data.put("prixVrac", String.format("%.2f €", article.getPrixVrac()));  // Prix en vrac
                 data.put("seuilVrac", String.valueOf(article.getSeuilVrac()));  // Seuil de vrac
                 data.put("stock", String.valueOf(article.getStock()));  // Stock restant
+                data.put("articleImageURL", article.getImageUrl());
 
                 // Ajout de l'article formaté à la liste
                 articlesFormates.add(data);

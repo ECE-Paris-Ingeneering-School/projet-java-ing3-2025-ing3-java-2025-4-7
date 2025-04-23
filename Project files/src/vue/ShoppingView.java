@@ -9,6 +9,13 @@ import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import java.net.URL;
+import java.net.MalformedURLException;
+import javax.imageio.ImageIO;
+import java.io.IOException;
+import java.net.URL;
 
 
 public class ShoppingView {
@@ -529,25 +536,34 @@ public class ShoppingView {
 
 
 
-    public void updateHomePageView(List<Map<String, String>> articles, ActionListener ajouterPanierListener) {
-        homePagePanel.removeAll();  // On vide le panneau existant
 
+
+    public void updateHomePageView(List<Map<String, String>> articles, ActionListener ajouterPanierListener) {
+        homePagePanel.removeAll();
+
+        // Navbar
+        JPanel navbar = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        navbar.setBackground(new Color(66, 133, 244));
+        JLabel navbarLabel = new JLabel("Bienvenue sur notre boutique !");
+        navbarLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
+        navbarLabel.setForeground(Color.WHITE);
+        navbar.add(navbarLabel);
+
+        // Main container
         JPanel mainContainer = new JPanel();
         mainContainer.setLayout(new BoxLayout(mainContainer, BoxLayout.Y_AXIS));
         mainContainer.setBackground(Color.WHITE);
         mainContainer.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
 
-        // Grouper les articles par marque
+        // Regrouper par marque
         Map<String, List<Map<String, String>>> articlesParMarque = new LinkedHashMap<>();
-        for (Map<String, String> articleData : articles) {
-            String marque = articleData.get("marque");
-            System.out.println(articleData.get("id"));
-            if (marque == null) marque = "Autres";
+        for (Map<String, String> article : articles) {
+            String marque = article.getOrDefault("marque", "Autres");
             articlesParMarque.putIfAbsent(marque, new ArrayList<>());
-            articlesParMarque.get(marque).add(articleData);
+            articlesParMarque.get(marque).add(article);
         }
 
-        // Affichage des sections par marque
+        // Parcours des marques
         for (String marque : articlesParMarque.keySet()) {
             JPanel sectionPanel = new JPanel();
             sectionPanel.setLayout(new BoxLayout(sectionPanel, BoxLayout.Y_AXIS));
@@ -555,7 +571,6 @@ public class ShoppingView {
 
             JLabel marqueLabel = new JLabel(marque.toUpperCase());
             marqueLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
-            marqueLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
             marqueLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 5, 0));
             sectionPanel.add(marqueLabel);
 
@@ -563,12 +578,11 @@ public class ShoppingView {
             ligneArticles.setLayout(new BoxLayout(ligneArticles, BoxLayout.X_AXIS));
             ligneArticles.setBackground(Color.WHITE);
 
-            // Affichage des articles sous chaque marque
-            for (Map<String, String> articleData : articlesParMarque.get(marque)) {
+            for (Map<String, String> article : articlesParMarque.get(marque)) {
                 JPanel card = new JPanel();
                 card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-                card.setPreferredSize(new Dimension(180, 150));
-                card.setMaximumSize(new Dimension(180, 150));
+                card.setPreferredSize(new Dimension(220, 380));
+                card.setMaximumSize(new Dimension(220, 380));
                 card.setBorder(BorderFactory.createCompoundBorder(
                         BorderFactory.createLineBorder(new Color(220, 220, 220)),
                         BorderFactory.createEmptyBorder(10, 10, 10, 10)
@@ -576,54 +590,73 @@ public class ShoppingView {
                 card.setBackground(new Color(245, 245, 250));
                 card.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-                JLabel nomLabel = new JLabel(articleData.get("nom"));
-                nomLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+                // Nom (top)
+                JLabel nomLabel = new JLabel(article.get("nom"));
+                nomLabel.setFont(new Font("SansSerif", Font.BOLD, 15));
+                nomLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                nomLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                nomLabel.setMaximumSize(new Dimension(200, 40));
+                card.add(nomLabel);
+                card.add(Box.createVerticalStrut(10));
 
-                JLabel prixLabel = new JLabel("Prix : " + articleData.get("prix"));
-                prixLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
+                // Image
+                String imageURL = article.get("articleImageURL");
+                if (imageURL != null && !imageURL.isEmpty()) {
+                    try {
+                        URL url = new URL(imageURL);
+                        ImageIcon icon = new ImageIcon(url);
+                        if (icon.getImageLoadStatus() == MediaTracker.COMPLETE) {
+                            Image scaled = icon.getImage().getScaledInstance(180, 240, Image.SCALE_SMOOTH);
+                            JLabel imageLabel = new JLabel(new ImageIcon(scaled));
+                            imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+                            JPanel imageContainer = new JPanel();
+                            imageContainer.setPreferredSize(new Dimension(180, 240));
+                            imageContainer.setMaximumSize(new Dimension(180, 240));
+                            imageContainer.setBackground(Color.WHITE);
+                            imageContainer.add(imageLabel);
+
+                            card.add(imageContainer);
+                        }
+                    } catch (Exception e) {
+                        System.out.println("Erreur chargement image: " + e.getMessage());
+                        card.setBackground(Color.RED);
+                    }
+                }
+
+                card.add(Box.createVerticalStrut(10));
+
+                // Infos
+                // Infos
+                JLabel prixLabel = new JLabel("Prix : " + article.get("prix"));
+                prixLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
                 prixLabel.setForeground(new Color(34, 139, 34));
+                prixLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-                JLabel stockLabel = new JLabel("Stock : " + articleData.get("stock"));
-                stockLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
-                stockLabel.setForeground(new Color(255, 69, 0));
-                stockLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-                JLabel prixVracLabel = new JLabel("Prix Vrac : " + articleData.get("prixVrac"));
+// Prix vrac reformatté
+                String seuil = article.get("seuilVrac");
+                String prixVrac = article.get("prixVrac");
+                JLabel prixVracLabel = new JLabel("Prix vrac ("+seuil+"+) : " + prixVrac);
                 prixVracLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
-                prixVracLabel.setForeground(new Color(255, 69, 0));
-                prixVracLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+                prixVracLabel.setForeground(Color.GRAY);
+                prixVracLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-                JLabel seuilVracLabel = new JLabel("Seuil Vrac : " + articleData.get("seuilVrac"));
-                seuilVracLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
-                seuilVracLabel.setForeground(new Color(255, 69, 0));
-                seuilVracLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+                card.add(prixLabel);
+                card.add(prixVracLabel);
+                card.add(Box.createVerticalStrut(10));
 
+// Bouton
                 JButton ajouterButton = new JButton("Ajouter au panier");
                 ajouterButton.setFocusPainted(false);
                 ajouterButton.setBackground(new Color(66, 133, 244));
                 ajouterButton.setForeground(Color.WHITE);
                 ajouterButton.setFont(new Font("SansSerif", Font.PLAIN, 12));
                 ajouterButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-
-                // Définir l'ID de l'article comme ActionCommand
-                ajouterButton.setActionCommand(articleData.get("id"));
-                // Attacher l'ActionListener passé depuis le contrôleur
+                ajouterButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+                ajouterButton.setActionCommand(article.get("id"));
                 ajouterButton.addActionListener(ajouterPanierListener);
 
-                // Ajouter les composants au panneau de carte
-                card.add(nomLabel);
-                card.add(Box.createVerticalStrut(5));
-                card.add(prixLabel);
-                card.add(Box.createVerticalStrut(5));
-                card.add(stockLabel);
-                card.add(Box.createVerticalStrut(5));
-                card.add(prixVracLabel);
-                card.add(Box.createVerticalStrut(5));
-                card.add(seuilVracLabel);
-                card.add(Box.createVerticalStrut(5));
-                card.add(Box.createVerticalGlue());
                 card.add(ajouterButton);
-
                 ligneArticles.add(card);
                 ligneArticles.add(Box.createHorizontalStrut(10));
             }
@@ -633,18 +666,32 @@ public class ShoppingView {
             ligneScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
             ligneScroll.getHorizontalScrollBar().setPreferredSize(new Dimension(0, 0));
             ligneScroll.setBorder(BorderFactory.createEmptyBorder());
-            ligneScroll.setPreferredSize(new Dimension(0, 180));
+            ligneScroll.setPreferredSize(new Dimension(0, 420)); // hauteur plus grande pour scroll correct
 
             sectionPanel.add(ligneScroll);
             sectionPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
             mainContainer.add(sectionPanel);
         }
 
-        homePagePanel.add(mainContainer);
+        JScrollPane pageScroll = new JScrollPane(mainContainer);
+        pageScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        pageScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        homePagePanel.setLayout(new BorderLayout());
+        homePagePanel.add(navbar, BorderLayout.NORTH);
+        homePagePanel.add(pageScroll, BorderLayout.CENTER);
+
         homePagePanel.revalidate();
         homePagePanel.repaint();
     }
+
+
+
+
+
+
+
+
 
 
     public void afficherPageCompte(String nom, String email, String tel, String adresse, List<String[]> historique) {
