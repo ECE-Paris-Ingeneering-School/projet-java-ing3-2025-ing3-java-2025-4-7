@@ -86,7 +86,7 @@ public class ShoppingView {
 
         JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         leftPanel.setOpaque(false);
-        homeButton = new JButton("Home");
+        homeButton = new JButton("Accueil");
         leftPanel.add(homeButton);
 
         JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
