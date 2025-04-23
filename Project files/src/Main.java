@@ -8,5 +8,6 @@ public class Main {
         view.setVisible(true);
         view.showPage("HomePage");
         //bien fou matheo
+        //sah pas plus reel
     }
 }
