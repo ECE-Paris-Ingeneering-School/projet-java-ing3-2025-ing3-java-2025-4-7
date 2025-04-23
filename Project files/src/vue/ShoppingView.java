@@ -34,7 +34,7 @@ public class ShoppingView {
     private JLabel loginErrorMessageLabel;
 
     public ShoppingView() {
-        frame = new JFrame("Shopping App");
+        frame = new JFrame("PokeShop App");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 600);
 
