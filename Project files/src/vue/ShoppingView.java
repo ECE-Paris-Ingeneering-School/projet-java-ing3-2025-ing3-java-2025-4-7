@@ -129,6 +129,27 @@ public class ShoppingView {
         adminButton.setFont(new Font("Arial", Font.BOLD, 14));
         adminButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
         adminButton.setVisible(false);
+        // Chargement et redimensionnement de l'image
+        ImageIcon originalicon = new ImageIcon("Project files/src/image/logopanier1.png");
+        if (originalicon.getImageLoadStatus() != MediaTracker.COMPLETE) {
+            System.out.println("❌ Erreur : l'image n'a pas pu être chargée !");
+        } else {
+            System.out.println("✅ Image chargée avec succès !");
+        }
+
+        // Redimensionner l'image (ajuste à ta convenance)
+        int nWidth = 120;
+        int nHeight = 50;
+        Image resizedimage = originalicon.getImage().getScaledInstance(nWidth, nHeight, Image.SCALE_SMOOTH);
+        ImageIcon resizedicon = new ImageIcon(resizedimage);
+
+        // Bouton Accueil avec l'image
+        panierButton = new JButton(resizedicon);
+        panierButton.setToolTipText("Panier"); // Optionnel
+        panierButton.setBorderPainted(false);
+        panierButton.setContentAreaFilled(false);
+        panierButton.setFocusPainted(false);
+        panierButton.setOpaque(false);
 
         rightPanel.add(accountButton);
         rightPanel.add(panierButton);
