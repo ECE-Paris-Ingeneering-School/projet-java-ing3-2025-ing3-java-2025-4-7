@@ -86,7 +86,29 @@ public class ShoppingView {
 
         JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         leftPanel.setOpaque(false);
-        homeButton = new JButton("Accueil");
+
+        // Chargement et redimensionnement de l'image
+        ImageIcon originalIcon = new ImageIcon("Project files/src/image/logoAPP.png");
+        if (originalIcon.getImageLoadStatus() != MediaTracker.COMPLETE) {
+            System.out.println("❌ Erreur : l'image n'a pas pu être chargée !");
+        } else {
+            System.out.println("✅ Image chargée avec succès !");
+        }
+
+        // Redimensionner l'image (ajuste à ta convenance)
+        int newWidth = 120;
+        int newHeight = 90;
+        Image resizedImage = originalIcon.getImage().getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+        ImageIcon resizedIcon = new ImageIcon(resizedImage);
+
+        // Bouton Accueil avec l'image
+        homeButton = new JButton(resizedIcon);
+        homeButton.setToolTipText("Accueil"); // Optionnel
+        homeButton.setBorderPainted(false);
+        homeButton.setContentAreaFilled(false);
+        homeButton.setFocusPainted(false);
+        homeButton.setOpaque(false);
+
         leftPanel.add(homeButton);
 
         JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -100,16 +122,17 @@ public class ShoppingView {
         rightPanel.setOpaque(false);
         accountButton = new JButton("Mon compte");
         panierButton = new JButton("Panier");
-        adminButton = new JButton("Admin"); // Initialize the admin button
+        adminButton = new JButton("Admin");
         adminButton.setFocusPainted(false);
         adminButton.setBackground(new Color(255, 87, 34));
         adminButton.setForeground(Color.WHITE);
         adminButton.setFont(new Font("Arial", Font.BOLD, 14));
         adminButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        adminButton.setVisible(false); // Initially hidden
+        adminButton.setVisible(false);
+
         rightPanel.add(accountButton);
         rightPanel.add(panierButton);
-        rightPanel.add(adminButton); // Add the admin button to the right panel
+        rightPanel.add(adminButton);
 
         header.add(leftPanel, BorderLayout.WEST);
         header.add(centerPanel, BorderLayout.CENTER);
@@ -117,6 +140,8 @@ public class ShoppingView {
 
         return header;
     }
+
+
 
     private JPanel createHomePagePanel() {
         JPanel panel = new JPanel(new BorderLayout());
