@@ -323,25 +323,12 @@ public class ShoppingController {
         }
 
         try {
-            // Prompt the user for the quantity
-            String input = JOptionPane.showInputDialog(null, "Entrez la quantité souhaitée :", "Quantité", JOptionPane.PLAIN_MESSAGE);
-            if (input == null || input.trim().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Commande annulée.");
-                return;
-            }
+            int quantity = 1; // Toujours +1 à chaque clic
 
-            int quantity = Integer.parseInt(input.trim());
-            if (quantity <= 0) {
-                JOptionPane.showMessageDialog(null, "La quantité doit être un entier positif.");
-                return;
-            }
-
-            // Retrieve the article details
+            // Récupérer les infos de l'article
             Article article = articleDAO.chercher(Integer.parseInt(articleId));
-            double pricePerUnit = (quantity >= article.getSeuilVrac()) ? article.getPrixVrac() : article.getPrixUnitaire();
-            double totalPrice = pricePerUnit * quantity;
 
-            // Retrieve the current order for the user
+            // Récupérer les commandes de l'utilisateur
             List<Commande> commandes = commandeDAO.getCommandesParUtilisateur(utilisateurConnecte.getId());
             Commande commandeEnCours = null;
 
@@ -352,11 +339,14 @@ public class ShoppingController {
                 }
             }
 
-            // If no "in progress" order exists, create a new one
             if (commandeEnCours == null) {
+                // Nouvelle commande
+                double pricePerUnit = (quantity >= article.getSeuilVrac()) ? article.getPrixVrac() : article.getPrixUnitaire();
+                double totalPrice = pricePerUnit * quantity;
+
                 LocalDate today = LocalDate.now();
                 commandeEnCours = new Commande(
-                        0, // Auto-generated ID
+                        0,
                         utilisateurConnecte.getId(),
                         today.toString(),
                         "en cours",
@@ -367,14 +357,34 @@ public class ShoppingController {
                 );
                 commandeDAO.ajouter(commandeEnCours);
             } else {
-                // Add the article to the existing order
+                // Modifier la commande existante
                 String listeID_Article = commandeEnCours.getListeID_Article();
                 String listeQuantite_Article = commandeEnCours.getListeQuantite_Article();
 
-                listeID_Article += (listeID_Article.isEmpty() ? "" : "-") + articleId;
-                listeQuantite_Article += (listeQuantite_Article.isEmpty() ? "" : "-") + quantity;
+                String[] ids = listeID_Article.isEmpty() ? new String[0] : listeID_Article.split("-");
+                String[] quantites = listeQuantite_Article.isEmpty() ? new String[0] : listeQuantite_Article.split("-");
 
-                // Recalculate the total price
+                boolean found = false;
+                for (int i = 0; i < ids.length; i++) {
+                    if (ids[i].equals(articleId)) {
+                        int currentQty = Integer.parseInt(quantites[i]);
+                        quantites[i] = String.valueOf(currentQty + quantity);
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found) {
+                    // Ajout de nouvel article
+                    listeID_Article = listeID_Article.isEmpty() ? articleId : listeID_Article + "-" + articleId;
+                    listeQuantite_Article = listeQuantite_Article.isEmpty() ? String.valueOf(quantity) : listeQuantite_Article + "-" + quantity;
+                } else {
+                    // Reconstruction des listes mises à jour
+                    listeID_Article = String.join("-", ids);
+                    listeQuantite_Article = String.join("-", quantites);
+                }
+
+                // Recalcul du prix total
                 double prixTotal = 0;
                 String[] listeID_ArticleSplit = listeID_Article.split("-");
                 String[] listeQuantite_ArticleSplit = listeQuantite_Article.split("-");
@@ -386,7 +396,6 @@ public class ShoppingController {
                     prixTotal += currentPricePerUnit * quantite;
                 }
 
-                // Update the order
                 commandeEnCours.setListeID_Article(listeID_Article);
                 commandeEnCours.setListeQuantite_Article(listeQuantite_Article);
                 commandeEnCours.setPrix(prixTotal);
@@ -394,12 +403,14 @@ public class ShoppingController {
             }
 
             JOptionPane.showMessageDialog(null, "Article ajouté au panier avec succès !");
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(null, "Quantité invalide. Veuillez entrer un entier positif.");
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, "Erreur technique : " + ex.getMessage());
         }
     }
+
+
+
+
     private void afficherPanier() {
         if (utilisateurConnecte == null) {
             JOptionPane.showMessageDialog(null, "Veuillez vous connecter pour accéder à votre panier.");
@@ -444,6 +455,7 @@ public class ShoppingController {
                 data.put("marque", article.getMarque());
                 data.put("prix", String.format("%.2f €", prixAffiche));
                 data.put("quantite", String.valueOf(quantite));
+                data.put("imageUrl", article.getImageUrl());
                 articlesPanier.add(data);
             }
 

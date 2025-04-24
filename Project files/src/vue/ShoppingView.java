@@ -741,34 +741,112 @@ public class ShoppingView {
         panierPagePanel.removeAll();  // Clear the existing panel
 
         JPanel mainContainer = new JPanel();
-        mainContainer.setLayout(new BoxLayout(mainContainer, BoxLayout.Y_AXIS));
+        mainContainer.setLayout(new GridLayout(0, 2, 20, 20));  // 2 cards per row with spacing
         mainContainer.setBackground(Color.WHITE);
         mainContainer.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
 
         for (Map<String, String> articleData : articles) {
-            JPanel articlePanel = new JPanel();
-            articlePanel.setLayout(new BoxLayout(articlePanel, BoxLayout.X_AXIS));
-            articlePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-            articlePanel.setBackground(new Color(245, 245, 250));
+            JPanel card = new JPanel(new BorderLayout());
+            card.setPreferredSize(new Dimension(300, 200));
+            card.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
+            card.setBackground(Color.WHITE);
 
+            // --- IMAGE A GAUCHE
+            String imageURL = articleData.get("imageUrl");
+            JPanel imagePanel = new JPanel();
+            imagePanel.setPreferredSize(new Dimension(180, 240));
+            imagePanel.setMaximumSize(new Dimension(180, 240));
+            imagePanel.setBackground(Color.WHITE);
+
+            if (imageURL != null && !imageURL.isEmpty()) {
+                try {
+                    URL url = new URL(imageURL);
+                    ImageIcon icon = new ImageIcon(url);
+                    if (icon.getImageLoadStatus() == MediaTracker.COMPLETE) {
+                        Image scaled = icon.getImage().getScaledInstance(180, 240, Image.SCALE_SMOOTH);
+                        JLabel imageLabel = new JLabel(new ImageIcon(scaled));
+                        imagePanel.add(imageLabel);
+                    }
+                } catch (Exception e) {
+                    System.out.println("Erreur chargement image: " + e.getMessage());
+                }
+            }
+            card.add(imagePanel, BorderLayout.WEST);
+
+            // --- CONTENU A DROITE
+            JPanel contentPanel = new JPanel();
+            contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+            contentPanel.setBackground(Color.WHITE);
+            contentPanel.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
+
+            // Titre
             JLabel nomLabel = new JLabel(articleData.get("nom"));
             nomLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+            nomLabel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
 
-            JLabel quantiteLabel = new JLabel("Quantité: " + articleData.get("quantite"));
+            // Boutons
+            JPanel boutonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
+            boutonsPanel.setBackground(Color.WHITE);
+            JButton plusBtn = new JButton("+");
+            JButton minusBtn = new JButton("-");
+            plusBtn.setPreferredSize(new Dimension(45, 25));
+            minusBtn.setPreferredSize(new Dimension(45, 25));
+
+            // Récupérer la quantité et le prix unitaire
+            final int initialQuantity = Integer.parseInt(articleData.get("quantite"));
+            final double priceUnit = Double.parseDouble(articleData.get("prix").replace(" €", "").replace(",", "."));
+
+            // Labels pour la quantité et le prix total
+            final JLabel quantiteLabel = new JLabel("Quantité: " + initialQuantity);
             quantiteLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
 
-            JLabel prixLabel = new JLabel("Prix: " + articleData.get("prix"));
-            prixLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
-            prixLabel.setForeground(new Color(34, 139, 34));
+            final JLabel prixUnitaireLabel = new JLabel("Prix unitaire: " + articleData.get("prix"));
+            prixUnitaireLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
 
-            articlePanel.add(nomLabel);
-            articlePanel.add(Box.createHorizontalStrut(20));
-            articlePanel.add(quantiteLabel);
-            articlePanel.add(Box.createHorizontalStrut(20));
-            articlePanel.add(prixLabel);
+            final JLabel prixTotalLabel = new JLabel("Prix total: " + String.format("%.2f €", priceUnit * initialQuantity));
+            prixTotalLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
+            prixTotalLabel.setForeground(new Color(34, 139, 34));
 
-            mainContainer.add(articlePanel);
-            mainContainer.add(Box.createVerticalStrut(10));
+            // Action pour le bouton "+"
+            plusBtn.addActionListener(e -> {
+                int newQuantity = initialQuantity + 1;
+                double newTotalPrice = priceUnit * newQuantity;
+                quantiteLabel.setText("Quantité: " + newQuantity);
+                prixTotalLabel.setText("Prix total: " + String.format("%.2f €", newTotalPrice));
+
+                // Mettre à jour la base de données ou autre action pour la quantité
+                articleData.put("quantite", String.valueOf(newQuantity));
+            });
+
+            // Action pour le bouton "-"
+            minusBtn.addActionListener(e -> {
+                if (initialQuantity > 1) {
+                    int newQuantity = initialQuantity - 1;
+                    double newTotalPrice = priceUnit * newQuantity;
+                    quantiteLabel.setText("Quantité: " + newQuantity);
+                    prixTotalLabel.setText("Prix total: " + String.format("%.2f €", newTotalPrice));
+
+                    // Mettre à jour la base de données ou autre action pour la quantité
+                    articleData.put("quantite", String.valueOf(newQuantity));
+                }
+            });
+
+            // Ajouter les boutons au panel des boutons
+            boutonsPanel.add(minusBtn);
+            boutonsPanel.add(plusBtn);
+
+            // Ajouter tous les éléments au panel de contenu
+            contentPanel.add(nomLabel);
+            contentPanel.add(boutonsPanel);
+            contentPanel.add(quantiteLabel);
+            contentPanel.add(prixUnitaireLabel);
+            contentPanel.add(prixTotalLabel);
+
+            // Ajouter le panel de contenu à la carte
+            card.add(contentPanel, BorderLayout.CENTER);
+
+            // Ajouter la carte au conteneur principal
+            mainContainer.add(card);
         }
 
         JScrollPane scrollPane = new JScrollPane(mainContainer);
@@ -781,12 +859,18 @@ public class ShoppingView {
         // Ajouter le bouton "Commander" en bas
         JPanel bottomPanel = new JPanel();
         bottomPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
+        bottomPanel.setBackground(Color.WHITE);
         bottomPanel.add(commanderButton);
         panierPagePanel.add(bottomPanel, BorderLayout.SOUTH);
 
         panierPagePanel.revalidate();
         panierPagePanel.repaint();
     }
+
+
+
+
+
 
 
 
