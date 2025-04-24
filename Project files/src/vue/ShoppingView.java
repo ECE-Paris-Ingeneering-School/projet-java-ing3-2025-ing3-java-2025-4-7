@@ -97,7 +97,7 @@ public class ShoppingView {
 
         // Redimensionner l'image (ajuste à ta convenance)
         int newWidth = 120;
-        int newHeight = 90;
+        int newHeight = 50;
         Image resizedImage = originalIcon.getImage().getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
         ImageIcon resizedIcon = new ImageIcon(resizedImage);
 
