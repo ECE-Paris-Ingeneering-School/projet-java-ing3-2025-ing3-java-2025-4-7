@@ -107,6 +107,7 @@ public class ShoppingController {
 
         view.getAjouterButton().addActionListener(e -> handleAjouterArticle());
 
+
     }
 
     private void handleLogin() {
@@ -434,6 +435,7 @@ public class ShoppingController {
                     commandeEnCours.getListeID_Article() == null ||
                     commandeEnCours.getListeID_Article().trim().isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Votre panier est vide.");
+                view.showPage("HomePage");
                 return;
             }
 
@@ -447,24 +449,107 @@ public class ShoppingController {
                 Article article = articleDAO.chercher(idArticle);
                 int quantite = Integer.parseInt(listeQuantite_Article[i]);
 
-                // Determine the price to display based on the quantity
-                double prixAffiche = (quantite >= article.getSeuilVrac()) ? article.getPrixVrac() : article.getPrixUnitaire();
+//                // Determine the price to display based on the quantity
+//                double prixAffiche = (quantite >= article.getSeuilVrac()) ? article.getPrixVrac() : article.getPrixUnitaire();
+//                System.out.println(prixAffiche);
 
                 Map<String, String> data = new HashMap<>();
+                data.put("id", String.valueOf(idArticle)); // 🔥 essentiel pour les boutons
                 data.put("nom", article.getNom());
                 data.put("marque", article.getMarque());
-                data.put("prix", String.format("%.2f €", prixAffiche));
+                data.put("prixUnitaire", String.format("%.2f €", article.getPrixUnitaire()));
+                data.put("prixVrac", String.format("%.2f €", article.getPrixVrac()));
+                data.put("seuilVrac", String.valueOf(article.getSeuilVrac()));
                 data.put("quantite", String.valueOf(quantite));
                 data.put("imageUrl", article.getImageUrl());
+                data.put("liste_id_article", commandeEnCours.getListeID_Article());
                 articlesPanier.add(data);
+
             }
 
             // Update the view with the articles
-            view.updatePanierPageView(articlesPanier);
+            view.updatePanierPageView(articlesPanier, e -> {
+                String articleId = e.getActionCommand();
+                modifierQuantiteArticleDansCommande(articleId, 1);
+            }, e -> {
+                String articleId = e.getActionCommand();
+                modifierQuantiteArticleDansCommande(articleId, -1);
+            });
+
             view.showPage("Panier");
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, "Erreur technique : " + ex.getMessage());
         }
+    }
+
+    private void modifierQuantiteArticleDansCommande(String articleIdStr, int delta) {
+        if (utilisateurConnecte == null) return;
+
+        int articleId = Integer.parseInt(articleIdStr);
+        List<Commande> commandes = commandeDAO.getCommandesParUtilisateur(utilisateurConnecte.getId());
+        Commande commandeEnCours = commandes.stream()
+                .filter(c -> "en cours".equals(c.getStatut()))
+                .findFirst()
+                .orElse(null);
+
+        if (commandeEnCours == null) return;
+
+        String[] ids = commandeEnCours.getListeID_Article().split("-");
+        String[] quantites = commandeEnCours.getListeQuantite_Article().split("-");
+
+        boolean updated = false;
+        for (int i = 0; i < ids.length; i++) {
+            if (ids[i].equals(String.valueOf(articleId))) {
+                int qte = Integer.parseInt(quantites[i]) + delta;
+                if (qte <= 0) {
+                    // Supprimer l'article de la commande
+                    ids = removeIndex(ids, i);
+                    quantites = removeIndex(quantites, i);
+                } else {
+                    quantites[i] = String.valueOf(qte);
+                }
+                updated = true;
+                break;
+            }
+        }
+
+        if (!updated && delta > 0) {
+            ids = append(ids, String.valueOf(articleId));
+            quantites = append(quantites, "1");
+        }
+
+        String newIds = String.join("-", ids);
+        String newQtes = String.join("-", quantites);
+
+        // Recalcul du prix
+        double nouveauPrix = 0;
+        for (int i = 0; i < ids.length; i++) {
+            Article article = articleDAO.chercher(Integer.parseInt(ids[i]));
+            int qte = Integer.parseInt(quantites[i]);
+            double prix = (qte >= article.getSeuilVrac()) ? article.getPrixVrac() : article.getPrixUnitaire();
+            nouveauPrix += prix * qte;
+        }
+
+        commandeEnCours.setListeID_Article(newIds);
+        commandeEnCours.setListeQuantite_Article(newQtes);
+        commandeEnCours.setPrix(nouveauPrix);
+
+        commandeDAO.modifier(commandeEnCours);
+
+        // Mise à jour interface
+        afficherPanier();
+    }
+
+    private String[] removeIndex(String[] array, int index) {
+        List<String> list = new ArrayList<>(List.of(array));
+        list.remove(index);
+        return list.toArray(new String[0]);
+    }
+
+    private String[] append(String[] array, String value) {
+        List<String> list = new ArrayList<>(List.of(array));
+        list.add(value);
+        return list.toArray(new String[0]);
     }
 
 
@@ -489,6 +574,7 @@ public class ShoppingController {
 
             if (commandeEnCours == null) {
                 JOptionPane.showMessageDialog(null, "Votre panier est vide.");
+                view.showPage("HomePage");
                 return;
             }
 

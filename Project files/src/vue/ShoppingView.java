@@ -23,7 +23,7 @@ public class ShoppingView {
     private JPanel mainPanel;
     private CardLayout cardLayout;
     private JTable adminTable;
-    private JButton homeButton, accountButton, panierButton, loginButton, registerButton, searchButton, submitLoginButton, submitRegisterButton, logoutButton, commanderButton, ajouterButton, adminButton, saveButton;
+    private JButton homeButton, accountButton, panierButton, loginButton, registerButton, searchButton, submitLoginButton, submitRegisterButton, logoutButton, commanderButton, ajouterButton, adminButton, saveButton, plusBtn,minusBtn;
     private JTextField searchField, emailField, registerEmailField, registerPrenomField, registerNomField;
     private JPasswordField passwordField, registerPasswordField, registerConfirmPasswordField;
 
@@ -760,25 +760,24 @@ public class ShoppingView {
         cardLayout.show(mainPanel, "UpdateAccount");
     }
 
-    public void updatePanierPageView(List<Map<String, String>> articles) {
-        panierPagePanel.removeAll();  // Clear the existing panel
+    public void updatePanierPageView(List<Map<String, String>> articles, ActionListener plusListener, ActionListener minusListener) {
+        panierPagePanel.removeAll(); // Clear the existing panel
 
         JPanel mainContainer = new JPanel();
-        mainContainer.setLayout(new GridLayout(0, 2, 20, 20));  // 2 cards per row with spacing
+        mainContainer.setLayout(new GridLayout(0, 2, 20, 20)); // 2 cards per row with spacing
         mainContainer.setBackground(Color.WHITE);
         mainContainer.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
 
         for (Map<String, String> articleData : articles) {
             JPanel card = new JPanel(new BorderLayout());
-            card.setPreferredSize(new Dimension(300, 200));
+            card.setPreferredSize(new Dimension(400, 300));
             card.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
             card.setBackground(Color.WHITE);
 
-            // --- IMAGE A GAUCHE
+            // Image Panel
             String imageURL = articleData.get("imageUrl");
             JPanel imagePanel = new JPanel();
             imagePanel.setPreferredSize(new Dimension(180, 240));
-            imagePanel.setMaximumSize(new Dimension(180, 240));
             imagePanel.setBackground(Color.WHITE);
 
             if (imageURL != null && !imageURL.isEmpty()) {
@@ -791,23 +790,21 @@ public class ShoppingView {
                         imagePanel.add(imageLabel);
                     }
                 } catch (Exception e) {
-                    System.out.println("Erreur chargement image: " + e.getMessage());
+                    System.out.println("Error loading image: " + e.getMessage());
                 }
             }
             card.add(imagePanel, BorderLayout.WEST);
 
-            // --- CONTENU A DROITE
+            // Content Panel
             JPanel contentPanel = new JPanel();
             contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
             contentPanel.setBackground(Color.WHITE);
             contentPanel.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
 
-            // Titre
             JLabel nomLabel = new JLabel(articleData.get("nom"));
             nomLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
             nomLabel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
 
-            // Boutons
             JPanel boutonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
             boutonsPanel.setBackground(Color.WHITE);
             JButton plusBtn = new JButton("+");
@@ -815,60 +812,50 @@ public class ShoppingView {
             plusBtn.setPreferredSize(new Dimension(45, 25));
             minusBtn.setPreferredSize(new Dimension(45, 25));
 
-            // Récupérer la quantité et le prix unitaire
+            // Quantity and Price Logic
             final int initialQuantity = Integer.parseInt(articleData.get("quantite"));
-            final double priceUnit = Double.parseDouble(articleData.get("prix").replace(" €", "").replace(",", "."));
+            final double priceUnit = Double.parseDouble(articleData.get("prixUnitaire").replace(" €", "").replace(",", "."));
+            final double priceVrac = Double.parseDouble(articleData.get("prixVrac").replace(" €", "").replace(",", "."));
+            final int seuilVrac = Integer.parseInt(articleData.get("seuilVrac"));
 
-            // Labels pour la quantité et le prix total
+            double prixAffiche = (initialQuantity >= seuilVrac) ? priceVrac : priceUnit;
+
             final JLabel quantiteLabel = new JLabel("Quantité: " + initialQuantity);
             quantiteLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
 
-            final JLabel prixUnitaireLabel = new JLabel("Prix unitaire: " + articleData.get("prix"));
+            final JLabel prixUnitaireLabel = new JLabel("Prix unitaire: " + String.format("%.2f €", priceUnit));
             prixUnitaireLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
 
-            final JLabel prixTotalLabel = new JLabel("Prix total: " + String.format("%.2f €", priceUnit * initialQuantity));
+            final JLabel prixVracLabel = new JLabel("Prix vrac: " + String.format("%.2f €", priceVrac));
+            prixVracLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
+
+            final JLabel prixSeuilLabel = new JLabel("Seuil vrac: " + seuilVrac);
+            prixSeuilLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
+
+            final JLabel prixTotalLabel = new JLabel("Prix total: " + String.format("%.2f €", prixAffiche * initialQuantity));
             prixTotalLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
             prixTotalLabel.setForeground(new Color(34, 139, 34));
 
-            // Action pour le bouton "+"
-            plusBtn.addActionListener(e -> {
-                int newQuantity = initialQuantity + 1;
-                double newTotalPrice = priceUnit * newQuantity;
-                quantiteLabel.setText("Quantité: " + newQuantity);
-                prixTotalLabel.setText("Prix total: " + String.format("%.2f €", newTotalPrice));
+            // Set Action Commands and Listeners
+            String articleId = articleData.get("id");
+            plusBtn.setActionCommand(articleId);
+            minusBtn.setActionCommand(articleId);
 
-                // Mettre à jour la base de données ou autre action pour la quantité
-                articleData.put("quantite", String.valueOf(newQuantity));
-            });
+            plusBtn.addActionListener(plusListener);
+            minusBtn.addActionListener(minusListener);
 
-            // Action pour le bouton "-"
-            minusBtn.addActionListener(e -> {
-                if (initialQuantity > 1) {
-                    int newQuantity = initialQuantity - 1;
-                    double newTotalPrice = priceUnit * newQuantity;
-                    quantiteLabel.setText("Quantité: " + newQuantity);
-                    prixTotalLabel.setText("Prix total: " + String.format("%.2f €", newTotalPrice));
-
-                    // Mettre à jour la base de données ou autre action pour la quantité
-                    articleData.put("quantite", String.valueOf(newQuantity));
-                }
-            });
-
-            // Ajouter les boutons au panel des boutons
             boutonsPanel.add(minusBtn);
             boutonsPanel.add(plusBtn);
 
-            // Ajouter tous les éléments au panel de contenu
             contentPanel.add(nomLabel);
             contentPanel.add(boutonsPanel);
             contentPanel.add(quantiteLabel);
             contentPanel.add(prixUnitaireLabel);
+            contentPanel.add(prixVracLabel);
+            contentPanel.add(prixSeuilLabel);
             contentPanel.add(prixTotalLabel);
 
-            // Ajouter le panel de contenu à la carte
             card.add(contentPanel, BorderLayout.CENTER);
-
-            // Ajouter la carte au conteneur principal
             mainContainer.add(card);
         }
 
@@ -879,7 +866,7 @@ public class ShoppingView {
 
         panierPagePanel.add(scrollPane, BorderLayout.CENTER);
 
-        // Ajouter le bouton "Commander" en bas
+        // Add "Commander" button
         JPanel bottomPanel = new JPanel();
         bottomPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
         bottomPanel.setBackground(Color.WHITE);
@@ -1015,5 +1002,8 @@ public class ShoppingView {
     public JButton getSaveButton() {
         return saveButton;
     }
+
+    public JButton getPlusBtn(){return plusBtn;}
+    public JButton getMinusBtn(){return minusBtn;}
 
 }
