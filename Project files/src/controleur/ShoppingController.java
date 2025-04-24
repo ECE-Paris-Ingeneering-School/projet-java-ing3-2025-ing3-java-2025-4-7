@@ -454,6 +454,8 @@ public class ShoppingController {
             JOptionPane.showMessageDialog(null, "Erreur technique : " + ex.getMessage());
         }
     }
+
+
     private void handleCommanderButton() {
         if (utilisateurConnecte == null) {
             JOptionPane.showMessageDialog(null, "Veuillez vous connecter pour passer une commande.");
@@ -478,8 +480,40 @@ public class ShoppingController {
                 return;
             }
 
+            // Show credit card input form
+            JPanel creditCardPanel = new JPanel(new GridLayout(4, 2, 10, 10));
+            creditCardPanel.add(new JLabel("Nom sur la carte:"));
+            JTextField cardNameField = new JTextField();
+            creditCardPanel.add(cardNameField);
+
+            creditCardPanel.add(new JLabel("Numéro de carte:"));
+            JTextField cardNumberField = new JTextField();
+            creditCardPanel.add(cardNumberField);
+
+            creditCardPanel.add(new JLabel("Date d'expiration (MM/YY):"));
+            JTextField expiryDateField = new JTextField();
+            creditCardPanel.add(expiryDateField);
+
+            creditCardPanel.add(new JLabel("CVV:"));
+            JTextField cvvField = new JTextField();
+            creditCardPanel.add(cvvField);
+
+            int result = JOptionPane.showConfirmDialog(null, creditCardPanel, "Informations de paiement", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+            if (result != JOptionPane.OK_OPTION) {
+                JOptionPane.showMessageDialog(null, "Commande annulée.");
+                return;
+            }
+
+            // Validate credit card inputs (basic validation)
+            if (cardNameField.getText().trim().isEmpty() || cardNumberField.getText().trim().isEmpty() ||
+                    expiryDateField.getText().trim().isEmpty() || cvvField.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Veuillez remplir toutes les informations de paiement.");
+                return;
+            }
+
             // Update the status of the current order
-            commandeEnCours.setStatut("commande passé");
+            commandeEnCours.setStatut("commande passée");
             commandeDAO.modifier(commandeEnCours);
 
             // Create a new "en cours" order
@@ -497,9 +531,38 @@ public class ShoppingController {
             commandeDAO.ajouter(nouvelleCommande);
 
             JOptionPane.showMessageDialog(null, "Votre commande a été passée avec succès !");
+            afficherRatingForm(); // Show the rating form after the order is placed
             afficherAccueil();
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, "Erreur technique : " + ex.getMessage());
+        }
+    }
+
+    private void afficherRatingForm() {
+        JPanel ratingPanel = new JPanel(new GridLayout(3, 1, 10, 10));
+        ratingPanel.add(new JLabel("Notez votre expérience (1 à 5):"));
+        JSlider ratingSlider = new JSlider(1, 5, 3);
+        ratingSlider.setMajorTickSpacing(1);
+        ratingSlider.setPaintTicks(true);
+        ratingSlider.setPaintLabels(true);
+        ratingPanel.add(ratingSlider);
+
+        ratingPanel.add(new JLabel("Laissez un commentaire:"));
+        JTextArea commentArea = new JTextArea(5, 20);
+        JScrollPane scrollPane = new JScrollPane(commentArea);
+        ratingPanel.add(scrollPane);
+
+        int result = JOptionPane.showConfirmDialog(null, ratingPanel, "Évaluation de la commande", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+        if (result == JOptionPane.OK_OPTION) {
+            int rating = ratingSlider.getValue();
+            String comment = commentArea.getText().trim();
+
+            // Save the rating and comment (you can store it in the database)
+            System.out.println("Note: " + rating);
+            System.out.println("Commentaire: " + comment);
+
+            JOptionPane.showMessageDialog(null, "Merci pour votre retour !");
         }
     }
 

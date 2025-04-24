@@ -782,7 +782,6 @@ public class ShoppingView {
         JPanel bottomPanel = new JPanel();
         bottomPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
         bottomPanel.add(commanderButton);
-        bottomPanel.add(ajouterButton);
         panierPagePanel.add(bottomPanel, BorderLayout.SOUTH);
 
         panierPagePanel.revalidate();
