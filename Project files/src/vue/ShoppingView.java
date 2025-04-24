@@ -488,7 +488,7 @@ public class ShoppingView {
 
             cardPanel.add(topLeftPanel, BorderLayout.CENTER);
 
-            JButton viewDetailsButton = new JButton("Voir détails");
+            JButton viewDetailsButton = new JButton("Voir détails de la facture");
             viewDetailsButton.setFont(new Font("Arial", Font.PLAIN, 12));
             viewDetailsButton.setBackground(new Color(0, 123, 255));
             viewDetailsButton.setForeground(Color.WHITE);
