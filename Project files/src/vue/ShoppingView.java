@@ -533,7 +533,7 @@ public class ShoppingView {
         panel.add(titleLabel, BorderLayout.NORTH);
 
         // Initialize the admin table with all fields
-        String[] columnNames = {"ID", "Nom", "Marque", "Prix Unitaire", "Prix Vrac", "Seuil Vrac", "Stock", "Disponible", "Modifier"};
+        String[] columnNames = {"ID", "Nom", "Marque", "Prix Unitaire", "Prix Vrac", "Seuil Vrac", "Stock", "Disponible","lien image", "Modifier"};
         adminTable = new JTable(new DefaultTableModel(columnNames, 0));
         JScrollPane scrollPane = new JScrollPane(adminTable);
         panel.add(scrollPane, BorderLayout.CENTER);
@@ -546,8 +546,16 @@ public class ShoppingView {
         saveButton.setFocusPainted(false);
         saveButton.setPreferredSize(new Dimension(250, 40));
 
+        ajouterButton = new JButton("Ajouter un article");
+        ajouterButton.setFont(new Font("Arial", Font.BOLD, 16));
+        ajouterButton.setBackground(new Color(70, 130, 180));
+        ajouterButton.setForeground(Color.WHITE);
+        ajouterButton.setFocusPainted(false);
+        ajouterButton.setPreferredSize(new Dimension(150, 40));
+
         JPanel bottomPanel = new JPanel();
         bottomPanel.add(saveButton);
+        bottomPanel.add(ajouterButton);
         panel.add(bottomPanel, BorderLayout.SOUTH);
 
         return panel;
@@ -671,7 +679,7 @@ public class ShoppingView {
                 card.add(Box.createVerticalStrut(10));
 
 // Bouton
-                JButton ajouterButton = new JButton("Ajouter au panier");
+                JButton ajouterButton = new JButton("Ajouter un article");
                 ajouterButton.setFocusPainted(false);
                 ajouterButton.setBackground(new Color(66, 133, 244));
                 ajouterButton.setForeground(Color.WHITE);
@@ -774,6 +782,7 @@ public class ShoppingView {
         JPanel bottomPanel = new JPanel();
         bottomPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
         bottomPanel.add(commanderButton);
+        bottomPanel.add(ajouterButton);
         panierPagePanel.add(bottomPanel, BorderLayout.SOUTH);
 
         panierPagePanel.revalidate();

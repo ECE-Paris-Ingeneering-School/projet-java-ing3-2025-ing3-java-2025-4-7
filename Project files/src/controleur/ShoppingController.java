@@ -5,6 +5,7 @@ import modele.*;
 import DAO.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
@@ -103,6 +104,8 @@ public class ShoppingController {
 
             JOptionPane.showMessageDialog(null, "Modifications enregistrées avec succès !");
         });
+
+        view.getAjouterButton().addActionListener(e -> handleAjouterArticle());
 
     }
 
@@ -499,6 +502,70 @@ public class ShoppingController {
             JOptionPane.showMessageDialog(null, "Erreur technique : " + ex.getMessage());
         }
     }
+
+    // Add this method in ShoppingController
+    private void handleAjouterArticle() {
+        // Create a panel for the form
+        JPanel formPanel = new JPanel(new GridLayout(9, 2, 10, 10));
+        formPanel.add(new JLabel("Nom:"));
+        JTextField nomField = new JTextField();
+        formPanel.add(nomField);
+
+        formPanel.add(new JLabel("Marque:"));
+        JTextField marqueField = new JTextField();
+        formPanel.add(marqueField);
+
+        formPanel.add(new JLabel("Prix Unitaire:"));
+        JTextField prixUnitaireField = new JTextField();
+        formPanel.add(prixUnitaireField);
+
+        formPanel.add(new JLabel("Prix Vrac:"));
+        JTextField prixVracField = new JTextField();
+        formPanel.add(prixVracField);
+
+        formPanel.add(new JLabel("Seuil Vrac:"));
+        JTextField seuilVracField = new JTextField();
+        formPanel.add(seuilVracField);
+
+        formPanel.add(new JLabel("Stock:"));
+        JTextField stockField = new JTextField();
+        formPanel.add(stockField);
+
+        formPanel.add(new JLabel("Disponible (true/false):"));
+        JTextField disponibleField = new JTextField();
+        formPanel.add(disponibleField);
+
+        formPanel.add(new JLabel("Lien Image:"));
+        JTextField imageUrlField = new JTextField();
+        formPanel.add(imageUrlField);
+
+        // Show the form in a dialog
+        int result = JOptionPane.showConfirmDialog(null, formPanel, "Ajouter un Article", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+        if (result == JOptionPane.OK_OPTION) {
+            try {
+                // Retrieve the input values
+                String nom = nomField.getText().trim();
+                String marque = marqueField.getText().trim();
+                double prixUnitaire = Double.parseDouble(prixUnitaireField.getText().trim());
+                double prixVrac = Double.parseDouble(prixVracField.getText().trim());
+                int seuilVrac = Integer.parseInt(seuilVracField.getText().trim());
+                int stock = Integer.parseInt(stockField.getText().trim());
+                boolean disponible = Boolean.parseBoolean(disponibleField.getText().trim());
+                String imageUrl = imageUrlField.getText().trim();
+
+                // Create a new Article object
+                Article newArticle = new Article(0, nom, marque, prixUnitaire, prixVrac, seuilVrac, stock, disponible, imageUrl);
+
+                // Add the article to the database
+                articleDAO.ajouter(newArticle);
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Veuillez entrer des valeurs valides.");
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "Erreur technique : " + ex.getMessage());
+            }
+        }
+    }
     private void afficherPageAdmin() {
         if (utilisateurConnecte != null && utilisateurConnecte.getIsAdmin()) {
             // Load articles into the table
@@ -516,6 +583,7 @@ public class ShoppingController {
                         article.getSeuilVrac(),
                         article.getStock(),
                         article.getIsAvailable(),
+                        article.getImageUrl(),
                         "Modifier"
                 });
             }
