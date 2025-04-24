@@ -503,12 +503,13 @@ public class ShoppingView {
             commandesPanel.add(cardPanel);
         }
 
+        // Créer un JScrollPane pour rendre le panneau défilable
         JScrollPane commandesScrollPane = new JScrollPane(commandesPanel);
-        commandesScrollPane.setBorder(null);
-        commandesPanel.setPreferredSize(new Dimension(600, 300));
+        commandesScrollPane.setBorder(null);  // Supprime la bordure du JScrollPane
+        commandesScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);  // Activer le défilement vertical
+        commandesScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);  // Désactiver le défilement horizontal
 
-
-
+        // Panel de déconnexion
         JPanel logoutPanel = new JPanel();
         logoutPanel.setBackground(new Color(245, 245, 245));
         logoutPanel.add(logoutButton);
@@ -523,6 +524,7 @@ public class ShoppingView {
 
         return panel;
     }
+
 
     public JPanel createAdminPagePanel() {
         JPanel panel = new JPanel(new BorderLayout());
