@@ -129,6 +129,7 @@ public class ShoppingView {
         adminButton.setFont(new Font("Arial", Font.BOLD, 14));
         adminButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
         adminButton.setVisible(false);
+
         // Chargement et redimensionnement de l'image
         ImageIcon originalicon = new ImageIcon("Project files/src/image/logopanier1.png");
         if (originalicon.getImageLoadStatus() != MediaTracker.COMPLETE) {
@@ -150,6 +151,28 @@ public class ShoppingView {
         panierButton.setContentAreaFilled(false);
         panierButton.setFocusPainted(false);
         panierButton.setOpaque(false);
+
+        // Chargement et redimensionnement de l'image
+        ImageIcon Originalicon = new ImageIcon("Project files/src/image/boutonadmin1.png");
+        if (Originalicon.getImageLoadStatus() != MediaTracker.COMPLETE) {
+            System.out.println("❌ Erreur : l'image n'a pas pu être chargée !");
+        } else {
+            System.out.println("✅ Image chargée avec succès !");
+        }
+
+        // Redimensionner l'image (ajuste à ta convenance)
+        int neWidth = 120;
+        int neHeight = 50;
+        Image Resizedimage = Originalicon.getImage().getScaledInstance(neWidth, neHeight, Image.SCALE_SMOOTH);
+        ImageIcon Resizedicon = new ImageIcon(Resizedimage);
+
+        // Bouton Accueil avec l'image
+        adminButton = new JButton(Resizedicon);
+        adminButton.setToolTipText("Admin"); // Optionnel
+        adminButton.setBorderPainted(false);
+        adminButton.setContentAreaFilled(false);
+        adminButton.setFocusPainted(false);
+        adminButton.setOpaque(false);
 
         rightPanel.add(accountButton);
         rightPanel.add(panierButton);
