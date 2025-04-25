@@ -189,7 +189,7 @@ public class ShoppingView {
 
     private JPanel createHomePagePanel() {
         JPanel panel = new JPanel(new BorderLayout());
-        JLabel label = new JLabel("Bienvenue sur notre Pokéshop ! Code PROMO spécial bienvenue : WELCOME10", SwingConstants.CENTER);
+        JLabel label = new JLabel("Bienvenue sur notre Pokéshop !", SwingConstants.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 24));
         panel.add(label, BorderLayout.CENTER);
         return panel;
@@ -623,7 +623,7 @@ public class ShoppingView {
         // Navbar
         JPanel navbar = new JPanel(new FlowLayout(FlowLayout.LEFT));
         navbar.setBackground(new Color(66, 133, 244));
-        JLabel navbarLabel = new JLabel("Bienvenue sur notre boutique !");
+        JLabel navbarLabel = new JLabel("Bienvenue sur Pokéshop ! Code PROMO spécial d'ouverture : WELCOME10");
         navbarLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
         navbarLabel.setForeground(Color.WHITE);
         navbar.add(navbarLabel);
