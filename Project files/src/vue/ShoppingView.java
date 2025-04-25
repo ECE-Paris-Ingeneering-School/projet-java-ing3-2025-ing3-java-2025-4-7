@@ -189,7 +189,7 @@ public class ShoppingView {
 
     private JPanel createHomePagePanel() {
         JPanel panel = new JPanel(new BorderLayout());
-        JLabel label = new JLabel("Bienvenue sur notre site de Shopping", SwingConstants.CENTER);
+        JLabel label = new JLabel("Bienvenue sur notre Pokéshop ! Code PROMO spécial bienvenue : WELCOME10", SwingConstants.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 24));
         panel.add(label, BorderLayout.CENTER);
         return panel;
