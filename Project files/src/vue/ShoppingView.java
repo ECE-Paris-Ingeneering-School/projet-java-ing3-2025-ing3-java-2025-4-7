@@ -537,7 +537,7 @@ public class ShoppingView {
             viewDetailsButton.setBackground(new Color(0, 123, 255));
             viewDetailsButton.setForeground(Color.WHITE);
             viewDetailsButton.setFocusPainted(false);
-            viewDetailsButton.setPreferredSize(new Dimension(120, 40));
+            viewDetailsButton.setPreferredSize(new Dimension(320, 40));
 
             JPanel bottomRightPanel = new JPanel(new BorderLayout());
             bottomRightPanel.setBackground(Color.WHITE);
