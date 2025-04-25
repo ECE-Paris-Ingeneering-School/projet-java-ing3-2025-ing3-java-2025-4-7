@@ -48,7 +48,7 @@ public class Commande {
 
     public void setListeQuantite_Article(String listeQuantite_Article) {this.listeQuantite_Article = listeQuantite_Article; }
 
-    public void setAdresseLivraison(String adresseLivraison) { this.adresseLivraison = adresseLivraison; };
+    public void setAdresse(String adresseLivraison) { this.adresseLivraison = adresseLivraison; };
 
     public void setStatut(String statut) { this.statut = statut; }
 }

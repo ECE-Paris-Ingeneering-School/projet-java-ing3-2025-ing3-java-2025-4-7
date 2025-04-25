@@ -576,8 +576,8 @@ public class ShoppingController {
                 return;
             }
 
-            // Show credit card input form
-            JPanel creditCardPanel = new JPanel(new GridLayout(5, 2, 10, 10));
+            // Show payment + address input form
+            JPanel creditCardPanel = new JPanel(new GridLayout(9, 2, 10, 10));
             creditCardPanel.add(new JLabel("Nom sur la carte:"));
             JTextField cardNameField = new JTextField();
             creditCardPanel.add(cardNameField);
@@ -598,6 +598,23 @@ public class ShoppingController {
             JTextField promoCodeField = new JTextField();
             creditCardPanel.add(promoCodeField);
 
+            // Adresse
+            creditCardPanel.add(new JLabel("Adresse:"));
+            JTextField adresseField = new JTextField();
+            creditCardPanel.add(adresseField);
+
+            creditCardPanel.add(new JLabel("Ville:"));
+            JTextField villeField = new JTextField();
+            creditCardPanel.add(villeField);
+
+            creditCardPanel.add(new JLabel("Code postal:"));
+            JTextField codePostalField = new JTextField();
+            creditCardPanel.add(codePostalField);
+
+            creditCardPanel.add(new JLabel("Pays:"));
+            JTextField paysField = new JTextField();
+            creditCardPanel.add(paysField);
+
             int result = JOptionPane.showConfirmDialog(null, creditCardPanel, "Informations de paiement", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
             if (result != JOptionPane.OK_OPTION) {
@@ -605,19 +622,31 @@ public class ShoppingController {
                 return;
             }
 
-            // Validate credit card inputs (basic validation)
+            // Validate credit card inputs
             if (cardNameField.getText().trim().isEmpty() || cardNumberField.getText().trim().isEmpty() ||
                     expiryDateField.getText().trim().isEmpty() || cvvField.getText().trim().isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Veuillez remplir toutes les informations de paiement.");
                 return;
             }
 
+            // Validate address fields
+            if (adresseField.getText().trim().isEmpty() || villeField.getText().trim().isEmpty() ||
+                    codePostalField.getText().trim().isEmpty() || paysField.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Veuillez remplir toutes les informations d'adresse.");
+                return;
+            }
+
+            // Récupérer et concaténer l’adresse complète
+            String adresseComplete = adresseField.getText().trim() + ", " +
+                    villeField.getText().trim() + ", " +
+                    codePostalField.getText().trim() + ", " +
+                    paysField.getText().trim();
+
             // Appliquer la réduction si code promo valide
             String codePromo = promoCodeField.getText().trim().toUpperCase();
             double reduction = 0.0;
             if (!codePromo.isEmpty()) {
                 Promo promo = promoDAO.chercherParCode(codePromo);
-
                 if (promo != null && promo.isActive()) {
                     reduction = promo.getReduction(); // valeur entre 0.0 et 1.0
                 } else {
@@ -625,8 +654,6 @@ public class ShoppingController {
                 }
             }
 
-
-            // Appliquer la réduction sur le prix si besoin
             double prixOriginal = commandeEnCours.getPrix(); // doit être correctement calculé avant
             double prixFinal = prixOriginal;
 
@@ -640,22 +667,23 @@ public class ShoppingController {
             System.out.println("Réduction : " + (reduction * 100) + "%");
             System.out.println("Prix final après réduction : " + prixFinal + " €");
 
-            // Mettre à jour le prix dans la commande
+            // Mettre à jour la commande actuelle
             commandeEnCours.setPrix(prixFinal);
             commandeEnCours.setStatut("commande passée");
+            commandeEnCours.setAdresse(adresseComplete);
             commandeDAO.modifier(commandeEnCours);
 
-            // Create a new "en cours" order
+            // Créer une nouvelle commande vide "en cours"
             LocalDate today = LocalDate.now();
             Commande nouvelleCommande = new Commande(
                     0, // ID auto-généré
                     utilisateurConnecte.getId(),
                     today.toString(),
                     "en cours",
-                    0.0, // prix initial
-                    "",  // pas encore d'articles
-                    "",  // pas encore de quantités
-                    utilisateurConnecte.getAdresse()
+                    0.0,
+                    "",
+                    "",
+                    utilisateurConnecte.getAdresse() // adresse par défaut pour la nouvelle commande vide
             );
             commandeDAO.ajouter(nouvelleCommande);
 
@@ -666,6 +694,7 @@ public class ShoppingController {
             JOptionPane.showMessageDialog(null, "Erreur technique : " + ex.getMessage());
         }
     }
+
 
 
     private void afficherRatingForm() {
