@@ -192,35 +192,29 @@ public class ShoppingController {
 
 
     private void filterArticles(String searchText) {
-        // Récupérer tous les articles depuis la base de données
-        ArticleDAO articleDAO = new ArticleDAOImpl(daoFactory);
-        List<Article> articles = articleDAO.getAll();
+        List<Article> articles = articleDAO.rechercherArticles(searchText);  // 🆕 appel DAO
 
-        // Création d'une liste pour stocker les articles filtrés
-        List<Map<String, String>> articlesFiltrés = new ArrayList<>();
-
-        // Filtrage des articles en fonction du nom, de la marque, de la disponibilité et du stock
+        List<Map<String, String>> articlesFormates = new ArrayList<>();
         for (Article article : articles) {
-            // Vérifier si le texte de recherche correspond soit au nom ou à la marque de l'article
-            boolean matchesName = article.getNom().toLowerCase().contains(searchText.toLowerCase());
-            boolean matchesBrand = article.getMarque().toLowerCase().contains(searchText.toLowerCase());
-            boolean isAvailable = article.getIsAvailable() && article.getStock() > 0;
-
-            if ((matchesName || matchesBrand) && isAvailable) {
-                Map<String, String> data = new HashMap<>();
-                data.put("nom", article.getNom());
-                data.put("marque", article.getMarque());
-                data.put("prix", String.format("%.2f €", article.getPrixUnitaire()));
-                data.put("stock", String.valueOf(article.getStock()));
-
-                articlesFiltrés.add(data);
-            }
+            Map<String, String> data = new HashMap<>();
+            data.put("id", String.valueOf(article.getId()));
+            data.put("nom", article.getNom());
+            data.put("marque", article.getMarque());
+            data.put("prix", String.format("%.2f €", article.getPrixUnitaire()));
+            data.put("prixVrac", String.format("%.2f €", article.getPrixVrac()));
+            data.put("seuilVrac", String.valueOf(article.getSeuilVrac()));
+            data.put("stock", String.valueOf(article.getStock()));
+            data.put("articleImageURL", article.getImageUrl());
+            articlesFormates.add(data);
         }
 
-        // Mettre à jour la vue avec les articles filtrés
-        view.updateHomePageView(articlesFiltrés, e -> handleCommander(e.getActionCommand()));
-        afficherAccueil();
+        if (articlesFormates.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Aucun article trouvé pour : " + searchText);
+        }
+
+        view.updateHomePageView(articlesFormates, e -> handleCommander(e.getActionCommand()));
     }
+
 
 
     private void afficherAccueil() {

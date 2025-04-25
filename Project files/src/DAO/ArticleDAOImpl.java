@@ -193,6 +193,40 @@ public class ArticleDAOImpl implements ArticleDAO {
         System.out.println("Debug: Fin de la méthode modifier");
         return article;
     }
+    public ArrayList<Article> rechercherArticles(String motCle) {
+        ArrayList<Article> articles = new ArrayList<>();
+        String sql = "SELECT * FROM articles WHERE articleNom LIKE ? OR articleMarque LIKE ?";
+
+        try (Connection connexion = daoFactory.getConnection();
+             PreparedStatement ps = connexion.prepareStatement(sql)) {
+
+            ps.setString(1, "%" + motCle + "%");
+            ps.setString(2, "%" + motCle + "%");
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int articleID = rs.getInt("articleID");
+                String articleNom = rs.getString("articleNom");
+                String articleMarque = rs.getString("articleMarque");
+                double prixUnitaire = rs.getDouble("articlePrix_unitaire");
+                double prixVrac = rs.getDouble("articlePrix_vrac");
+                int seuilVrac = rs.getInt("articleSeuil_vrac");
+                int stock = rs.getInt("articleStock");
+                boolean isAvailable = rs.getBoolean("articleIsAvailable");
+                String imageURL = rs.getString("articleImageURL");
+
+                if (isAvailable && stock > 0) {
+                    articles.add(new Article(articleID, articleNom, articleMarque, prixUnitaire, prixVrac, seuilVrac, stock, isAvailable, imageURL));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Erreur lors de la recherche d'articles.");
+        }
+
+        return articles;
+    }
+
 
     @Override
     /**
