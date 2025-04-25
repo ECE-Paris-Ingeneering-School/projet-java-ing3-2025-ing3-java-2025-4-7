@@ -94,6 +94,14 @@ CREATE TABLE IF NOT EXISTS `promo` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 --
 
+
+--
+-- Déchargement des données de la table `promo`
+--
+INSERT INTO `promo` (`promoID`, `code`, `reduction`, `actif`) VALUES
+                                                                                                                (1, 'WELCOME10', 0.10, true),
+                                                                                                                (2, 'neuil', 0.5, true);
+
 --
 -- Déchargement des données de la table `Utilisateur`
 --

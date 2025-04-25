@@ -579,7 +579,7 @@ public class ShoppingController {
             }
 
             // Show credit card input form
-            JPanel creditCardPanel = new JPanel(new GridLayout(4, 2, 10, 10));
+            JPanel creditCardPanel = new JPanel(new GridLayout(5, 2, 10, 10));
             creditCardPanel.add(new JLabel("Nom sur la carte:"));
             JTextField cardNameField = new JTextField();
             creditCardPanel.add(cardNameField);
@@ -596,6 +596,10 @@ public class ShoppingController {
             JTextField cvvField = new JTextField();
             creditCardPanel.add(cvvField);
 
+            creditCardPanel.add(new JLabel("Code promo (optionnel):"));
+            JTextField promoCodeField = new JTextField();
+            creditCardPanel.add(promoCodeField);
+
             int result = JOptionPane.showConfirmDialog(null, creditCardPanel, "Informations de paiement", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
             if (result != JOptionPane.OK_OPTION) {
@@ -610,31 +614,58 @@ public class ShoppingController {
                 return;
             }
 
-            // Update the status of the current order
+            // Appliquer la réduction si code promo valide
+            String codePromo = promoCodeField.getText().trim().toUpperCase();
+            double reduction = 0.0;
+            if (!codePromo.isEmpty()) {
+                //TODO: recuperer la reduction depuis la base de données, il faut creer le dao pour ça
+
+                //temporaire
+                reduction = 0.10; // 10% de réduction
+            }
+
+
+            // Appliquer la réduction sur le prix si besoin
+            double prixOriginal = commandeEnCours.getPrix(); // doit être correctement calculé avant
+            double prixFinal = prixOriginal;
+
+            if (reduction > 0.0) {
+                prixFinal = prixOriginal * (1 - reduction);
+                JOptionPane.showMessageDialog(null, "Code promo appliqué ! Nouveau total : " + String.format("%.2f €", prixFinal));
+            }
+
+            System.out.println("Prix original : " + prixOriginal + " €");
+            System.out.println("Code promo saisi : " + codePromo);
+            System.out.println("Réduction : " + (reduction * 100) + "%");
+            System.out.println("Prix final après réduction : " + prixFinal + " €");
+
+            // Mettre à jour le prix dans la commande
+            commandeEnCours.setPrix(prixFinal);
             commandeEnCours.setStatut("commande passée");
             commandeDAO.modifier(commandeEnCours);
 
             // Create a new "en cours" order
             LocalDate today = LocalDate.now();
             Commande nouvelleCommande = new Commande(
-                    0, // ID will be auto-generated
+                    0, // ID auto-généré
                     utilisateurConnecte.getId(),
                     today.toString(),
                     "en cours",
-                    0.0, // Initial price is 0
-                    "",  // No articles yet
-                    "",  // No quantities yet
+                    0.0, // prix initial
+                    "",  // pas encore d'articles
+                    "",  // pas encore de quantités
                     utilisateurConnecte.getAdresse()
             );
             commandeDAO.ajouter(nouvelleCommande);
 
             JOptionPane.showMessageDialog(null, "Votre commande a été passée avec succès !");
-            afficherRatingForm(); // Show the rating form after the order is placed
+            afficherRatingForm();
             afficherAccueil();
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, "Erreur technique : " + ex.getMessage());
         }
     }
+
 
     private void afficherRatingForm() {
         JPanel ratingPanel = new JPanel(new GridLayout(3, 1, 10, 10));
