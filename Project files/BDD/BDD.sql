@@ -81,6 +81,18 @@ CREATE TABLE IF NOT EXISTS `commandes` (
                                                  PRIMARY KEY (`commandeID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Structure de la table `promo`
+
+DROP TABLE IF EXISTS `promo`;
+CREATE TABLE IF NOT EXISTS `promo` (
+                                         `promoID` int NOT NULL AUTO_INCREMENT,
+                                         `code` varchar(50) NOT NULL,
+                                         `reduction` FLOAT NOT NULL,
+                                         `actif` BOOLEAN NOT NULL,
+                                         PRIMARY KEY (`promoID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+--
 
 --
 -- Déchargement des données de la table `Utilisateur`
