@@ -139,7 +139,7 @@ public class ShoppingView {
         }
 
         // Redimensionner l'image (ajuste à ta convenance)
-        int nWidth = 120;
+        int nWidth = 50;
         int nHeight = 50;
         Image resizedimage = originalicon.getImage().getScaledInstance(nWidth, nHeight, Image.SCALE_SMOOTH);
         ImageIcon resizedicon = new ImageIcon(resizedimage);
@@ -161,7 +161,7 @@ public class ShoppingView {
         }
 
         // Redimensionner l'image (ajuste à ta convenance)
-        int neWidth = 120;
+        int neWidth = 50;
         int neHeight = 50;
         Image Resizedimage = Originalicon.getImage().getScaledInstance(neWidth, neHeight, Image.SCALE_SMOOTH);
         ImageIcon Resizedicon = new ImageIcon(Resizedimage);
