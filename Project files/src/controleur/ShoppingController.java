@@ -192,7 +192,7 @@ public class ShoppingController {
 
 
     private void filterArticles(String searchText) {
-        List<Article> articles = articleDAO.rechercherArticles(searchText);  // 🆕 appel DAO
+        List<Article> articles = articleDAO.rechercherArticles(searchText);
 
         List<Map<String, String>> articlesFormates = new ArrayList<>();
         for (Article article : articles) {
