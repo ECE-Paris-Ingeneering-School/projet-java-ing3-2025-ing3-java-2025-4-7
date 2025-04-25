@@ -125,10 +125,10 @@ public class PromoDAOImpl implements PromoDAO {
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     promo = new Promo();
-                    promo.setPromoID(resultSet.getInt("id"));
+                    promo.setPromoID(resultSet.getInt("promoID"));
                     promo.setCode(resultSet.getString("code"));
                     promo.setReduction(resultSet.getFloat("reduction"));
-                    promo.setActive(resultSet.getBoolean("active"));
+                    promo.setActive(resultSet.getBoolean("actif"));
                 }
             }
         } catch (SQLException e) {

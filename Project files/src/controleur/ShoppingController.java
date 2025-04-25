@@ -21,6 +21,7 @@ public class ShoppingController {
     private CommandeDAOImpl commandeDAO;
     private ArticleDAOImpl articleDAO;
     private DaoFactory daoFactory;
+    private PromoDAOImpl promoDAO;
 
     public ShoppingController(ShoppingView view) {
         this.view = view;
@@ -29,6 +30,7 @@ public class ShoppingController {
         this.utilisateurDAO = new UtilisateurDAOImpl(this.daoFactory);
         this.commandeDAO = new CommandeDAOImpl(this.daoFactory);
         this.articleDAO = new ArticleDAOImpl(this.daoFactory);
+        this.promoDAO = new PromoDAOImpl(this.daoFactory);
 
         //Test des fonctions de commandedao
         //print toutes les info:
@@ -614,10 +616,13 @@ public class ShoppingController {
             String codePromo = promoCodeField.getText().trim().toUpperCase();
             double reduction = 0.0;
             if (!codePromo.isEmpty()) {
-                //TODO: recuperer la reduction depuis la base de données, il faut creer le dao pour ça
+                Promo promo = promoDAO.chercherParCode(codePromo);
 
-                //temporaire
-                reduction = 0.10; // 10% de réduction
+                if (promo != null && promo.isActive()) {
+                    reduction = promo.getReduction(); // valeur entre 0.0 et 1.0
+                } else {
+                    JOptionPane.showMessageDialog(null, "Code promo invalide ou inactif.");
+                }
             }
 
 
