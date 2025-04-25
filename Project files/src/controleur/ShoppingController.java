@@ -109,7 +109,7 @@ public class ShoppingController {
 
         view.getAjouterButton().addActionListener(e -> handleAjouterArticle());
 
-
+        view.getSupprimerButton().addActionListener(e -> handleSupprimerArticle());
     }
 
     private void handleLogin() {
@@ -827,5 +827,29 @@ public class ShoppingController {
             return 0; // Default value for integers
         }
         return Integer.parseInt(value.toString());
+    }
+
+    private void handleSupprimerArticle() {
+        JTable table = view.getAdminTable();
+        int selectedRow = table.getSelectedRow();
+
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(null, "Veuillez sélectionner un article à supprimer.");
+            return;
+        }
+
+        int articleId = parseInteger(table.getValueAt(selectedRow, 0));
+        int confirmation = JOptionPane.showConfirmDialog(null, "Êtes-vous sûr de vouloir supprimer cet article ?", "Confirmation", JOptionPane.YES_NO_OPTION);
+
+        if (confirmation == JOptionPane.YES_OPTION) {
+            try {
+                Article articleASupprimier = articleDAO.chercher(articleId);
+                articleDAO.supprimer(articleASupprimier);
+                ((DefaultTableModel) table.getModel()).removeRow(selectedRow);
+                JOptionPane.showMessageDialog(null, "Article supprimé avec succès !");
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "Erreur lors de la suppression : " + ex.getMessage());
+            }
+        }
     }
 }

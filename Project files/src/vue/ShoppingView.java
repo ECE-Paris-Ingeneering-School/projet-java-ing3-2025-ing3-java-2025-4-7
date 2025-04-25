@@ -23,7 +23,7 @@ public class ShoppingView {
     private JPanel mainPanel;
     private CardLayout cardLayout;
     private JTable adminTable;
-    private JButton homeButton, accountButton, panierButton, loginButton, registerButton, searchButton, submitLoginButton, submitRegisterButton, logoutButton, commanderButton, ajouterButton, adminButton, saveButton, plusBtn,minusBtn;
+    private JButton homeButton, accountButton, panierButton, loginButton, registerButton, searchButton, submitLoginButton, submitRegisterButton, logoutButton, commanderButton, ajouterButton, adminButton, saveButton, plusBtn,minusBtn, supprimerButton;
     private JTextField searchField, emailField, registerEmailField, registerPrenomField, registerNomField;
     private JPasswordField passwordField, registerPasswordField, registerConfirmPasswordField;
 
@@ -599,13 +599,22 @@ public class ShoppingView {
         ajouterButton.setFocusPainted(false);
         ajouterButton.setPreferredSize(new Dimension(150, 40));
 
+        supprimerButton = new JButton("Supprimer un article");
+        supprimerButton.setFont(new Font("Arial", Font.BOLD, 16));
+        supprimerButton.setBackground(new Color(220, 53, 69));
+        supprimerButton.setForeground(Color.WHITE);
+        supprimerButton.setFocusPainted(false);
+        supprimerButton.setPreferredSize(new Dimension(200, 40));
+
         JPanel bottomPanel = new JPanel();
         bottomPanel.add(saveButton);
         bottomPanel.add(ajouterButton);
+        bottomPanel.add(supprimerButton);
         panel.add(bottomPanel, BorderLayout.SOUTH);
 
         return panel;
     }
+
 
 
 
@@ -1061,5 +1070,10 @@ public class ShoppingView {
 
     public JButton getPlusBtn(){return plusBtn;}
     public JButton getMinusBtn(){return minusBtn;}
+
+    // Getter for the supprimer button
+    public JButton getSupprimerButton() {
+        return supprimerButton;
+    }
 
 }
