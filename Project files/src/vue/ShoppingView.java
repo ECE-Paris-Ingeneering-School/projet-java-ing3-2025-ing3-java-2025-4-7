@@ -707,7 +707,7 @@ public class ShoppingView {
 
                 // Infos
                 // Infos
-                JLabel prixLabel = new JLabel("Prix : " + article.get("prix"));
+                JLabel prixLabel = new JLabel("Prix: " + article.get("prixUnitaire"));
                 prixLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
                 prixLabel.setForeground(new Color(34, 139, 34));
                 prixLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -784,6 +784,7 @@ public class ShoppingView {
     }
 
     public void updatePanierPageView(List<Map<String, String>> articles, ActionListener plusListener, ActionListener minusListener) {
+        double totalPrix = 0.0;
         panierPagePanel.removeAll(); // Clear the existing panel
 
         JPanel mainContainer = new JPanel();
@@ -796,6 +797,25 @@ public class ShoppingView {
             card.setPreferredSize(new Dimension(400, 300));
             card.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
             card.setBackground(Color.WHITE);
+            try {
+                String prixRaw = articleData.get("prixUnitaire");
+                String quantiteRaw = articleData.get("quantite");
+
+                if (prixRaw != null && quantiteRaw != null) {
+                    String prixStr = prixRaw.replace("€", "").replace(",", ".").replaceAll("[^\\d.]", "").trim();
+                    double prix = Double.parseDouble(prixStr);
+                    int quantite = Integer.parseInt(quantiteRaw.trim());
+                    totalPrix += prix * quantite;
+                } else {
+                    System.out.println("❌ Donnée manquante pour calcul du total : " + articleData);
+                }
+
+
+
+            } catch (Exception e) {
+                System.out.println("Erreur lors du calcul du total : " + e.getMessage());
+            }
+
 
             // Image Panel
             String imageURL = articleData.get("imageUrl");
@@ -895,6 +915,19 @@ public class ShoppingView {
         bottomPanel.setBackground(Color.WHITE);
         bottomPanel.add(commanderButton);
         panierPagePanel.add(bottomPanel, BorderLayout.SOUTH);
+        // Affichage du total
+        JLabel totalLabel = new JLabel("Total : " + String.format("%.2f €", totalPrix));
+        totalLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        totalLabel.setForeground(new Color(34, 139, 34));
+
+        JPanel totalPanel = new JPanel();
+        totalPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        totalPanel.add(totalLabel);
+
+// 👉 Ajoute le panel dans le container qui contient les articles
+        mainContainer.add(Box.createVerticalStrut(20));
+        mainContainer.add(totalPanel);
+
 
         panierPagePanel.revalidate();
         panierPagePanel.repaint();

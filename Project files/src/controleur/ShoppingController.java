@@ -201,6 +201,7 @@ public class ShoppingController {
             data.put("nom", article.getNom());
             data.put("marque", article.getMarque());
             data.put("prix", String.format("%.2f €", article.getPrixUnitaire()));
+            data.put("prixUnitaire", String.format("%.2f €", article.getPrixUnitaire()));
             data.put("prixVrac", String.format("%.2f €", article.getPrixVrac()));
             data.put("seuilVrac", String.valueOf(article.getSeuilVrac()));
             data.put("stock", String.valueOf(article.getStock()));
@@ -241,7 +242,8 @@ public class ShoppingController {
                 data.put("id",String.valueOf(article.getId()));  // ID de l'article
                 data.put("nom", article.getNom());  // Nom de l'article
                 data.put("marque", article.getMarque());  // Marque de l'article
-                data.put("prix", String.format("%.2f €", article.getPrixUnitaire()));  // Prix unitaire
+                data.put("prix", String.format("%.2f €", article.getPrixUnitaire()));// Prix unitaire
+                data.put("prixUnitaire", String.format("%.2f €", article.getPrixUnitaire()));
                 data.put("prixVrac", String.format("%.2f €", article.getPrixVrac()));  // Prix en vrac
                 data.put("seuilVrac", String.valueOf(article.getSeuilVrac()));  // Seuil de vrac
                 data.put("stock", String.valueOf(article.getStock()));  // Stock restant
