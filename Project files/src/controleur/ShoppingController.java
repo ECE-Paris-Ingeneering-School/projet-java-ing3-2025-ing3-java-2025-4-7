@@ -16,6 +16,12 @@ import java.time.LocalDate;
 import java.io.File;
 import java.io.PrintWriter;
 import java.time.LocalDate;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.File;
+import java.io.IOException;
+import javax.swing.*;
+import java.awt.*;
 
 public class ShoppingController {
     private ShoppingView view;
@@ -293,9 +299,44 @@ public class ShoppingController {
                     JButton clickedButton = (JButton) e.getSource();
                     String commandeId = clickedButton.getName();
                     System.out.println("details " + commandeId);
-                    // TODO : ouvrir page de facture etc
+
+                    // Lire le contenu du fichier de facture
+                    String facturePath = "Project files/src/factures/facture_" + commandeId + ".txt";
+                    File factureFile = new File(facturePath);
+
+                    if (factureFile.exists()) {
+                        try {
+                            StringBuilder factureContent = new StringBuilder();
+                            BufferedReader reader = new BufferedReader(new FileReader(factureFile));
+                            String line;
+                            while ((line = reader.readLine()) != null) {
+                                factureContent.append(line).append("\n");
+                            }
+                            reader.close();
+
+                            // Afficher le contenu dans une nouvelle petite fenêtre
+                            JTextArea textArea = new JTextArea(factureContent.toString());
+                            textArea.setEditable(false);
+                            textArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+                            JScrollPane scrollPane = new JScrollPane(textArea);
+
+                            JFrame detailsFrame = new JFrame("Détails de la Commande n°" + commandeId);
+                            detailsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                            detailsFrame.setSize(500, 600);
+                            detailsFrame.add(scrollPane);
+                            detailsFrame.setLocationRelativeTo(null); // Centre la fenêtre
+                            detailsFrame.setVisible(true);
+
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                            JOptionPane.showMessageDialog(null, "Erreur lors de la lecture de la facture.", "Erreur", JOptionPane.ERROR_MESSAGE);
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Facture non trouvée pour cette commande.", "Erreur", JOptionPane.ERROR_MESSAGE);
+                    }
                 });
             }
+
 
         } else {
             view.showPage("Login");
@@ -699,65 +740,63 @@ public class ShoppingController {
         }
     }
 
-    //TODO: gestion des prix vracs et reduction a mettre en plus, mettre nom +prenom
     private void generateFacture(Commande commande) {
         try {
             // Crée le répertoire des factures s'il n'existe pas
             String factureDirectory = "Project files/src/factures/";
             File dir = new File(factureDirectory);
             if (!dir.exists()) {
-                dir.mkdirs(); // Crée le dossier s'il n'existe pas
+                dir.mkdirs();
             }
 
-            // Crée le fichier de facture
             String factureFilePath = factureDirectory + "facture_" + commande.getId() + ".txt";
             File factureFile = new File(factureFilePath);
 
             try (PrintWriter writer = new PrintWriter(factureFile)) {
-                // Informations de la facture
+                // Informations de base
                 writer.println("----- FACTURE -----");
                 writer.println("Numéro de commande : " + commande.getId());
                 writer.println("Date : " + commande.getDate());
-                writer.println("Client : " + utilisateurConnecte.getNom());
+                writer.println("Client : " + utilisateurConnecte.getNom() + " " + utilisateurConnecte.getPrenom()); // Ajout prénom
                 writer.println("Adresse de livraison : " + commande.getAdresseLivraison());
                 writer.println("Statut : " + commande.getStatut());
 
                 writer.println();
                 writer.println("-- ARTICLES --");
 
-                // Récupérer les articles de la commande
                 List<Article> articles = commandeDAO.getArticlesParCommande(commande, articleDAO);
+                String[] idsStr = commande.getListeID_Article().split("-");
+                String[] quantitesStr = commande.getListeQuantite_Article().split("-");
 
-                // Récupérer les chaînes des IDs et des quantités
-                String listeIdsStr = commande.getListeID_Article(); // Ex: "0-1-2"
-                String listeQuantitesStr = commande.getListeQuantite_Article(); // Ex: "0-4-2"
-
-                // Diviser les chaînes en tableaux
-                String[] idsStr = listeIdsStr.split("-");  // ["0", "1", "2"]
-                String[] quantitesStr = listeQuantitesStr.split("-");  // ["0", "4", "2"]
-
-                // Vérification de correspondance entre les IDs et les quantités
                 if (idsStr.length != quantitesStr.length) {
                     System.out.println("Erreur : Le nombre d'IDs d'articles ne correspond pas au nombre de quantités.");
                     return;
                 }
 
-                // Traiter chaque article et sa quantité
+                double totalAvantReduction = 0.0;
+
                 for (int i = 0; i < idsStr.length; i++) {
                     try {
-                        // Convertir l'ID de l'article et la quantité en entier
                         int articleId = Integer.parseInt(idsStr[i].trim());
                         int quantite = Integer.parseInt(quantitesStr[i].trim());
 
-                        // Chercher l'article correspondant dans la liste des articles
                         Article article = articles.stream()
                                 .filter(a -> a.getId() == articleId)
                                 .findFirst()
                                 .orElse(null);
 
                         if (article != null) {
-                            double prixUnitaire = article.getPrixUnitaire();
-                            writer.println("x" + quantite + " " + article.getNom() + " " + String.format("%.2f €", prixUnitaire));
+                            double prixUnitaire;
+                            if (quantite >= article.getSeuilVrac()) {
+                                prixUnitaire = article.getPrixVrac();
+                                writer.println("x" + quantite + " " + article.getNom() + " (Prix vrac) : " + String.format("%.2f €", prixUnitaire));
+                            } else {
+                                prixUnitaire = article.getPrixUnitaire();
+                                writer.println("x" + quantite + " " + article.getNom() + " : " + String.format("%.2f €", prixUnitaire));
+                            }
+
+                            double sousTotal = prixUnitaire * quantite;
+                            totalAvantReduction += sousTotal;
                         } else {
                             System.out.println("Article non trouvé pour l'ID: " + articleId);
                         }
@@ -766,9 +805,17 @@ public class ShoppingController {
                     }
                 }
 
-                // Total de la facture
                 writer.println();
+
+                // Vérifier s'il y a une réduction
+                double reduction = totalAvantReduction - commande.getPrix(); // Le total stocké dans commande est après réduction
+
+                writer.println("Total avant réduction : " + String.format("%.2f €", totalAvantReduction));
+                if (reduction > 0.01) { // S'il y a une réduction significative
+                    writer.println("Réduction appliquée : -" + String.format("%.2f €", reduction));
+                }
                 writer.println("Total à payer : " + String.format("%.2f €", commande.getPrix()));
+
                 writer.println("--------------------");
                 writer.println("Merci pour votre achat !");
             }
@@ -779,6 +826,7 @@ public class ShoppingController {
             System.out.println("❌ Erreur lors de la génération de la facture : " + e.getMessage());
         }
     }
+
 
 
 
