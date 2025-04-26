@@ -16,7 +16,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 
-public class ShoppingView {
+public class ShoppingView extends JFrame {
     private JFrame frame;
     private JPanel mainPanel;
     private CardLayout cardLayout;
@@ -38,6 +38,14 @@ public class ShoppingView {
         frame = new JFrame("PokeShop App");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 600);
+
+        // 1. Ajout de l'icône (depuis le dossier 'resources')
+        try {
+            ImageIcon icon = new ImageIcon(getClass().getResource("../image/pokeball.png")); // Chemin relatif
+            frame.setIconImage(icon.getImage());
+        } catch (Exception e) {
+            System.err.println("Erreur de chargement de l'icône: " + e.getMessage());
+        }
 
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
