@@ -1,0 +1,8 @@
+----- FACTURE -----
+Numéro de commande : 12
+Date : 2025-04-26
+Client : Melly
+Adresse de livraison : 11111, 11, 1, 1
+Statut : commande passée
+
+-- ARTICLES --

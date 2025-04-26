@@ -64,6 +64,7 @@ public class Article {
         return imageURL;
     }
 
+
     public void setImageURL(String imageURL) {
         this.imageURL = imageURL;
     }
