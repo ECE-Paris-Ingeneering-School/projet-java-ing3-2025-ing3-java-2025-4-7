@@ -39,9 +39,9 @@ public class ShoppingView extends JFrame {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 600);
 
-        // 1. Ajout de l'icône (depuis le dossier 'resources')
+        // Ajout de l'icône
         try {
-            ImageIcon icon = new ImageIcon(getClass().getResource("../image/pokeball.png")); // Chemin relatif
+            ImageIcon icon = new ImageIcon("../image/pokeball.png");
             frame.setIconImage(icon.getImage());
         } catch (Exception e) {
             System.err.println("Erreur de chargement de l'icône: " + e.getMessage());
@@ -71,7 +71,6 @@ public class ShoppingView extends JFrame {
         }
 
 
-
         mainPanel.add(homePagePanel, "HomePage");
         mainPanel.add(accountPagePanel, "Account");
         mainPanel.add(panierPagePanel, "Panier");
@@ -91,7 +90,7 @@ public class ShoppingView extends JFrame {
 
     private JPanel createHeaderPanel() {
         JPanel header = new JPanel(new BorderLayout());
-        header.setBackground(new Color(50, 50, 160));  // Change la couleur de fond en bleu pour un style plus moderne
+        header.setBackground(new Color(38, 74, 193));  // Change la couleur de fond en bleu pour un style plus moderne
 
         // Panel à gauche (logo)
         JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -100,9 +99,9 @@ public class ShoppingView extends JFrame {
         // Chargement et redimensionnement de l'image (logo)
         ImageIcon originalIcon = new ImageIcon("Project files/src/image/logoAPP.png");
         if (originalIcon.getImageLoadStatus() != MediaTracker.COMPLETE) {
-            System.out.println("❌ Erreur : l'image n'a pas pu être chargée !");
+            System.out.println("Erreur : l'image n'a pas pu être chargée !");
         } else {
-            System.out.println("✅ Image chargée avec succès !");
+            System.out.println("Image chargée avec succès !");
         }
 
         // Redimensionner l'image
@@ -161,15 +160,6 @@ public class ShoppingView extends JFrame {
         accountButton.setContentAreaFilled(false);
         accountButton.setFocusPainted(false);
         accountButton.setOpaque(false);
-
-
-        /*accountButton = new JButton("Mon compte");
-        accountButton.setFont(new Font("Arial", Font.BOLD, 14));
-        accountButton.setForeground(Color.WHITE);
-        accountButton.setFocusPainted(false);
-        accountButton.setBackground(new Color(23, 162, 184)); // Bleu clair
-        accountButton.setOpaque(true);
-        accountButton.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));*/
 
         // Bouton Panier
         ImageIcon panierIcon = new ImageIcon("Project files/src/image/panier/panier.png");
@@ -287,7 +277,7 @@ public class ShoppingView extends JFrame {
 
         commanderButton = new JButton("Commander");
         commanderButton.setFont(new Font("Arial", Font.BOLD, 16));
-        commanderButton.setBackground(new Color(70, 130, 180));
+        commanderButton.setBackground(new Color(38, 74, 193));
         commanderButton.setForeground(Color.WHITE);
         commanderButton.setFocusPainted(false);
         commanderButton.setPreferredSize(new Dimension(150, 40));
@@ -856,32 +846,31 @@ public class ShoppingView extends JFrame {
             card.setPreferredSize(new Dimension(400, 300));
             card.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
             card.setBackground(Color.WHITE);
+
+            // Panel image
+            JPanel imageContainer = new JPanel(new BorderLayout());
+            imageContainer.setBackground(Color.WHITE);
+
+            // Panel info
+            JPanel infoContainer = new JPanel();
+            infoContainer.setBackground(Color.WHITE);
+
+            // Calcul du prix
             try {
                 String prixRaw = articleData.get("prixUnitaire");
                 String quantiteRaw = articleData.get("quantite");
-
                 if (prixRaw != null && quantiteRaw != null) {
                     String prixStr = prixRaw.replace("€", "").replace(",", ".").replaceAll("[^\\d.]", "").trim();
                     double prix = Double.parseDouble(prixStr);
                     int quantite = Integer.parseInt(quantiteRaw.trim());
                     totalPrix += prix * quantite;
-                } else {
-                    System.out.println("❌ Donnée manquante pour calcul du total : " + articleData);
                 }
-
-
-
             } catch (Exception e) {
-                System.out.println("Erreur lors du calcul du total : " + e.getMessage());
+                System.out.println("Erreur calcul du total : " + e.getMessage());
             }
 
-
-            // Image Panel
+            // Gestion de l'image
             String imageURL = articleData.get("imageUrl");
-            JPanel imagePanel = new JPanel();
-            imagePanel.setPreferredSize(new Dimension(180, 240));
-            imagePanel.setBackground(Color.WHITE);
-
             if (imageURL != null && !imageURL.isEmpty()) {
                 try {
                     URL url = new URL(imageURL);
@@ -889,28 +878,28 @@ public class ShoppingView extends JFrame {
                     if (icon.getImageLoadStatus() == MediaTracker.COMPLETE) {
                         Image scaled = icon.getImage().getScaledInstance(180, 240, Image.SCALE_SMOOTH);
                         JLabel imageLabel = new JLabel(new ImageIcon(scaled));
-                        imagePanel.add(imageLabel);
+
+                        imageContainer.add(imageLabel, BorderLayout.CENTER);
                     }
                 } catch (Exception e) {
                     System.out.println("Error loading image: " + e.getMessage());
                 }
             }
-            card.add(imagePanel, BorderLayout.WEST);
+
 
             // Content Panel
-            JPanel contentPanel = new JPanel();
-            contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
-            contentPanel.setBackground(Color.WHITE);
-            contentPanel.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
+            infoContainer.setLayout(new BoxLayout(infoContainer, BoxLayout.Y_AXIS));
+            infoContainer.setBackground(Color.WHITE);
+            infoContainer.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
 
             JLabel nomLabel = new JLabel(articleData.get("nom"));
-            nomLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+            nomLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
             nomLabel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
 
             JPanel boutonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
             boutonsPanel.setBackground(Color.WHITE);
 
-
+            // Bouton pour ajouter des articles
             ImageIcon plusIcon = new ImageIcon("Project files/src/image/panier/panierAjouter.png");
             Image resizedPlusImage = plusIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
             ImageIcon resizedPlusIcon = new ImageIcon(resizedPlusImage);
@@ -921,6 +910,7 @@ public class ShoppingView extends JFrame {
             plusBtn.setContentAreaFilled(false);
             plusBtn.setFocusPainted(false);
 
+            // Bouton pou retirer des articles
             ImageIcon minIcon = new ImageIcon("Project files/src/image/panier/panierSupprimer.png");
             Image resizedMinImage = minIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
             ImageIcon resizedMinIcon = new ImageIcon(resizedMinImage);
@@ -931,11 +921,11 @@ public class ShoppingView extends JFrame {
             minusBtn.setContentAreaFilled(false);
             minusBtn.setFocusPainted(false);
 
-
+            // Dimensions des boutons + et -
             plusBtn.setPreferredSize(new Dimension(60, 60));
             minusBtn.setPreferredSize(new Dimension(60, 60));
 
-            // Quantity and Price Logic
+            // Logique des quantités et des prix
             final int initialQuantity = Integer.parseInt(articleData.get("quantite"));
             final double priceUnit = Double.parseDouble(articleData.get("prixUnitaire").replace(" €", "").replace(",", "."));
             final double priceVrac = Double.parseDouble(articleData.get("prixVrac").replace(" €", "").replace(",", "."));
@@ -957,7 +947,7 @@ public class ShoppingView extends JFrame {
 
             final JLabel prixTotalLabel = new JLabel("Prix total: " + String.format("%.2f €", prixAffiche * initialQuantity));
             prixTotalLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
-            prixTotalLabel.setForeground(new Color(34, 139, 34));
+            prixTotalLabel.setForeground(new Color(48, 80, 207));
 
             // Set Action Commands and Listeners
             String articleId = articleData.get("id");
@@ -970,15 +960,23 @@ public class ShoppingView extends JFrame {
             boutonsPanel.add(minusBtn);
             boutonsPanel.add(plusBtn);
 
-            contentPanel.add(nomLabel);
-            contentPanel.add(boutonsPanel);
-            contentPanel.add(quantiteLabel);
-            contentPanel.add(prixUnitaireLabel);
-            contentPanel.add(prixVracLabel);
-            contentPanel.add(prixSeuilLabel);
-            contentPanel.add(prixTotalLabel);
+            infoContainer.add(nomLabel);
+            infoContainer.add(boutonsPanel);
+            infoContainer.add(quantiteLabel);
+            infoContainer.add(prixUnitaireLabel);
+            infoContainer.add(prixVracLabel);
+            infoContainer.add(prixSeuilLabel);
+            infoContainer.add(prixTotalLabel);
 
-            card.add(contentPanel, BorderLayout.CENTER);
+            // Configuration du JSplitPane
+            JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, imageContainer, infoContainer);
+            splitPane.setResizeWeight(0.5);
+            splitPane.setDividerSize(5);
+            splitPane.setContinuousLayout(true);
+            splitPane.setEnabled(false);
+            splitPane.setBackground(Color.WHITE);
+
+            card.add(splitPane, BorderLayout.CENTER);
             mainContainer.add(card);
         }
 
@@ -989,24 +987,30 @@ public class ShoppingView extends JFrame {
 
         panierPagePanel.add(scrollPane, BorderLayout.CENTER);
 
-        // Add "Commander" button
-        JPanel bottomPanel = new JPanel();
-        bottomPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
-        bottomPanel.setBackground(Color.WHITE);
-        bottomPanel.add(commanderButton);
-        panierPagePanel.add(bottomPanel, BorderLayout.SOUTH);
-        // Affichage du total
+        // Panel du bas de page avec le boutton commander et le total de la commande
         JLabel totalLabel = new JLabel("Total : " + String.format("%.2f €", totalPrix));
         totalLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        totalLabel.setForeground(new Color(34, 139, 34));
+        totalLabel.setForeground(new Color(38, 74, 193));
+        totalLabel.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
 
         JPanel totalPanel = new JPanel();
-        totalPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-        totalPanel.add(totalLabel);
+        totalPanel.setBackground(Color.WHITE);
+        totalPanel.add(totalLabel, BorderLayout.EAST);
 
-// 👉 Ajoute le panel dans le container qui contient les articles
+        JSplitPane bottomPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, totalPanel, commanderButton);
+        bottomPanel.setResizeWeight(0.8);
+        bottomPanel.setDividerSize(5);
+        bottomPanel.setContinuousLayout(true);
+        bottomPanel.setEnabled(false);
+        bottomPanel.setBackground(Color.WHITE);
+
+
+
+
+        panierPagePanel.add(bottomPanel, BorderLayout.SOUTH);
+
+        // Ajoute le panel dans le container qui contient les articles
         mainContainer.add(Box.createVerticalStrut(20));
-        mainContainer.add(totalPanel);
 
 
         panierPagePanel.revalidate();
@@ -1035,108 +1039,55 @@ public class ShoppingView extends JFrame {
 
 
 
-    public JTextField getEmailField() {
-        return emailField;
-    }
+    public JTextField getEmailField() { return emailField; }
 
-    public JPasswordField getPasswordField() {
-        return passwordField;
-    }
+    public JPasswordField getPasswordField() { return passwordField; }
 
-    public JLabel getRegisterErrorMessageLabel() {
-        return registerErrorMessageLabel;
-    }
+    public JLabel getRegisterErrorMessageLabel() { return registerErrorMessageLabel; }
 
-    public void showPage(String name) {
-        cardLayout.show(mainPanel, name);
-    }
+    public void showPage(String name) { cardLayout.show(mainPanel, name); }
 
-    public void setVisible(boolean visible) {
-        frame.setVisible(visible);
-    }
+    public void setVisible(boolean visible) { frame.setVisible(visible); }
 
-    public JButton getHomeButton() {
-        return homeButton;
-    }
+    public JButton getHomeButton() { return homeButton; }
 
-    public JButton getAccountButton() {
-        return accountButton;
-    }
+    public JButton getAccountButton() { return accountButton; }
 
-    public JButton getPanierButton() {
-        return panierButton;
-    }
+    public JButton getPanierButton() { return panierButton; }
 
-    public JButton getLoginButton() {
-        return loginButton;
-    }
-    // Getter pour prenomField
-    public JTextField getRegisterPrenomField() {
-        return registerPrenomField;
-    }
+    public JButton getLoginButton() { return loginButton; }
 
-    // Getter pour nomField
-    public JTextField getRegisterNomField() {
-        return registerNomField;
-    }
+    public JTextField getRegisterPrenomField() { return registerPrenomField; }
 
-    // Getter pour emailField
-    public JTextField getRegisterEmailField() {
-        return registerEmailField;
-    }
+    public JTextField getRegisterNomField() { return registerNomField; }
 
-    // Getter pour passwordField
-    public JPasswordField getRegisterPasswordField() {
-        return registerPasswordField;
-    }
+    public JTextField getRegisterEmailField() { return registerEmailField; }
 
-    // Getter pour confirmPasswordField
-    public JPasswordField getRegisterConfirmPasswordField() {
-        return registerConfirmPasswordField;
-    }
+    public JPasswordField getRegisterPasswordField() { return registerPasswordField; }
 
-    public JButton getRegisterButton() {
-        return registerButton;
-    }
+    public JPasswordField getRegisterConfirmPasswordField() { return registerConfirmPasswordField; }
 
-    public JButton getSubmitLoginButton() {
-        return submitLoginButton;
-    }
+    public JButton getRegisterButton() { return registerButton; }
 
-    public JButton getSubmitRegisterButton() {
-        return submitRegisterButton;
-    }
+    public JButton getSubmitLoginButton() { return submitLoginButton; }
 
-    public JButton getLogoutButton() {
-        return logoutButton;
-    }
+    public JButton getSubmitRegisterButton() { return submitRegisterButton; }
 
-    public JPanel getPanierPagePanel() {
-        return panierPagePanel;
-    }
+    public JButton getLogoutButton() { return logoutButton; }
 
-    public JPanel getListPanel() {
-        return listPanel;
-    }
+    public JPanel getPanierPagePanel() { return panierPagePanel; }
 
-    public JPanel getMainPanel() {
-        return mainPanel;
-    }
-    public JPanel getHomePagePanel() {
-        return homePagePanel;
-    }
+    public JPanel getListPanel() { return listPanel; }
 
-    public JButton getSearchButton() {
-        return searchButton;
-    }
+    public JPanel getMainPanel() { return mainPanel; }
 
-    public String getSearchText() {
-        return searchField.getText();
-    }
+    public JPanel getHomePagePanel() { return homePagePanel; }
 
-    public JLabel getLoginErrorMessageLabel() {
-        return loginErrorMessageLabel;
-    }
+    public JButton getSearchButton() { return searchButton; }
+
+    public String getSearchText() { return searchField.getText(); }
+
+    public JLabel getLoginErrorMessageLabel() { return loginErrorMessageLabel; }
 
     public JButton getCommanderButton() {return commanderButton;}
 
@@ -1144,31 +1095,18 @@ public class ShoppingView extends JFrame {
 
     public JButton getAdminButton(){return adminButton;}
 
-    // Getter for the admin table
-    public JTable getAdminTable() {
-        return adminTable;
-    }
+    public JTable getAdminTable() { return adminTable; }
 
-    // Getter for the save button
-    public JButton getSaveButton() {
-        return saveButton;
-    }
+    public JButton getSaveButton() { return saveButton; }
 
     public JButton getPlusBtn(){return plusBtn;}
+
     public JButton getMinusBtn(){return minusBtn;}
 
-    // Getter for the supprimer button
-    public JButton getSupprimerButton() {
-        return supprimerButton;
-    }
+    public JButton getSupprimerButton() { return supprimerButton; }
 
-    // Getter pour récupérer les boutons
-    public List<JButton> getRateButtons() {
-        return rateButtons;
-    }
+    public List<JButton> getRateButtons() { return rateButtons; }
 
-    public List<JButton> getViewDetailsButtons() {
-        return viewDetailsButtons;
-    }
+    public List<JButton> getViewDetailsButtons() { return viewDetailsButtons; }
 
 }
