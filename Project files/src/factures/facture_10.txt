@@ -1,0 +1,12 @@
+----- FACTURE -----
+Numéro de commande : 10
+Date : 2025-04-26
+Client : Melly
+Adresse de livraison : 69 RUE DE LA RUE, PARIS, 75000, FRANCE
+Statut : commande passée
+
+-- ARTICLES --
+
+Total à payer : 180,00 €
+--------------------
+Merci pour votre achat !

@@ -13,6 +13,9 @@ import java.util.HashMap;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
+import java.io.File;
+import java.io.PrintWriter;
+import java.time.LocalDate;
 
 public class ShoppingController {
     private ShoppingView view;
@@ -686,6 +689,7 @@ public class ShoppingController {
                     utilisateurConnecte.getAdresse() // adresse par défaut pour la nouvelle commande vide
             );
             commandeDAO.ajouter(nouvelleCommande);
+            generateFacture(commandeEnCours);
 
             JOptionPane.showMessageDialog(null, "Votre commande a été passée avec succès !");
             afficherRatingForm();
@@ -694,6 +698,96 @@ public class ShoppingController {
             JOptionPane.showMessageDialog(null, "Erreur technique : " + ex.getMessage());
         }
     }
+
+    //TODO: gestion des prix vracs et reduction a mettre en plus, mettre nom +prenom
+    private void generateFacture(Commande commande) {
+        try {
+            // Crée le répertoire des factures s'il n'existe pas
+            String factureDirectory = "Project files/src/factures/";
+            File dir = new File(factureDirectory);
+            if (!dir.exists()) {
+                dir.mkdirs(); // Crée le dossier s'il n'existe pas
+            }
+
+            // Crée le fichier de facture
+            String factureFilePath = factureDirectory + "facture_" + commande.getId() + ".txt";
+            File factureFile = new File(factureFilePath);
+
+            try (PrintWriter writer = new PrintWriter(factureFile)) {
+                // Informations de la facture
+                writer.println("----- FACTURE -----");
+                writer.println("Numéro de commande : " + commande.getId());
+                writer.println("Date : " + commande.getDate());
+                writer.println("Client : " + utilisateurConnecte.getNom());
+                writer.println("Adresse de livraison : " + commande.getAdresseLivraison());
+                writer.println("Statut : " + commande.getStatut());
+
+                writer.println();
+                writer.println("-- ARTICLES --");
+
+                // Récupérer les articles de la commande
+                List<Article> articles = commandeDAO.getArticlesParCommande(commande, articleDAO);
+
+                // Récupérer les chaînes des IDs et des quantités
+                String listeIdsStr = commande.getListeID_Article(); // Ex: "0-1-2"
+                String listeQuantitesStr = commande.getListeQuantite_Article(); // Ex: "0-4-2"
+
+                // Diviser les chaînes en tableaux
+                String[] idsStr = listeIdsStr.split("-");  // ["0", "1", "2"]
+                String[] quantitesStr = listeQuantitesStr.split("-");  // ["0", "4", "2"]
+
+                // Vérification de correspondance entre les IDs et les quantités
+                if (idsStr.length != quantitesStr.length) {
+                    System.out.println("Erreur : Le nombre d'IDs d'articles ne correspond pas au nombre de quantités.");
+                    return;
+                }
+
+                // Traiter chaque article et sa quantité
+                for (int i = 0; i < idsStr.length; i++) {
+                    try {
+                        // Convertir l'ID de l'article et la quantité en entier
+                        int articleId = Integer.parseInt(idsStr[i].trim());
+                        int quantite = Integer.parseInt(quantitesStr[i].trim());
+
+                        // Chercher l'article correspondant dans la liste des articles
+                        Article article = articles.stream()
+                                .filter(a -> a.getId() == articleId)
+                                .findFirst()
+                                .orElse(null);
+
+                        if (article != null) {
+                            double prixUnitaire = article.getPrixUnitaire();
+                            writer.println("x" + quantite + " " + article.getNom() + " " + String.format("%.2f €", prixUnitaire));
+                        } else {
+                            System.out.println("Article non trouvé pour l'ID: " + articleId);
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Erreur de format de nombre pour l'article ID: " + idsStr[i] + " ou quantité: " + quantitesStr[i]);
+                    }
+                }
+
+                // Total de la facture
+                writer.println();
+                writer.println("Total à payer : " + String.format("%.2f €", commande.getPrix()));
+                writer.println("--------------------");
+                writer.println("Merci pour votre achat !");
+            }
+
+            System.out.println("✅ Facture générée : " + factureFilePath);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("❌ Erreur lors de la génération de la facture : " + e.getMessage());
+        }
+    }
+
+
+
+
+
+
+
+
+
 
 
 

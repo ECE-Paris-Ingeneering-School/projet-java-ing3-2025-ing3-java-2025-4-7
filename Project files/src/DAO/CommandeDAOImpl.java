@@ -1,5 +1,6 @@
 package DAO;
 
+import modele.Article;
 import modele.Commande;
 
 import java.sql.*;
@@ -166,5 +167,40 @@ public class CommandeDAOImpl implements CommandeDAO {
 
         return new Commande(id, utilisateurID, date, statut, prix, listeID_Article, listeQuantite_Article, adresseLivraison);
     }
+
+
+    public List<Article> getArticlesParCommande(Commande commande, ArticleDAO articleDAO) {
+        List<Article> articles = new ArrayList<>();
+
+        try {
+            // Récupérer la liste d'IDs d'articles sous forme de String
+            String listeIdArticlesStr = commande.getListeID_Article();
+            if (listeIdArticlesStr == null || listeIdArticlesStr.isEmpty()) {
+                return articles; // Pas d'articles dans cette commande
+            }
+
+            // Découper la liste en utilisant le bon séparateur (ici, les tirets)
+            String[] idStrings = listeIdArticlesStr.split("-"); // Utiliser "-" comme séparateur, pas ","
+
+            for (String idStr : idStrings) {
+                try {
+                    int articleId = Integer.parseInt(idStr.trim());
+                    Article article = articleDAO.chercher(articleId); // Chercher l'article avec l'ID
+                    if (article != null) {
+                        articles.add(article);
+                    }
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                    System.out.println("DAO - Erreur lors de la conversion d'un ID d'article: " + idStr);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("DAO - Erreur lors de la récupération des articles pour la commande.");
+        }
+
+        return articles;
+    }
+
 
 }
