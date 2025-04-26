@@ -172,7 +172,7 @@ public class ShoppingView extends JFrame {
         accountButton.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));*/
 
         // Bouton Panier
-        ImageIcon panierIcon = new ImageIcon("Project files/src/image/panier.png");
+        ImageIcon panierIcon = new ImageIcon("Project files/src/image/panier/panier.png");
         Image resizedPanierImage = panierIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
         ImageIcon resizedPanierIcon = new ImageIcon(resizedPanierImage);
 
@@ -911,7 +911,7 @@ public class ShoppingView extends JFrame {
             boutonsPanel.setBackground(Color.WHITE);
 
 
-            ImageIcon plusIcon = new ImageIcon("Project files/src/image/panierAjouter.png");
+            ImageIcon plusIcon = new ImageIcon("Project files/src/image/panier/panierAjouter.png");
             Image resizedPlusImage = plusIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
             ImageIcon resizedPlusIcon = new ImageIcon(resizedPlusImage);
 
@@ -921,7 +921,7 @@ public class ShoppingView extends JFrame {
             plusBtn.setContentAreaFilled(false);
             plusBtn.setFocusPainted(false);
 
-            ImageIcon minIcon = new ImageIcon("Project files/src/image/panierSupprimer.png");
+            ImageIcon minIcon = new ImageIcon("Project files/src/image/panier/panierSupprimer.png");
             Image resizedMinImage = minIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
             ImageIcon resizedMinIcon = new ImageIcon(resizedMinImage);
 
