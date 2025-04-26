@@ -7,7 +7,5 @@ public class Main {
         new ShoppingController(view);
         view.setVisible(true);
         view.showPage("HomePage");
-        //bien fou matheo
-        //sah pas plus reel
     }
 }

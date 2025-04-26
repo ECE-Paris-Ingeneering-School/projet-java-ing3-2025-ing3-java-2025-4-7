@@ -32,17 +32,6 @@ public class ShoppingController {
         this.articleDAO = new ArticleDAOImpl(this.daoFactory);
         this.promoDAO = new PromoDAOImpl(this.daoFactory);
 
-        //Test des fonctions de commandedao
-        //print toutes les info:
-        List<Commande> commandes = commandeDAO.getAll();
-        for (Commande commande : commandes) {
-            System.out.println("ID: " + commande.getId() + ", Utilisateur ID: " + commande.getUtilisateurID() +
-                    ", Date: " + commande.getDate() + ", Statut: " + commande.getStatut() +
-                    ", Liste ID Articles: " + commande.getListeID_Article() +
-                    ", Liste Quantité Articles: " + commande.getListeQuantite_Article() +
-                    ", Prix: " + commande.getPrix());
-        }
-
         initializeListeners();
         afficherAccueil();
     }
@@ -52,7 +41,6 @@ public class ShoppingController {
 
         view.getAccountButton().addActionListener(e -> {
             if (utilisateurConnecte != null) {
-
                 view.showPage("UpdateAccount");
             } else {
                 view.showPage("Account");
@@ -227,7 +215,7 @@ public class ShoppingController {
             System.out.println("Admin Button Visible: " + view.getAdminButton().isVisible());
         } else {
             view.getAdminButton().setVisible(false); // Hide the admin button
-            System.out.println("tedvhb");
+            System.out.println("Utilisateur non-admin");
         }
         // Crée une instance de ArticleDAO pour récupérer tous les articles
         ArticleDAO articleDAO = new ArticleDAOImpl(daoFactory);
