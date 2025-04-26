@@ -656,16 +656,6 @@ public class ShoppingView extends JFrame {
     }
 
 
-
-
-
-
-
-
-
-
-
-
     public void updateHomePageView(List<Map<String, String>> articles, ActionListener ajouterPanierListener) {
         homePagePanel.removeAll();
 
@@ -887,16 +877,20 @@ public class ShoppingView extends JFrame {
             }
 
 
-            // Content Panel
+            // Panel des informations
             infoContainer.setLayout(new BoxLayout(infoContainer, BoxLayout.Y_AXIS));
             infoContainer.setBackground(Color.WHITE);
             infoContainer.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
+            infoContainer.setAlignmentX(Component.RIGHT_ALIGNMENT);
 
             JLabel nomLabel = new JLabel(articleData.get("nom"));
-            nomLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+            nomLabel.setFont(new Font("SansSerif", Font.BOLD, 22));
             nomLabel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
+            JPanel nomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
+            nomPanel.setBackground(Color.WHITE);
+            nomPanel.add(nomLabel);
 
-            JPanel boutonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
+            JPanel boutonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
             boutonsPanel.setBackground(Color.WHITE);
 
             // Bouton pour ajouter des articles
@@ -933,21 +927,41 @@ public class ShoppingView extends JFrame {
 
             double prixAffiche = (initialQuantity >= seuilVrac) ? priceVrac : priceUnit;
 
-            final JLabel quantiteLabel = new JLabel("Quantité: " + initialQuantity);
-            quantiteLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
+            final JLabel quantiteLabel = new JLabel("    Quantité: " + initialQuantity);
+            quantiteLabel.setFont(new Font("SansSerif", Font.PLAIN, 15));
 
-            final JLabel prixUnitaireLabel = new JLabel("Prix unitaire: " + String.format("%.2f €", priceUnit));
-            prixUnitaireLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
+            final JLabel prixUnitaireLabel = new JLabel("    Prix unitaire: " + String.format("%.2f €", priceUnit));
+            prixUnitaireLabel.setFont(new Font("SansSerif", Font.PLAIN, 15));
 
-            final JLabel prixVracLabel = new JLabel("Prix vrac: " + String.format("%.2f €", priceVrac));
-            prixVracLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
+            final JLabel prixVracLabel = new JLabel("    Prix vrac: " + String.format("%.2f €", priceVrac));
+            prixVracLabel.setFont(new Font("SansSerif", Font.PLAIN, 15));
 
-            final JLabel prixSeuilLabel = new JLabel("Seuil vrac: " + seuilVrac);
-            prixSeuilLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
+            final JLabel prixSeuilLabel = new JLabel("    Seuil vrac: " + seuilVrac);
+            prixSeuilLabel.setFont(new Font("SansSerif", Font.PLAIN, 15));
 
-            final JLabel prixTotalLabel = new JLabel("Prix total: " + String.format("%.2f €", prixAffiche * initialQuantity));
-            prixTotalLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
+            final JLabel prixTotalLabel = new JLabel("    Prix total: " + String.format("%.2f €", prixAffiche * initialQuantity));
+            prixTotalLabel.setFont(new Font("SansSerif", Font.BOLD, 17));
             prixTotalLabel.setForeground(new Color(48, 80, 207));
+
+            JPanel quantitePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
+            quantitePanel.setBackground(Color.WHITE);
+            quantitePanel.add(quantiteLabel);
+
+            JPanel prixUnitairePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
+            prixUnitairePanel.setBackground(Color.WHITE);
+            prixUnitairePanel.add(prixUnitaireLabel);
+
+            JPanel prixVracPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
+            prixVracPanel.setBackground(Color.WHITE);
+            prixVracPanel.add(prixVracLabel);
+
+            JPanel prixSeuilPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
+            prixSeuilPanel.setBackground(Color.WHITE);
+            prixSeuilPanel.add(prixSeuilLabel);
+
+            JPanel prixTotalPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
+            prixTotalPanel.setBackground(Color.WHITE);
+            prixTotalPanel.add(prixTotalLabel);
 
             // Set Action Commands and Listeners
             String articleId = articleData.get("id");
@@ -960,18 +974,18 @@ public class ShoppingView extends JFrame {
             boutonsPanel.add(minusBtn);
             boutonsPanel.add(plusBtn);
 
-            infoContainer.add(nomLabel);
+            infoContainer.add(nomPanel);
+            infoContainer.add(quantitePanel);
+            infoContainer.add(prixUnitairePanel);
+            infoContainer.add(prixVracPanel);
+            infoContainer.add(prixSeuilPanel);
+            infoContainer.add(prixTotalPanel);
             infoContainer.add(boutonsPanel);
-            infoContainer.add(quantiteLabel);
-            infoContainer.add(prixUnitaireLabel);
-            infoContainer.add(prixVracLabel);
-            infoContainer.add(prixSeuilLabel);
-            infoContainer.add(prixTotalLabel);
 
             // Configuration du JSplitPane
             JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, imageContainer, infoContainer);
             splitPane.setResizeWeight(0.5);
-            splitPane.setDividerSize(5);
+            splitPane.setDividerSize(0);
             splitPane.setContinuousLayout(true);
             splitPane.setEnabled(false);
             splitPane.setBackground(Color.WHITE);
@@ -988,10 +1002,10 @@ public class ShoppingView extends JFrame {
         panierPagePanel.add(scrollPane, BorderLayout.CENTER);
 
         // Panel du bas de page avec le boutton commander et le total de la commande
-        JLabel totalLabel = new JLabel("Total : " + String.format("%.2f €", totalPrix));
+        JLabel totalLabel = new JLabel("Total de la commande : " + String.format("%.2f €", totalPrix));
         totalLabel.setFont(new Font("Arial", Font.BOLD, 16));
         totalLabel.setForeground(new Color(38, 74, 193));
-        totalLabel.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
+        totalLabel.setBorder(BorderFactory.createEmptyBorder(5, 20, 0, 0));
 
         JPanel totalPanel = new JPanel();
         totalPanel.setBackground(Color.WHITE);
