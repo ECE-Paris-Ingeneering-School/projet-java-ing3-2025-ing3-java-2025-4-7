@@ -12,11 +12,6 @@ import java.util.LinkedHashMap;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import java.net.URL;
-import java.net.MalformedURLException;
-import javax.imageio.ImageIO;
-import java.io.IOException;
-import java.net.URL;
-
 
 public class ShoppingView {
     private JFrame frame;
@@ -32,6 +27,9 @@ public class ShoppingView {
     private Map<String, JLabel> quantiteLabels;
     private JLabel registerErrorMessageLabel;
     private JLabel loginErrorMessageLabel;
+
+    private List<JButton> rateButtons = new ArrayList<>();
+    private List<JButton> viewDetailsButtons = new ArrayList<>();
 
     public ShoppingView() {
         frame = new JFrame("PokeShop App");
@@ -469,17 +467,21 @@ public class ShoppingView {
         return panel;
     }
 
-    public JPanel createUpdateAccountPagePanel(String userName, String userEmail, String userPhone, String userAddress, List<String[]> commandes) {
+    public JPanel createUpdateAccountPagePanel(
+            String userName,
+            String userEmail,
+            String userPhone,
+            String userAddress,
+            List<String[]> commandes
+    ) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(new Color(245, 245, 245));
 
-        // Titre
         JLabel titleLabel = new JLabel("Mon Compte", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 26));
         titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
         panel.add(titleLabel, BorderLayout.NORTH);
 
-        // Infos utilisateur
         JPanel userInfoPanel = new JPanel(new GridLayout(4, 2, 10, 10));
         userInfoPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY), "Informations utilisateur"));
         userInfoPanel.setBackground(Color.WHITE);
@@ -494,11 +496,13 @@ public class ShoppingView {
         userInfoPanel.add(new JLabel("Adresse :"));
         userInfoPanel.add(new JLabel(userAddress));
 
-        // Panel commandes
         JPanel commandesPanel = new JPanel();
         commandesPanel.setLayout(new BoxLayout(commandesPanel, BoxLayout.Y_AXIS));
         commandesPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY), "Historique des commandes"));
         commandesPanel.setBackground(Color.WHITE);
+
+        rateButtons.clear(); // Important si tu rappelles cette méthode plusieurs fois
+        viewDetailsButtons.clear();
 
         for (String[] infos : commandes) {
             String id = infos[0];
@@ -510,7 +514,7 @@ public class ShoppingView {
             JPanel cardPanel = new JPanel(new BorderLayout(10, 10));
             cardPanel.setBackground(Color.WHITE);
             cardPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-            cardPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 150));
+            cardPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 170));
 
             JPanel topLeftPanel = new JPanel(new GridLayout(5, 1));
             topLeftPanel.setBackground(Color.WHITE);
@@ -532,28 +536,42 @@ public class ShoppingView {
 
             cardPanel.add(topLeftPanel, BorderLayout.CENTER);
 
+            JPanel bottomButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
+            bottomButtonPanel.setBackground(Color.WHITE);
+
             JButton viewDetailsButton = new JButton("Voir détails de la facture");
             viewDetailsButton.setFont(new Font("Arial", Font.PLAIN, 12));
             viewDetailsButton.setBackground(new Color(0, 123, 255));
             viewDetailsButton.setForeground(Color.WHITE);
             viewDetailsButton.setFocusPainted(false);
-            viewDetailsButton.setPreferredSize(new Dimension(320, 40));
+            viewDetailsButton.setPreferredSize(new Dimension(180, 30));
 
-            JPanel bottomRightPanel = new JPanel(new BorderLayout());
-            bottomRightPanel.setBackground(Color.WHITE);
-            bottomRightPanel.add(viewDetailsButton, BorderLayout.EAST);
+            JButton rateButton = new JButton("Noter");
+            rateButton.setFont(new Font("Arial", Font.PLAIN, 12));
+            rateButton.setBackground(new Color(40, 167, 69));
+            rateButton.setForeground(Color.WHITE);
+            rateButton.setFocusPainted(false);
+            rateButton.setPreferredSize(new Dimension(100, 30));
 
-            cardPanel.add(bottomRightPanel, BorderLayout.SOUTH);
+            viewDetailsButton.setName(id);
+            rateButton.setName(id);
+
+            // Stocker les boutons pour que le contrôleur les utilise après
+            viewDetailsButtons.add(viewDetailsButton);
+            rateButtons.add(rateButton);
+
+            bottomButtonPanel.add(viewDetailsButton);
+            bottomButtonPanel.add(rateButton);
+
+            cardPanel.add(bottomButtonPanel, BorderLayout.SOUTH);
             commandesPanel.add(cardPanel);
         }
 
-        // Créer un JScrollPane pour rendre le panneau défilable
         JScrollPane commandesScrollPane = new JScrollPane(commandesPanel);
-        commandesScrollPane.setBorder(null);  // Supprime la bordure du JScrollPane
-        commandesScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);  // Activer le défilement vertical
-        commandesScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);  // Désactiver le défilement horizontal
+        commandesScrollPane.setBorder(null);
+        commandesScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        commandesScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-        // Panel de déconnexion
         JPanel logoutPanel = new JPanel();
         logoutPanel.setBackground(new Color(245, 245, 245));
         logoutPanel.add(logoutButton);
@@ -1074,6 +1092,15 @@ public class ShoppingView {
     // Getter for the supprimer button
     public JButton getSupprimerButton() {
         return supprimerButton;
+    }
+
+    // Getter pour récupérer les boutons
+    public List<JButton> getRateButtons() {
+        return rateButtons;
+    }
+
+    public List<JButton> getViewDetailsButtons() {
+        return viewDetailsButtons;
     }
 
 }

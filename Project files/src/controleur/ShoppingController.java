@@ -64,7 +64,6 @@ public class ShoppingController {
         view.getLoginButton().addActionListener(e -> view.showPage("Login"));
         view.getRegisterButton().addActionListener(e -> view.showPage("Register"));
 
-
         view.getSubmitLoginButton().addActionListener(e -> handleLogin());
         view.getSubmitRegisterButton().addActionListener(e -> handleRegister());
         view.getAccountButton().addActionListener(e -> afficherCompte());
@@ -271,10 +270,9 @@ public class ShoppingController {
             String userTel = String.valueOf(utilisateurConnecte.getTelephone());
             String userAddress = utilisateurConnecte.getAdresse();
 
-            // Récupérer l'historique des commandes en utilisant l'utilisateurID
+            // Récupérer l'historique des commandes
             List<Commande> commandes = commandeDAO.getCommandesParUtilisateur(utilisateurConnecte.getId());
 
-            // Préparer les données à envoyer à la vue
             List<String[]> historiqueCommandes = new ArrayList<>();
             for (Commande commande : commandes) {
                 String[] infos = new String[]{
@@ -287,18 +285,32 @@ public class ShoppingController {
                 historiqueCommandes.add(infos);
             }
 
-            // Afficher côté console pour debug si besoin
-            System.out.println("Nom : " + userName);
-            System.out.println("Email : " + userEmail);
-            System.out.println("Téléphone : " + userTel);
-            System.out.println("Adresse : " + userAddress);
-            System.out.println("Commandes : " + historiqueCommandes.size());
-
             view.afficherPageCompte(userName, userEmail, userTel, userAddress, historiqueCommandes);
+
+            // 🔥 AJOUTER LES ACTIONLISTENERS ici (après création des boutons)
+            for (JButton rateButton : view.getRateButtons()) {
+                rateButton.addActionListener(e -> {
+                    JButton clickedButton = (JButton) e.getSource();
+                    String commandeId = clickedButton.getName();
+                    System.out.println("note " + commandeId);
+                    afficherRatingForm();
+                });
+            }
+
+            for (JButton viewDetailsButton : view.getViewDetailsButtons()) {
+                viewDetailsButton.addActionListener(e -> {
+                    JButton clickedButton = (JButton) e.getSource();
+                    String commandeId = clickedButton.getName();
+                    System.out.println("details " + commandeId);
+                    // TODO : ouvrir page de facture etc
+                });
+            }
+
         } else {
             view.showPage("Login");
         }
     }
+
 
 
 
