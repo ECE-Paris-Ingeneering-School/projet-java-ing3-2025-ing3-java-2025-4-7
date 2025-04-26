@@ -151,16 +151,29 @@ public class ShoppingView extends JFrame {
         rightPanel.setOpaque(false);
 
         // Bouton Mon compte
-        accountButton = new JButton("Mon compte");
+
+        ImageIcon compteIcon = new ImageIcon("Project files/src/image/utilisateur.png");
+        Image resizedCompteImage = compteIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
+        ImageIcon resizedCompteIcon = new ImageIcon(resizedCompteImage);
+
+        accountButton = new JButton(resizedCompteIcon);
+        accountButton.setToolTipText("Mon compte");
+        accountButton.setBorderPainted(false);
+        accountButton.setContentAreaFilled(false);
+        accountButton.setFocusPainted(false);
+        accountButton.setOpaque(false);
+
+
+        /*accountButton = new JButton("Mon compte");
         accountButton.setFont(new Font("Arial", Font.BOLD, 14));
         accountButton.setForeground(Color.WHITE);
         accountButton.setFocusPainted(false);
         accountButton.setBackground(new Color(23, 162, 184)); // Bleu clair
         accountButton.setOpaque(true);
-        accountButton.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
+        accountButton.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));*/
 
         // Bouton Panier
-        ImageIcon panierIcon = new ImageIcon("Project files/src/image/logopanier1.png");
+        ImageIcon panierIcon = new ImageIcon("Project files/src/image/panier.png");
         Image resizedPanierImage = panierIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
         ImageIcon resizedPanierIcon = new ImageIcon(resizedPanierImage);
 
