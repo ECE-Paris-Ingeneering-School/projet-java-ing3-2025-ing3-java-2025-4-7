@@ -12,6 +12,9 @@ import java.util.LinkedHashMap;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import java.net.URL;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
 
 public class ShoppingView {
     private JFrame frame;
@@ -80,12 +83,13 @@ public class ShoppingView {
 
     private JPanel createHeaderPanel() {
         JPanel header = new JPanel(new BorderLayout());
-        header.setBackground(Color.CYAN);
+        header.setBackground(new Color(50, 50, 160));  // Change la couleur de fond en bleu pour un style plus moderne
 
+        // Panel à gauche (logo)
         JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         leftPanel.setOpaque(false);
 
-        // Chargement et redimensionnement de l'image
+        // Chargement et redimensionnement de l'image (logo)
         ImageIcon originalIcon = new ImageIcon("Project files/src/image/logoAPP.png");
         if (originalIcon.getImageLoadStatus() != MediaTracker.COMPLETE) {
             System.out.println("❌ Erreur : l'image n'a pas pu être chargée !");
@@ -93,7 +97,7 @@ public class ShoppingView {
             System.out.println("✅ Image chargée avec succès !");
         }
 
-        // Redimensionner l'image (ajuste à ta convenance)
+        // Redimensionner l'image
         int newWidth = 120;
         int newHeight = 50;
         Image resizedImage = originalIcon.getImage().getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
@@ -101,7 +105,7 @@ public class ShoppingView {
 
         // Bouton Accueil avec l'image
         homeButton = new JButton(resizedIcon);
-        homeButton.setToolTipText("Accueil"); // Optionnel
+        homeButton.setToolTipText("Accueil");
         homeButton.setBorderPainted(false);
         homeButton.setContentAreaFilled(false);
         homeButton.setFocusPainted(false);
@@ -109,76 +113,84 @@ public class ShoppingView {
 
         leftPanel.add(homeButton);
 
+        // Panel du centre (recherche)
         JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         centerPanel.setOpaque(false);
+
+        // Barre de recherche stylisée
         searchField = new JTextField(15);
+        searchField.setFont(new Font("Arial", Font.PLAIN, 14));
+        searchField.setPreferredSize(new Dimension(250, 30));
+        searchField.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));  // Ajouter une bordure
+        searchField.setBackground(Color.WHITE);
+
+        // Bouton de recherche
         searchButton = new JButton("\uD83D\uDD0D");
+        searchButton.setFont(new Font("Arial", Font.PLAIN, 16));
+        searchButton.setPreferredSize(new Dimension(40, 30));
+        searchButton.setFocusPainted(false);
+        searchButton.setBackground(new Color(40, 167, 69));
+        searchButton.setForeground(Color.WHITE);
+        searchButton.setOpaque(true);
+        searchButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        // Ajouter au panel central
         centerPanel.add(searchField);
         centerPanel.add(searchButton);
 
+        // Panel à droite (compte, panier, admin)
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         rightPanel.setOpaque(false);
+
+        // Bouton Mon compte
         accountButton = new JButton("Mon compte");
-        panierButton = new JButton("Panier");
-        adminButton = new JButton("Admin");
-        adminButton.setFocusPainted(false);
-        adminButton.setBackground(new Color(255, 87, 34));
-        adminButton.setForeground(Color.WHITE);
-        adminButton.setFont(new Font("Arial", Font.BOLD, 14));
-        adminButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        adminButton.setVisible(false);
+        accountButton.setFont(new Font("Arial", Font.BOLD, 14));
+        accountButton.setForeground(Color.WHITE);
+        accountButton.setFocusPainted(false);
+        accountButton.setBackground(new Color(23, 162, 184)); // Bleu clair
+        accountButton.setOpaque(true);
+        accountButton.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
 
-        // Chargement et redimensionnement de l'image
-        ImageIcon originalicon = new ImageIcon("Project files/src/image/logopanier1.png");
-        if (originalicon.getImageLoadStatus() != MediaTracker.COMPLETE) {
-            System.out.println("❌ Erreur : l'image n'a pas pu être chargée !");
-        } else {
-            System.out.println("✅ Image chargée avec succès !");
-        }
+        // Bouton Panier
+        ImageIcon panierIcon = new ImageIcon("Project files/src/image/logopanier1.png");
+        Image resizedPanierImage = panierIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
+        ImageIcon resizedPanierIcon = new ImageIcon(resizedPanierImage);
 
-        // Redimensionner l'image (ajuste à ta convenance)
-        int nWidth = 50;
-        int nHeight = 50;
-        Image resizedimage = originalicon.getImage().getScaledInstance(nWidth, nHeight, Image.SCALE_SMOOTH);
-        ImageIcon resizedicon = new ImageIcon(resizedimage);
-
-        // Bouton Accueil avec l'image
-        panierButton = new JButton(resizedicon);
-        panierButton.setToolTipText("Panier"); // Optionnel
+        panierButton = new JButton(resizedPanierIcon);
+        panierButton.setToolTipText("Panier");
         panierButton.setBorderPainted(false);
         panierButton.setContentAreaFilled(false);
         panierButton.setFocusPainted(false);
         panierButton.setOpaque(false);
 
-        // Chargement et redimensionnement de l'image
-        ImageIcon Originalicon = new ImageIcon("Project files/src/image/boutonadmin1.png");
-        if (Originalicon.getImageLoadStatus() != MediaTracker.COMPLETE) {
-            System.out.println("❌ Erreur : l'image n'a pas pu être chargée !");
-        } else {
-            System.out.println("✅ Image chargée avec succès !");
-        }
+        // Bouton Admin
+        ImageIcon adminIcon = new ImageIcon("Project files/src/image/boutonadmin1.png");
+        Image resizedAdminImage = adminIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
+        ImageIcon resizedAdminIcon = new ImageIcon(resizedAdminImage);
 
-        // Redimensionner l'image (ajuste à ta convenance)
-        int neWidth = 50;
-        int neHeight = 50;
-        Image Resizedimage = Originalicon.getImage().getScaledInstance(neWidth, neHeight, Image.SCALE_SMOOTH);
-        ImageIcon Resizedicon = new ImageIcon(Resizedimage);
-
-        // Bouton Accueil avec l'image
-        adminButton = new JButton(Resizedicon);
-        adminButton.setToolTipText("Admin"); // Optionnel
+        adminButton = new JButton(resizedAdminIcon);
+        adminButton.setToolTipText("Admin");
         adminButton.setBorderPainted(false);
         adminButton.setContentAreaFilled(false);
         adminButton.setFocusPainted(false);
         adminButton.setOpaque(false);
 
+        // Ajouter les boutons au panel de droite
         rightPanel.add(accountButton);
         rightPanel.add(panierButton);
         rightPanel.add(adminButton);
 
+        // Ajouter tous les panels dans le header
         header.add(leftPanel, BorderLayout.WEST);
         header.add(centerPanel, BorderLayout.CENTER);
         header.add(rightPanel, BorderLayout.EAST);
+
+        // Ajouter des effets de survol (hover) pour les boutons
+        addHoverEffect(homeButton);
+        addHoverEffect(accountButton);
+        addHoverEffect(panierButton);
+        addHoverEffect(adminButton);
+        addHoverEffect(searchButton);
 
         return header;
     }
@@ -960,7 +972,22 @@ public class ShoppingView {
         panierPagePanel.repaint();
     }
 
+    // Fonction pour ajouter un effet de survol (hover) sur les boutons
+    private void addHoverEffect(JButton button) {
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                button.setBackground(new Color(0, 123, 255)); // Change la couleur au survol
+                button.setCursor(new Cursor(Cursor.HAND_CURSOR)); // Curseur main
+            }
 
+            @Override
+            public void mouseExited(MouseEvent e) {
+                button.setBackground(new Color(23, 162, 184)); // Remet la couleur originale (bleu clair)
+                button.setCursor(new Cursor(Cursor.DEFAULT_CURSOR)); // Curseur normal
+            }
+        });
+    }
 
 
 
