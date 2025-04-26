@@ -151,7 +151,6 @@ public class ShoppingView extends JFrame {
         rightPanel.setOpaque(false);
 
         // Bouton Mon compte
-
         ImageIcon compteIcon = new ImageIcon("Project files/src/image/utilisateur.png");
         Image resizedCompteImage = compteIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
         ImageIcon resizedCompteIcon = new ImageIcon(resizedCompteImage);
@@ -910,10 +909,31 @@ public class ShoppingView extends JFrame {
 
             JPanel boutonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
             boutonsPanel.setBackground(Color.WHITE);
-            JButton plusBtn = new JButton("+");
-            JButton minusBtn = new JButton("-");
-            plusBtn.setPreferredSize(new Dimension(45, 25));
-            minusBtn.setPreferredSize(new Dimension(45, 25));
+
+
+            ImageIcon plusIcon = new ImageIcon("Project files/src/image/panierAjouter.png");
+            Image resizedPlusImage = plusIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
+            ImageIcon resizedPlusIcon = new ImageIcon(resizedPlusImage);
+
+            JButton plusBtn = new JButton(resizedPlusIcon);
+            plusBtn.setToolTipText("Ajouter un élément du panier");
+            plusBtn.setBorderPainted(false);
+            plusBtn.setContentAreaFilled(false);
+            plusBtn.setFocusPainted(false);
+
+            ImageIcon minIcon = new ImageIcon("Project files/src/image/panierSupprimer.png");
+            Image resizedMinImage = minIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
+            ImageIcon resizedMinIcon = new ImageIcon(resizedMinImage);
+
+            JButton minusBtn = new JButton(resizedMinIcon);
+            minusBtn.setToolTipText("Supprimer un élément du panier");
+            minusBtn.setBorderPainted(false);
+            minusBtn.setContentAreaFilled(false);
+            minusBtn.setFocusPainted(false);
+
+
+            plusBtn.setPreferredSize(new Dimension(60, 60));
+            minusBtn.setPreferredSize(new Dimension(60, 60));
 
             // Quantity and Price Logic
             final int initialQuantity = Integer.parseInt(articleData.get("quantite"));
