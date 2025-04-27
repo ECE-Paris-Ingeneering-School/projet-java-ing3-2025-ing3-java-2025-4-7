@@ -214,7 +214,7 @@ public class ShoppingView extends JFrame{
         panierButton.setOpaque(false);
 
         //admin
-        ImageIcon adminIcon = new ImageIcon("Project files/src/image/boutonadmin1.png");
+        ImageIcon adminIcon = new ImageIcon("Project files/src/image/boutonadmin.png");
         Image resizedAdminImage = adminIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
         ImageIcon resizedAdminIcon = new ImageIcon(resizedAdminImage);
         adminButton = new JButton(resizedAdminIcon);
@@ -674,6 +674,24 @@ public class ShoppingView extends JFrame{
         JScrollPane userScrollPane = new JScrollPane(adminUserTable);
         tabbedPane.addTab("Utilisateurs", userScrollPane);
 
+
+        tabbedPane.addChangeListener(e -> {
+            int selectedIndex = tabbedPane.getSelectedIndex();
+            if (selectedIndex == 0) { // Articles tab
+                saveButton.setVisible(true);
+                ajouterButton.setVisible(true);
+                supprimerButton.setVisible(true);
+                saveUserButton.setVisible(false);
+                deleteUserButton.setVisible(false);
+            } else if (selectedIndex == 1) { // Users tab
+                saveButton.setVisible(false);
+                ajouterButton.setVisible(false);
+                supprimerButton.setVisible(false);
+                saveUserButton.setVisible(true);
+                deleteUserButton.setVisible(true);
+            }
+        });
+
         panel.add(tabbedPane, BorderLayout.CENTER);
         // Scroll pane for the tabbed pane
         JScrollPane scrollPane = new JScrollPane(tabbedPane);
@@ -716,6 +734,7 @@ public class ShoppingView extends JFrame{
         saveUserButton.setForeground(Color.WHITE);
         saveUserButton.setFocusPainted(false);
         saveUserButton.setPreferredSize(new Dimension(250, 40));
+        saveUserButton.setVisible(false);
 
         //bouton supprimer un utilisateur
         deleteUserButton = new JButton("Supprimer un utilisateur");
@@ -724,6 +743,7 @@ public class ShoppingView extends JFrame{
         deleteUserButton.setForeground(Color.WHITE);
         deleteUserButton.setFocusPainted(false);
         deleteUserButton.setPreferredSize(new Dimension(200, 40));
+        deleteUserButton.setVisible(false);
 
         JPanel bottomPanel = new JPanel();
         bottomPanel.add(saveButton);
