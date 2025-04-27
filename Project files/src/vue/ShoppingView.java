@@ -212,7 +212,7 @@ public class ShoppingView extends JFrame{
         panierButton.setOpaque(false);
 
         //admin
-        ImageIcon adminIcon = new ImageIcon("Project files/src/image/boutonadmin1.png");
+        ImageIcon adminIcon = new ImageIcon("Project files/src/image/adminButton.png");
         Image resizedAdminImage = adminIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
         ImageIcon resizedAdminIcon = new ImageIcon(resizedAdminImage);
         adminButton = new JButton(resizedAdminIcon);
@@ -221,6 +221,7 @@ public class ShoppingView extends JFrame{
         adminButton.setContentAreaFilled(false);
         adminButton.setFocusPainted(false);
         adminButton.setOpaque(false);
+
 
         rightPanel.add(accountButton);
         rightPanel.add(panierButton);
@@ -459,6 +460,41 @@ public class ShoppingView extends JFrame{
         gbc.gridx = 1;
         registerConfirmPasswordField = new JPasswordField(20);
         formContainer.add(registerConfirmPasswordField, gbc);
+/*
+        gbc.gridx = 0;
+        gbc.gridy++;
+        formContainer.add(new JLabel("Numéro de rue :"), gbc);
+        gbc.gridx = 1;
+        registerConfirmPasswordField = new JPasswordField(20);
+        formContainer.add(registerConfirmPasswordField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        formContainer.add(new JLabel("Rue :"), gbc);
+        gbc.gridx = 1;
+        registerConfirmPasswordField = new JPasswordField(20);
+        formContainer.add(registerConfirmPasswordField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        formContainer.add(new JLabel("Code postal :"), gbc);
+        gbc.gridx = 1;
+        registerConfirmPasswordField = new JPasswordField(20);
+        formContainer.add(registerConfirmPasswordField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        formContainer.add(new JLabel("Ville :"), gbc);
+        gbc.gridx = 1;
+        registerConfirmPasswordField = new JPasswordField(20);
+        formContainer.add(registerConfirmPasswordField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        formContainer.add(new JLabel("Téléphone :"), gbc);
+        gbc.gridx = 1;
+        registerConfirmPasswordField = new JPasswordField(20);
+        formContainer.add(registerConfirmPasswordField, gbc);*/
 
         //label si erreur
         gbc.gridx = 0;
