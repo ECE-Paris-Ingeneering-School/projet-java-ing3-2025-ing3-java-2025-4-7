@@ -692,7 +692,7 @@ public class ShoppingView extends JFrame{
         homePagePanel.removeAll();
 
         //bandeau bienvenue
-        JPanel bandeau = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel bandeau = new JPanel(new FlowLayout(FlowLayout.CENTER));
         bandeau.setBackground(new Color(66, 133, 244));
         JLabel navbarLabel = new JLabel("Bienvenue sur Pokéshop ! Code PROMO spécial d'ouverture : WELCOME10");
         navbarLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
