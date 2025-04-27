@@ -267,7 +267,7 @@ public class UtilisateurDAOImpl implements UtilisateurDAO {
      */
     @Override
     public void supprimer(int id) {
-        String deleteCommandesSQL = "DELETE FROM commande_totale WHERE utilisateurID = ?";
+        String deleteCommandesSQL = "DELETE FROM commandes WHERE utilisateurID = ?";
         String deleteUtilisateurSQL = "DELETE FROM utilisateurs WHERE utilisateurID = ?";
 
         try (Connection connexion = daoFactory.getConnection();
