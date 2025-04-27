@@ -709,7 +709,7 @@ public class ShoppingView extends JFrame{
         saveButton.setBackground(new Color(34, 139, 34));
         saveButton.setForeground(Color.WHITE);
         saveButton.setFocusPainted(false);
-        saveButton.setPreferredSize(new Dimension(250, 40));
+        //saveButton.setPreferredSize(new Dimension(250, 40));
 
         //bouton ajouter
         ajouterButton = new JButton("Ajouter un article");
@@ -717,7 +717,7 @@ public class ShoppingView extends JFrame{
         ajouterButton.setBackground(new Color(70, 130, 180));
         ajouterButton.setForeground(Color.WHITE);
         ajouterButton.setFocusPainted(false);
-        ajouterButton.setPreferredSize(new Dimension(150, 40));
+        //ajouterButton.setPreferredSize(new Dimension(150, 40));
 
         //bouton supprimer
         supprimerButton = new JButton("Supprimer un article");
@@ -725,7 +725,7 @@ public class ShoppingView extends JFrame{
         supprimerButton.setBackground(new Color(220, 53, 69));
         supprimerButton.setForeground(Color.WHITE);
         supprimerButton.setFocusPainted(false);
-        supprimerButton.setPreferredSize(new Dimension(200, 40));
+        //supprimerButton.setPreferredSize(new Dimension(200, 40));
 
         //bouton enregistrer utilisateur
         saveUserButton = new JButton("Enregistrer les modifications users");
