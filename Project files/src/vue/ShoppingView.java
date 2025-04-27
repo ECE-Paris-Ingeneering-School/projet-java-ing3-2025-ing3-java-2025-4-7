@@ -214,7 +214,7 @@ public class ShoppingView extends JFrame{
         panierButton.setOpaque(false);
 
         //admin
-        ImageIcon adminIcon = new ImageIcon("Project files/src/image/boutonadmin.png");
+        ImageIcon adminIcon = new ImageIcon("Project files/src/image/adminButton.png");
         Image resizedAdminImage = adminIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
         ImageIcon resizedAdminIcon = new ImageIcon(resizedAdminImage);
         adminButton = new JButton(resizedAdminIcon);
