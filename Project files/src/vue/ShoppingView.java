@@ -42,6 +42,7 @@ public class ShoppingView extends JFrame{
     private JButton supprimerButton;
     private JButton saveUserButton;
     private JButton deleteUserButton;
+    private JButton modifUserButton;
 
     // Champs texte et password
     private JTextField searchField;
@@ -641,13 +642,34 @@ public class ShoppingView extends JFrame{
         logoutPanel.setBackground(new Color(245, 245, 245));
         logoutPanel.add(logoutButton);
 
+        modifUserButton = new JButton("Modifier vos informations");
+        modifUserButton.setFont(new Font("Arial", Font.BOLD, 14));
+        modifUserButton.setBackground(new Color(84, 94, 246));
+        modifUserButton.setForeground(Color.WHITE);
+        modifUserButton.setFocusPainted(false);
+        modifUserButton.setPreferredSize(new Dimension(250, 40));
+
+        JPanel modifPanel = new JPanel();
+        modifPanel.setBackground(new Color(245, 245, 245));
+        modifPanel.add(modifUserButton);
+
+
+        JSplitPane bottomPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, modifPanel, logoutPanel);
+        bottomPanel.setResizeWeight(0.5);
+        bottomPanel.setDividerSize(0);
+        bottomPanel.setContinuousLayout(true);
+        bottomPanel.setEnabled(false);
+        bottomPanel.setBackground(new Color(245, 245, 245));
+
+
+
         JPanel centerPanel = new JPanel(new BorderLayout(10, 10));
         centerPanel.setBackground(new Color(245, 245, 245));
         centerPanel.add(userInfoPanel, BorderLayout.NORTH);
         centerPanel.add(commandesScrollPane, BorderLayout.CENTER);
 
         panel.add(centerPanel, BorderLayout.CENTER);
-        panel.add(logoutPanel, BorderLayout.SOUTH);
+        panel.add(bottomPanel, BorderLayout.SOUTH);
 
         return panel;
     }
