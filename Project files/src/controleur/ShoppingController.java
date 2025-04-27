@@ -976,6 +976,16 @@ public class ShoppingController{
                         new Utilisateur(id, email, mdp, nom, prenom, adresse, telephone, isAdmin),
                         email, mdp, nom, prenom, adresse, telephone, isAdmin
                 );
+                // Modifier user connecté si c'est lui meme qui modifie
+                if (utilisateurConnecte != null && utilisateurConnecte.getId() == id) {
+                    utilisateurConnecte.setEmail(email);
+                    utilisateurConnecte.setMotDePasse(mdp);
+                    utilisateurConnecte.setNom(nom);
+                    utilisateurConnecte.setPrenom(prenom);
+                    utilisateurConnecte.setAdresse(adresse);
+                    utilisateurConnecte.setTelephone(telephone);
+                    utilisateurConnecte.setIsAdmin(isAdmin);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(view, "Erreur lors de l'enregistrement de l'utilisateur à la ligne " + (i + 1));
@@ -1003,6 +1013,10 @@ public class ShoppingController{
                 utilisateurDAO.supprimer(userId);
                 ((DefaultTableModel) userTable.getModel()).removeRow(selectedRow);
                 JOptionPane.showMessageDialog(null, "Utilisateur supprimé avec succès !");
+                //Si c'est lui meme qui se supprime
+                if (utilisateurConnecte != null && utilisateurConnecte.getId() == userId) {
+                    handleLogout();
+                }
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(null, "Erreur lors de la suppression : " + ex.getMessage());
             }
