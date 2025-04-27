@@ -83,7 +83,7 @@ public class ShoppingView extends JFrame{
 
         //Icone de l'app
         try{
-            ImageIcon icon = new ImageIcon("../image/pokeball.png");
+            ImageIcon icon = new ImageIcon("Project files/src/image/pokeball.png");
             frame.setIconImage(icon.getImage());
         } catch (Exception e){
             System.err.println("Vue - Erreur de chargement de l'icône : " + e.getMessage());
