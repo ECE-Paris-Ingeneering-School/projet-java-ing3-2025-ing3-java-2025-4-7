@@ -308,6 +308,10 @@ public class ShoppingView extends JFrame{
         JScrollPane scrollPane = new JScrollPane(listPanel);
         panel.add(scrollPane, BorderLayout.CENTER);
 
+        // Ajustement de la vitesse de défilement avec la souris
+        JScrollBar vertical = scrollPane.getVerticalScrollBar();
+        vertical.setUnitIncrement(20);
+
         //bouton commander
         commanderButton = new JButton("Commander");
         commanderButton.setFont(new Font("Arial", Font.BOLD, 16));
@@ -618,6 +622,10 @@ public class ShoppingView extends JFrame{
         commandesScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         commandesScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
+        // Ajustement de la vitesse de défilement avec la souris
+        JScrollBar vertical = commandesScrollPane.getVerticalScrollBar();
+        vertical.setUnitIncrement(20);
+
         JPanel logoutPanel = new JPanel();
         logoutPanel.setBackground(new Color(245, 245, 245));
         logoutPanel.add(logoutButton);
@@ -647,6 +655,10 @@ public class ShoppingView extends JFrame{
         adminTable = new JTable(new DefaultTableModel(columnNames, 0));
         JScrollPane scrollPane = new JScrollPane(adminTable);
         panel.add(scrollPane, BorderLayout.CENTER);
+
+        // Ajustement de la vitesse de défilement avec la souris
+        JScrollBar vertical = scrollPane.getVerticalScrollBar();
+        vertical.setUnitIncrement(20);
 
         //bouton modifier
         saveButton = new JButton("Enregistrer les modifications");
@@ -711,6 +723,10 @@ public class ShoppingView extends JFrame{
         pageScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         pageScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         pageScroll.setBorder(BorderFactory.createEmptyBorder());
+
+        // Ajustement de la vitesse de défilement avec la souris
+        JScrollBar vertical = pageScroll.getVerticalScrollBar();
+        vertical.setUnitIncrement(20);
 
         //remplissage
         for (String marque : articlesParMarque.keySet()) {
@@ -1050,6 +1066,10 @@ public class ShoppingView extends JFrame{
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
+
+        // Ajustement de la vitesse de défilement avec la souris
+        JScrollBar vertical = scrollPane.getVerticalScrollBar();
+        vertical.setUnitIncrement(20);
 
         panierPagePanel.add(scrollPane, BorderLayout.CENTER);
 
