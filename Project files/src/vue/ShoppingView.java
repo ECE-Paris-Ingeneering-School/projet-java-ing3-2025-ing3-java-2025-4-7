@@ -42,7 +42,9 @@ public class ShoppingView extends JFrame{
     private JButton supprimerButton;
     private JButton saveUserButton;
     private JButton deleteUserButton;
-    private JButton modifUserButton;
+    private JButton savePromoButton;
+    private JButton ajouterPromoButton;
+    private JButton deletePromoButton;
 
     // Champs texte et password
     private JTextField searchField;
@@ -71,7 +73,7 @@ public class ShoppingView extends JFrame{
     private Map<String, JLabel> quantiteLabels = new HashMap<>();
 
     // Table admin
-    private JTable adminTable, adminUserTable;
+    private JTable adminTable, adminUserTable, adminPromoTable;
 
     // Listes de boutons pour actions
     private List<JButton> rateButtons = new ArrayList<>();
@@ -529,7 +531,7 @@ public class ShoppingView extends JFrame{
     }
 
 
-    public JPanel createUpdateAccountPagePanel(String userPrenom, String userName, String userEmail, String userPhone, String userAddress, List<String[]> commandes){
+    public JPanel createUpdateAccountPagePanel(String userName, String userEmail, String userPhone, String userAddress, List<String[]> commandes){
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(new Color(245, 245, 245));
 
@@ -540,13 +542,11 @@ public class ShoppingView extends JFrame{
         panel.add(titleLabel, BorderLayout.NORTH);
 
         //pannel infos
-        JPanel userInfoPanel = new JPanel(new GridLayout(0, 2, 10, 10));
+        JPanel userInfoPanel = new JPanel(new GridLayout(4, 2, 10, 10));
         userInfoPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY), "Informations utilisateur"));
         userInfoPanel.setBackground(Color.WHITE);
         userInfoPanel.setPreferredSize(new Dimension(500, 200));
 
-        userInfoPanel.add(new JLabel("Prénom :"));
-        userInfoPanel.add(new JLabel(userPrenom));
         userInfoPanel.add(new JLabel("Nom :"));
         userInfoPanel.add(new JLabel(userName));
         userInfoPanel.add(new JLabel("Email :"));
@@ -642,34 +642,13 @@ public class ShoppingView extends JFrame{
         logoutPanel.setBackground(new Color(245, 245, 245));
         logoutPanel.add(logoutButton);
 
-        modifUserButton = new JButton("Modifier vos informations");
-        modifUserButton.setFont(new Font("Arial", Font.BOLD, 14));
-        modifUserButton.setBackground(new Color(84, 94, 246));
-        modifUserButton.setForeground(Color.WHITE);
-        modifUserButton.setFocusPainted(false);
-        modifUserButton.setPreferredSize(new Dimension(250, 40));
-
-        JPanel modifPanel = new JPanel();
-        modifPanel.setBackground(new Color(245, 245, 245));
-        modifPanel.add(modifUserButton);
-
-
-        JSplitPane bottomPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, modifPanel, logoutPanel);
-        bottomPanel.setResizeWeight(0.5);
-        bottomPanel.setDividerSize(0);
-        bottomPanel.setContinuousLayout(true);
-        bottomPanel.setEnabled(false);
-        bottomPanel.setBackground(new Color(245, 245, 245));
-
-
-
         JPanel centerPanel = new JPanel(new BorderLayout(10, 10));
         centerPanel.setBackground(new Color(245, 245, 245));
         centerPanel.add(userInfoPanel, BorderLayout.NORTH);
         centerPanel.add(commandesScrollPane, BorderLayout.CENTER);
 
         panel.add(centerPanel, BorderLayout.CENTER);
-        panel.add(bottomPanel, BorderLayout.SOUTH);
+        panel.add(logoutPanel, BorderLayout.SOUTH);
 
         return panel;
     }
@@ -698,6 +677,13 @@ public class ShoppingView extends JFrame{
         JScrollPane userScrollPane = new JScrollPane(adminUserTable);
         tabbedPane.addTab("Utilisateurs", userScrollPane);
 
+        //Table for promo
+        String[] promoColumnNames = {"ID", "Code", "Réduction", "actif", "Modifier"};
+        adminPromoTable = new JTable(new DefaultTableModel(promoColumnNames, 0));
+        JScrollPane promoScrollPane = new JScrollPane(adminPromoTable);
+        tabbedPane.addTab("Promotions", promoScrollPane);
+
+
 
         tabbedPane.addChangeListener(e -> {
             int selectedIndex = tabbedPane.getSelectedIndex();
@@ -707,12 +693,28 @@ public class ShoppingView extends JFrame{
                 supprimerButton.setVisible(true);
                 saveUserButton.setVisible(false);
                 deleteUserButton.setVisible(false);
+                savePromoButton.setVisible(false);
+                ajouterPromoButton.setVisible(false);
+                deletePromoButton.setVisible(false);
             } else if (selectedIndex == 1) { // Users tab
                 saveButton.setVisible(false);
                 ajouterButton.setVisible(false);
                 supprimerButton.setVisible(false);
                 saveUserButton.setVisible(true);
                 deleteUserButton.setVisible(true);
+                savePromoButton.setVisible(false);
+                ajouterPromoButton.setVisible(false);
+                deletePromoButton.setVisible(false);
+            }
+            else if (selectedIndex == 2) { // Promo tab
+                saveButton.setVisible(false);
+                ajouterButton.setVisible(false);
+                supprimerButton.setVisible(false);
+                saveUserButton.setVisible(false);
+                deleteUserButton.setVisible(false);
+                savePromoButton.setVisible(true);
+                ajouterPromoButton.setVisible(true);
+                deletePromoButton.setVisible(true);
             }
         });
 
@@ -769,12 +771,44 @@ public class ShoppingView extends JFrame{
         deleteUserButton.setPreferredSize(new Dimension(200, 40));
         deleteUserButton.setVisible(false);
 
+        //bouton enregistrer promo
+        savePromoButton = new JButton("Enregistrer les modifications promo");
+        savePromoButton.setFont(new Font("Arial", Font.BOLD, 16));
+        savePromoButton.setBackground(new Color(34, 139, 34));
+        savePromoButton.setForeground(Color.WHITE);
+        savePromoButton.setFocusPainted(false);
+        savePromoButton.setPreferredSize(new Dimension(250, 40));
+        savePromoButton.setVisible(false);
+
+        //bouton ajouter promo
+        ajouterPromoButton = new JButton("Ajouter une promo");
+        ajouterPromoButton.setFont(new Font("Arial", Font.BOLD, 16));
+        ajouterPromoButton.setBackground(new Color(70, 130, 180));
+        ajouterPromoButton.setForeground(Color.WHITE);
+        ajouterPromoButton.setFocusPainted(false);
+        ajouterPromoButton.setPreferredSize(new Dimension(150, 40));
+        ajouterPromoButton.setVisible(false);
+
+        //bouton supprimer promo
+        deletePromoButton = new JButton("Supprimer une promo");
+        deletePromoButton.setFont(new Font("Arial", Font.BOLD, 16));
+        deletePromoButton.setBackground(new Color(220, 53, 69));
+        deletePromoButton.setForeground(Color.WHITE);
+        deletePromoButton.setFocusPainted(false);
+        deletePromoButton.setPreferredSize(new Dimension(200, 40));
+        deletePromoButton.setVisible(false);
+
+
+
         JPanel bottomPanel = new JPanel();
         bottomPanel.add(saveButton);
         bottomPanel.add(ajouterButton);
         bottomPanel.add(supprimerButton);
         bottomPanel.add(saveUserButton);
         bottomPanel.add(deleteUserButton);
+        bottomPanel.add(savePromoButton);
+        bottomPanel.add(ajouterPromoButton);
+        bottomPanel.add(deletePromoButton);
         panel.add(bottomPanel, BorderLayout.SOUTH);
 
         return panel;
@@ -964,12 +998,12 @@ public class ShoppingView extends JFrame{
     }
 
 
-    public void afficherPageCompte(String prenom, String nom, String email, String tel, String adresse, List<String[]> historique){
+    public void afficherPageCompte(String Prenom,String nom, String email, String tel, String adresse, List<String[]> historique){
         if (updateAccountPagePanel != null) {
             mainPanel.remove(updateAccountPagePanel);
         }
 
-        updateAccountPagePanel = createUpdateAccountPagePanel(prenom, nom, email, tel, adresse, historique);
+        updateAccountPagePanel = createUpdateAccountPagePanel(nom, email, tel, adresse, historique);
         mainPanel.add(updateAccountPagePanel, "UpdateAccount");
         cardLayout.show(mainPanel, "UpdateAccount");
     }
@@ -1291,5 +1325,10 @@ public class ShoppingView extends JFrame{
 
     public JButton getSaveUserButton() { return saveUserButton; }
     public JButton getDeleteUserButton() { return deleteUserButton; }
+    public JButton getDeletePromoButton() { return deletePromoButton; }
+    public JButton getSavePromoButton() { return savePromoButton; }
+    public JButton getAjouterPromoButton() { return ajouterPromoButton; }
+
+    public JTable getAdminPromoTable() {return adminPromoTable;}
 
 }

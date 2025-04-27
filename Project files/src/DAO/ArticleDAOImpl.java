@@ -228,54 +228,68 @@ public class ArticleDAOImpl implements ArticleDAO {
     }
 
 
-    @Override
     /**
      * Supprimer un objet de la classe Produit en paramètre dans la base de données en respectant la contrainte
      * d'intégrité référentielle : en supprimant un produit, supprimer aussi en cascade toutes les commandes de la
      * table commander qui ont l'id du produit supprimé.
      * @params : product = objet de Produit en paramètre à supprimer de la base de données
      */
+    //Supprimer un article
+    @Override
     public void supprimer(Article article) {
-        Connection connexion = null;
-        try {
-            // connexion
-            connexion = daoFactory.getConnection();
-            // Désactiver l'auto-commit pour gérer la transaction manuellement
-            connexion.setAutoCommit(false);
-
-            // récupération de l'id de l'objet product en paramètre
-            int id = article.getId();
-
-            // Correction de la requête SQL (virgule en trop enlevée)
-            String sql = "UPDATE articles SET articleIsAvailable = false WHERE articleID = ?";
-
-            try (PreparedStatement statement = connexion.prepareStatement(sql)) {
-                statement.setInt(1, id);
-                // Exécution de la mise à jour
-                int rowsAffected = statement.executeUpdate();
-
-                if (rowsAffected > 0) {
-                    connexion.commit(); // Valider la transaction
-                    System.out.println("Produit marqué comme supprimé avec succès");
-                } else {
-                    System.out.println("Aucun produit trouvé avec cet ID");
-                }
-            } catch (SQLException e) {
-                connexion.rollback(); // Annuler la transaction en cas d'erreur
-                e.printStackTrace();
+        try (Connection connexion = daoFactory.getConnection()) {
+            // Step 1: Delete the article from the "articles" table
+            String deleteArticleSQL = "DELETE FROM articles WHERE articleID = ?";
+            try (PreparedStatement deleteArticleStmt = connexion.prepareStatement(deleteArticleSQL)) {
+                deleteArticleStmt.setInt(1, article.getId());
+                deleteArticleStmt.executeUpdate();
             }
+
+            // Step 2: Update all commandes to remove the article from Liste_Id_articles and Liste_Quantite_articles
+            String selectCommandesSQL = "SELECT commandeID, Liste_Id_articles, Liste_Quantite_articles FROM commandes";
+            try (PreparedStatement selectCommandesStmt = connexion.prepareStatement(selectCommandesSQL);
+                 ResultSet resultSet = selectCommandesStmt.executeQuery()) {
+
+                while (resultSet.next()) {
+                    int commandeId = resultSet.getInt("commandeID");
+                    String listeIdArticles = resultSet.getString("Liste_Id_articles");
+                    String listeQuantiteArticles = resultSet.getString("Liste_Quantite_articles");
+
+                    // Parse and update the lists
+                    String[] idArray = listeIdArticles.split("-");
+                    String[] quantityArray = listeQuantiteArticles.split("-");
+
+                    StringBuilder updatedIdList = new StringBuilder();
+                    StringBuilder updatedQuantityList = new StringBuilder();
+
+                    for (int i = 0; i < idArray.length; i++) {
+                        if (!idArray[i].equals(String.valueOf(article.getId()))) {
+                            if (updatedIdList.length() > 0) {
+                                updatedIdList.append("-");
+                                updatedQuantityList.append("-");
+                            }
+                            updatedIdList.append(idArray[i]);
+                            updatedQuantityList.append(quantityArray[i]);
+                        }
+                    }
+
+                    // Update the commande if changes were made
+                    if (!updatedIdList.toString().equals(listeIdArticles)) {
+                        String updateCommandeSQL = "UPDATE commandes SET Liste_Id_articles = ?, Liste_Quantite_articles = ? WHERE commandeID = ?";
+                        try (PreparedStatement updateCommandeStmt = connexion.prepareStatement(updateCommandeSQL)) {
+                            updateCommandeStmt.setString(1, updatedIdList.toString());
+                            updateCommandeStmt.setString(2, updatedQuantityList.toString());
+                            updateCommandeStmt.setInt(3, commandeId);
+                            updateCommandeStmt.executeUpdate();
+                        }
+                    }
+                }
+            }
+
+            System.out.println("Article and its references in commandes removed successfully.");
         } catch (SQLException e) {
             e.printStackTrace();
-            System.out.println("Suppression du produit impossible");
-        } finally {
-            // Fermer la connexion dans tous les cas
-            if (connexion != null) {
-                try {
-                    connexion.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
+            System.out.println("Error while deleting the article and updating commandes.");
         }
     }
 }

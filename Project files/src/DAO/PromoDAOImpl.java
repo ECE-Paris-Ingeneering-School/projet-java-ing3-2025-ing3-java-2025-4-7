@@ -14,29 +14,31 @@ public class PromoDAOImpl implements PromoDAO {
     @Override
     public ArrayList<Promo> getAll() {
         ArrayList<Promo> promos = new ArrayList<>();
-        String query = "SELECT * FROM promo";
+        String query = "SELECT promoID, code, reduction, actif FROM Promo";
 
         try (Connection connection = daoFactory.getConnection();
              PreparedStatement statement = connection.prepareStatement(query);
              ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
-                Promo promo = new Promo();
-                promo.setPromoID(resultSet.getInt("id"));
-                promo.setCode(resultSet.getString("code"));
-                promo.setReduction(resultSet.getFloat("reduction"));
-                promo.setActive(resultSet.getBoolean("active"));
-                promos.add(promo);
+                int id = resultSet.getInt("promoID"); // Use the correct column name
+                String code = resultSet.getString("code");
+                float reduction = resultSet.getFloat("reduction");
+                boolean isActive = resultSet.getBoolean("actif");
+
+                promos.add(new Promo(id, code, reduction, isActive));
             }
         } catch (SQLException e) {
-            System.err.println("Error fetching all promos: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Error fetching all promos: " + e.getMessage());
         }
+
         return promos;
     }
 
     @Override
     public Promo ajouter(Promo promo) {
-        String query = "INSERT INTO promo (code, reduction, active) VALUES (?, ?, ?)";
+        String query = "INSERT INTO promo (code, reduction, actif) VALUES (?, ?, ?)";
 
         try (Connection connection = daoFactory.getConnection();
              PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
@@ -60,7 +62,7 @@ public class PromoDAOImpl implements PromoDAO {
     @Override
     public Promo chercher(int id) {
         Promo promo = null;
-        String query = "SELECT * FROM promo WHERE id = ?";
+        String query = "SELECT * FROM promo WHERE promoID = ?";
 
         try (Connection connection = daoFactory.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
@@ -69,10 +71,10 @@ public class PromoDAOImpl implements PromoDAO {
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     promo = new Promo();
-                    promo.setPromoID(resultSet.getInt("id"));
+                    promo.setPromoID(resultSet.getInt("promoID"));
                     promo.setCode(resultSet.getString("code"));
                     promo.setReduction(resultSet.getFloat("reduction"));
-                    promo.setActive(resultSet.getBoolean("active"));
+                    promo.setActive(resultSet.getBoolean("actif"));
                 }
             }
         } catch (SQLException e) {
@@ -83,7 +85,7 @@ public class PromoDAOImpl implements PromoDAO {
 
     @Override
     public Promo modifier(Promo promo) {
-        String query = "UPDATE promo SET code = ?, reduction = ?, active = ? WHERE id = ?";
+        String query = "UPDATE promo SET code = ?, reduction = ?, actif = ? WHERE promoID = ?";
 
         try (Connection connection = daoFactory.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
@@ -101,7 +103,7 @@ public class PromoDAOImpl implements PromoDAO {
 
     @Override
     public void supprimer(Promo promo) {
-        String query = "DELETE FROM promo WHERE id = ?";
+        String query = "DELETE FROM promo WHERE promoID = ?";
 
         try (Connection connection = daoFactory.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {

@@ -115,6 +115,12 @@ public class ShoppingController{
         view.getSaveUserButton().addActionListener(e -> handleSaveUsers());
 
         view.getDeleteUserButton().addActionListener(e -> handleDeleteUsers());
+
+        view.getSavePromoButton().addActionListener(e -> handleSavePromo());
+
+        view.getDeletePromoButton().addActionListener(e -> handleDeletePromo());
+
+        view.getAjouterPromoButton().addActionListener(e -> handleAddPromo());
     }
 
     private void handleLogin(){
@@ -906,6 +912,7 @@ public class ShoppingController{
                 JOptionPane.showMessageDialog(null, "Erreur technique : " + ex.getMessage());
             }
         }
+        afficherPageAdminGestionArticles();
     }
 
 
@@ -946,6 +953,21 @@ public class ShoppingController{
                         utilisateur.getAdresse(),
                         utilisateur.getTelephone(),
                         utilisateur.getIsAdmin(),
+                        "Modifier"
+                });
+            }
+
+            // Load promos into the admin promo table
+            List<Promo> promos = promoDAO.getAll();
+            System.out.println(promos.size());
+            DefaultTableModel promoModel = (DefaultTableModel) view.getAdminPromoTable().getModel();
+            promoModel.setRowCount(0); // Clear existing rows
+            for (Promo promo : promos) {
+                promoModel.addRow(new Object[]{
+                        promo.getPromoID(),
+                        promo.getCode(),
+                        promo.getReduction(),
+                        promo.isActive(),
                         "Modifier"
                 });
             }
@@ -993,6 +1015,7 @@ public class ShoppingController{
         }
 
         JOptionPane.showMessageDialog(view, "Modifications enregistrées avec succès !");
+        afficherPageAdminGestionArticles();
     }
 
     private void handleDeleteUsers()
@@ -1021,6 +1044,94 @@ public class ShoppingController{
                 JOptionPane.showMessageDialog(null, "Erreur lors de la suppression : " + ex.getMessage());
             }
         }
+        afficherPageAdminGestionArticles();
+    }
+
+    private void handleSavePromo(){
+        JTable promoTable = view.getAdminPromoTable();
+        DefaultTableModel promoModel = (DefaultTableModel) promoTable.getModel();
+
+        for (int i = 0; i < promoModel.getRowCount(); i++) {
+            try {
+                int id = parseInteger(promoModel.getValueAt(i, 0));
+                String code = promoModel.getValueAt(i, 1).toString();
+                float reduction = parseFloat(promoModel.getValueAt(i, 2));
+                boolean isActive = Boolean.parseBoolean(promoModel.getValueAt(i, 3).toString());
+
+                // Update promo in the database
+                Promo promo = new Promo(id,code, reduction, isActive);
+                promoDAO.modifier(promo);
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(view, "Erreur lors de l'enregistrement de la promotion à la ligne " + (i + 1));
+            }
+        }
+
+        JOptionPane.showMessageDialog(view, "Modifications enregistrées avec succès !");
+        afficherPageAdminGestionArticles();
+    }
+
+    private void handleAddPromo(){
+        //formulaire
+        JPanel formPanel = new JPanel(new GridLayout(4, 2, 10, 10));
+        formPanel.add(new JLabel("Code:"));
+        JTextField codeField = new JTextField();
+        formPanel.add(codeField);
+
+        formPanel.add(new JLabel("Réduction (0.0 - 1.0):"));
+        JTextField reductionField = new JTextField();
+        formPanel.add(reductionField);
+
+        formPanel.add(new JLabel("Actif (true/false):"));
+        JTextField actifField = new JTextField();
+        formPanel.add(actifField);
+
+        int result = JOptionPane.showConfirmDialog(null, formPanel, "Ajouter une Promotion", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+        if (result == JOptionPane.OK_OPTION) {
+            try {
+                //recuperer les inputs
+                String code = codeField.getText().trim();
+                float reduction = parseFloat(reductionField.getText().trim());
+                boolean actif = Boolean.parseBoolean(actifField.getText().trim());
+
+                //nouvel objet promo
+                Promo newPromo = new Promo(0, code, reduction, actif);
+
+                //ajout bdd
+                promoDAO.ajouter(newPromo);
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Veuillez entrer des valeurs valides.");
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "Erreur technique : " + ex.getMessage());
+            }
+        }
+        afficherPageAdminGestionArticles();
+    }
+
+    private void handleDeletePromo(){
+        JTable promoTable = view.getAdminPromoTable();
+        int selectedRow = promoTable.getSelectedRow();
+
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(null, "Veuillez sélectionner une promotion à supprimer.");
+            return;
+        }
+
+        int promoId = parseInteger(promoTable.getValueAt(selectedRow, 0));
+        int confirmation = JOptionPane.showConfirmDialog(null, "Êtes-vous sûr de vouloir supprimer cette promotion ?", "Confirmation", JOptionPane.YES_NO_OPTION);
+
+        if (confirmation == JOptionPane.YES_OPTION) {
+            try {
+                Promo promoToDelete = promoDAO.chercher(promoId);
+                promoDAO.supprimer(promoToDelete);
+                ((DefaultTableModel) promoTable.getModel()).removeRow(selectedRow);
+                JOptionPane.showMessageDialog(null, "Promotion supprimée avec succès !");
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "Erreur lors de la suppression : " + ex.getMessage());
+            }
+        }
+        afficherPageAdminGestionArticles();
     }
 
     private double parseDouble(Object value) {
@@ -1030,6 +1141,13 @@ public class ShoppingController{
         return Double.parseDouble(value.toString());
     }
 
+
+    private float parseFloat(Object value) {
+        if (value == null || value.toString().trim().isEmpty()) {
+            return 0.0f; // Valeur par défaut pour les floats
+        }
+        return Float.parseFloat(value.toString());
+    }
 
     private int parseInteger(Object value) {
         if (value == null || value.toString().trim().isEmpty()) {
