@@ -883,14 +883,19 @@ public class ShoppingView extends JFrame{
 
             // Calcul du prix
             try {
-                String prixRaw = articleData.get("prixUnitaire");
+                String prixUnitaireRaw = articleData.get("prixUnitaire");
+                String prixVracRaw = articleData.get("prixVrac");
+                String seuilVracRaw = articleData.get("seuilVrac");
                 String quantiteRaw = articleData.get("quantite");
-                if (prixRaw != null && quantiteRaw != null) {
-                    String prixStr = prixRaw.replace("€", "").replace(",", ".").replaceAll("[^\\d.]", "").trim();
-                    double prix = Double.parseDouble(prixStr);
+
+                if (prixUnitaireRaw != null && prixVracRaw != null && seuilVracRaw != null && quantiteRaw != null) {
+                    double prixUnitaire = Double.parseDouble(prixUnitaireRaw.replace("€", "").replace(",", ".").replaceAll("[^\\d.]", "").trim());
+                    double prixVrac = Double.parseDouble(prixVracRaw.replace("€", "").replace(",", ".").replaceAll("[^\\d.]", "").trim());
+                    int seuilVrac = Integer.parseInt(seuilVracRaw.trim());
                     int quantite = Integer.parseInt(quantiteRaw.trim());
-                    totalPrix += prix * quantite;
-                }
+
+                    double prixApplique = (quantite >= seuilVrac) ? prixVrac : prixUnitaire;
+                    totalPrix += prixApplique * quantite; }
             } catch (Exception e) {
                 System.out.println("Erreur calcul du total : " + e.getMessage());
             }
