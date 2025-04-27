@@ -1,5 +1,11 @@
 package modele;
 
+/**
+ * Classe de la commande passée par un utilisateur.
+ *
+ * Contient les informations principales comme la date, le statut,
+ * les articles commandés, les quantités, le prix total et l'adresse de livraison.
+ */
 public class Commande {
     private int id;
     private final int utilisateurID;
@@ -10,6 +16,18 @@ public class Commande {
     private String listeQuantite_Article;
     private String adresseLivraison; // 👈 Nouveau champ
 
+    /**
+     * Constructeur d'un objet commande avec toutes ses informations.
+     *
+     * @param id                    Identifiant de la commande
+     * @param utilisateurID         Identifiant de l'utilisateur ayant passé la commande
+     * @param date                  Date de la commande
+     * @param statut                Statut de la commande
+     * @param prix                  Prix total de la commande
+     * @param listeID_Article       Liste des IDs des articles commandés
+     * @param listeQuantite_Article Liste des quantités correspondantes
+     * @param adresseLivraison      Adresse de livraison
+     */
     public Commande(int id, int utilisateurID, String date, String statut, double prix,
                     String listeID_Article, String listeQuantite_Article, String adresseLivraison) {
         this.id = id;

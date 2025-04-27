@@ -1,5 +1,11 @@
 package modele;
 
+/**
+ * Représente un utilisateur dans le système, avec ses informations personnelles et ses paramètres de connexion.
+ *
+ * Un utilisateur peut être un client standard ou un administrateur, avec des informations telles que l'email,
+ * le mot de passe, l'adresse, le téléphone, et son statut d'administration.
+ */
 public class Utilisateur {
     private int id;
     private String email;

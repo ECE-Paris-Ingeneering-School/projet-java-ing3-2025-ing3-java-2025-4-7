@@ -1,5 +1,11 @@
 package modele;
 
+/**
+ * Classe Article avec ses informations de base comme
+ * le prix, le stock, et les informations de vrac.
+ *
+ * Un article peut également avoir une image associée via une URL.
+ */
 public class Article {
     private int id;
     private String nom;
@@ -11,7 +17,19 @@ public class Article {
     private boolean isAvailable;
     private String imageURL;  // Nouveau champ pour l'URL de l'image
 
-    // Constructeur mis à jour
+    /**
+     * Constructeur d'un nouvel article avec toutes ses propriétés.
+     *
+     * @param id            Identifiant de l'article
+     * @param nom           Nom de l'article
+     * @param marque        Marque de l'article
+     * @param prixUnitaire  Prix unitaire
+     * @param prixVrac      Prix pour l'achat en vrac
+     * @param seuilVrac     Seuil de quantité pour bénéficier du prix vrac
+     * @param stock         Stock disponible
+     * @param isAvailable   Disponibilité de l'article
+     * @param imageURL      URL de l'image représentant l'article
+     */
     public Article(int id, String nom, String marque, double prixUnitaire, double prixVrac,
                    int seuilVrac, int stock, boolean isAvailable, String imageURL) {
         this.id = id;
@@ -62,11 +80,6 @@ public class Article {
 
     public String getImageUrl() {
         return imageURL;
-    }
-
-
-    public void setImageURL(String imageURL) {
-        this.imageURL = imageURL;
     }
 
 }
