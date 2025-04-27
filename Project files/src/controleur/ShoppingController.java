@@ -264,10 +264,11 @@ public class ShoppingController{
     private void afficherCompte(){
         if (utilisateurConnecte != null){
             //Récupérer les informations personnelles de l'utilisateur
-            String userName = utilisateurConnecte.getNom();
+            String userPrenom = utilisateurConnecte.getPrenom();
+            String userNom = utilisateurConnecte.getNom();
             String userEmail = utilisateurConnecte.getEmail();
             String userTel = String.valueOf(utilisateurConnecte.getTelephone());
-            String userAddress = utilisateurConnecte.getAdresse();
+            String userAddresse = utilisateurConnecte.getAdresse();
 
             //Récupérer l'historique des commandes
             List<Commande> commandes = commandeDAO.getCommandesParUtilisateur(utilisateurConnecte.getId());
@@ -284,7 +285,7 @@ public class ShoppingController{
                 historiqueCommandes.add(infos);
             }
 
-            view.afficherPageCompte(userName, userEmail, userTel, userAddress, historiqueCommandes);
+            view.afficherPageCompte(userPrenom, userNom, userEmail, userTel, userAddresse, historiqueCommandes);
 
             //listeners
             for (JButton rateButton : view.getRateButtons()) {

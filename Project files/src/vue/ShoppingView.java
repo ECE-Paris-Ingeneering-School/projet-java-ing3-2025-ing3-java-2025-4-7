@@ -528,7 +528,7 @@ public class ShoppingView extends JFrame{
     }
 
 
-    public JPanel createUpdateAccountPagePanel(String userName, String userEmail, String userPhone, String userAddress, List<String[]> commandes){
+    public JPanel createUpdateAccountPagePanel(String userPrenom, String userName, String userEmail, String userPhone, String userAddress, List<String[]> commandes){
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(new Color(245, 245, 245));
 
@@ -539,11 +539,13 @@ public class ShoppingView extends JFrame{
         panel.add(titleLabel, BorderLayout.NORTH);
 
         //pannel infos
-        JPanel userInfoPanel = new JPanel(new GridLayout(4, 2, 10, 10));
+        JPanel userInfoPanel = new JPanel(new GridLayout(0, 2, 10, 10));
         userInfoPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY), "Informations utilisateur"));
         userInfoPanel.setBackground(Color.WHITE);
         userInfoPanel.setPreferredSize(new Dimension(500, 200));
 
+        userInfoPanel.add(new JLabel("Prénom :"));
+        userInfoPanel.add(new JLabel(userPrenom));
         userInfoPanel.add(new JLabel("Nom :"));
         userInfoPanel.add(new JLabel(userName));
         userInfoPanel.add(new JLabel("Email :"));
@@ -940,12 +942,12 @@ public class ShoppingView extends JFrame{
     }
 
 
-    public void afficherPageCompte(String nom, String email, String tel, String adresse, List<String[]> historique){
+    public void afficherPageCompte(String prenom, String nom, String email, String tel, String adresse, List<String[]> historique){
         if (updateAccountPagePanel != null) {
             mainPanel.remove(updateAccountPagePanel);
         }
 
-        updateAccountPagePanel = createUpdateAccountPagePanel(nom, email, tel, adresse, historique);
+        updateAccountPagePanel = createUpdateAccountPagePanel(prenom, nom, email, tel, adresse, historique);
         mainPanel.add(updateAccountPagePanel, "UpdateAccount");
         cardLayout.show(mainPanel, "UpdateAccount");
     }
