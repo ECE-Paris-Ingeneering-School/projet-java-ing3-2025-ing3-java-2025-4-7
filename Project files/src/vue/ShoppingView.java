@@ -41,6 +41,10 @@ public class ShoppingView extends JFrame{
     private JButton minusBtn;
     private JButton supprimerButton;
 
+    private JMenuItem option1;
+    private JMenuItem option2;
+    private JMenuItem option3;
+
     // Champs texte et password
     private JTextField searchField;
     private JTextField emailField;
@@ -222,6 +226,24 @@ public class ShoppingView extends JFrame{
         adminButton.setFocusPainted(false);
         adminButton.setOpaque(false);
 
+        // Création du menu déroulant (JPopupMenu)
+        JPopupMenu menuDeroulant = new JPopupMenu();
+
+        // Ajout des options au menu
+        option1 = new JMenuItem("Gestion des Articles");
+        option2 = new JMenuItem("Gestion des clients");
+        option3 = new JMenuItem("Gestion des commandes - stats");
+
+        menuDeroulant.add(option1);
+        menuDeroulant.add(option2);
+        menuDeroulant.add(option3);
+
+        adminButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // Afficher le menu sous le bouton
+                menuDeroulant.show(adminButton, 0, adminButton.getHeight());
+            }
+        });
 
         rightPanel.add(accountButton);
         rightPanel.add(panierButton);
@@ -1221,6 +1243,12 @@ public class ShoppingView extends JFrame{
     public JButton getAjouterButton() {return ajouterButton;}
 
     public JButton getAdminButton(){return adminButton;}
+
+    public JMenuItem getOption1() {return option1;}
+
+    public JMenuItem getOption2() {return option2;}
+
+    public JMenuItem getOption3() {return option3;}
 
     public JTable getAdminTable() { return adminTable; }
 
