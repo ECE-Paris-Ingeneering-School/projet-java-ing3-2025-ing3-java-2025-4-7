@@ -3,7 +3,7 @@ package vue;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
@@ -12,8 +12,6 @@ import java.util.LinkedHashMap;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import java.net.URL;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 
 public class ShoppingView extends JFrame{
@@ -835,12 +833,6 @@ public class ShoppingView extends JFrame{
 
 
 
-
-
-
-
-
-
     public void afficherPageCompte(String nom, String email, String tel, String adresse, List<String[]> historique) {
         if (updateAccountPagePanel != null) {
             mainPanel.remove(updateAccountPagePanel);
@@ -856,9 +848,11 @@ public class ShoppingView extends JFrame{
         panierPagePanel.removeAll(); // Clear the existing panel
 
         JPanel mainContainer = new JPanel();
-        mainContainer.setLayout(new GridLayout(0, 2, 20, 20)); // 2 cards per row with spacing
+        GridLayout gridLayout = new GridLayout(0, 2, 20, 20);
+        mainContainer.setLayout(gridLayout);
         mainContainer.setBackground(Color.WHITE);
         mainContainer.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
+
 
         for (Map<String, String> articleData : articles) {
             JPanel card = new JPanel(new BorderLayout());
@@ -1020,7 +1014,13 @@ public class ShoppingView extends JFrame{
             splitPane.setBackground(Color.WHITE);
 
             card.add(splitPane, BorderLayout.CENTER);
-            mainContainer.add(card);
+            card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 300));
+
+            JPanel wrapper = new JPanel();
+            wrapper.setLayout(new BoxLayout(wrapper, BoxLayout.Y_AXIS));
+            wrapper.setBackground(Color.WHITE);
+            wrapper.add(card, BorderLayout.NORTH);
+            mainContainer.add(wrapper);
         }
 
         JScrollPane scrollPane = new JScrollPane(mainContainer);
@@ -1047,13 +1047,26 @@ public class ShoppingView extends JFrame{
         bottomPanel.setEnabled(false);
         bottomPanel.setBackground(Color.WHITE);
 
-
-
-
         panierPagePanel.add(bottomPanel, BorderLayout.SOUTH);
 
+        // 🎯 Ajoute le listener sur le SCROLLPANE, pas ailleurs
+        scrollPane.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                int largeur = scrollPane.getViewport().getWidth();
+                //System.out.println("largeur = " + largeur);
+                if (largeur < 900) {
+                    gridLayout.setColumns(1);
+                } else {
+                    gridLayout.setColumns(2);
+                }
+                mainContainer.revalidate();
+                mainContainer.repaint();
+            }
+        });
+
         // Ajoute le panel dans le container qui contient les articles
-        mainContainer.add(Box.createVerticalStrut(20));
+        //mainContainer.add(Box.createVerticalStrut(20));
 
 
         panierPagePanel.revalidate();
@@ -1076,10 +1089,6 @@ public class ShoppingView extends JFrame{
             }
         });
     }
-
-
-
-
 
 
     public JTextField getEmailField() { return emailField; }
