@@ -3,12 +3,17 @@ package vue;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import java.net.URL;
-import java.util.List;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 
 public class ShoppingView extends JFrame{
@@ -76,13 +81,12 @@ public class ShoppingView extends JFrame{
         frame.setSize(800, 600);
 
         //Icone de l'app
-        try {
-            ImageIcon icon = new ImageIcon(Objects.requireNonNull(getClass().getResource("../image/pokeball.png")));
+        try{
+            ImageIcon icon = new ImageIcon("../image/pokeball.png");
             frame.setIconImage(icon.getImage());
-        } catch (Exception e) {
-            System.err.println("Erreur de chargement de l'icône: " + e.getMessage());
+        } catch (Exception e){
+            System.err.println("Vue - Erreur de chargement de l'icône : " + e.getMessage());
         }
-
 
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
@@ -472,7 +476,7 @@ public class ShoppingView extends JFrame{
         return panel;
     }
 
-
+    //methode fantome
     private JPanel createCommandePagePanel(){
         JPanel panel = new JPanel(new BorderLayout());
 
@@ -514,21 +518,18 @@ public class ShoppingView extends JFrame{
         return panel;
     }
 
-    public JPanel createUpdateAccountPagePanel(
-            String userName,
-            String userEmail,
-            String userPhone,
-            String userAddress,
-            List<String[]> commandes
-    ) {
+
+    public JPanel createUpdateAccountPagePanel(String userName, String userEmail, String userPhone, String userAddress, List<String[]> commandes){
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(new Color(245, 245, 245));
 
+        //titre
         JLabel titleLabel = new JLabel("Mon Compte", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 26));
         titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
         panel.add(titleLabel, BorderLayout.NORTH);
 
+        //pannel infos
         JPanel userInfoPanel = new JPanel(new GridLayout(4, 2, 10, 10));
         userInfoPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY), "Informations utilisateur"));
         userInfoPanel.setBackground(Color.WHITE);
@@ -543,15 +544,18 @@ public class ShoppingView extends JFrame{
         userInfoPanel.add(new JLabel("Adresse :"));
         userInfoPanel.add(new JLabel(userAddress));
 
+        //pannel historique
         JPanel commandesPanel = new JPanel();
         commandesPanel.setLayout(new BoxLayout(commandesPanel, BoxLayout.Y_AXIS));
         commandesPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY), "Historique des commandes"));
         commandesPanel.setBackground(Color.WHITE);
 
-        rateButtons.clear(); // Important si tu rappelles cette méthode plusieurs fois
+        //clear des boutons pour cliquer plusieurs fois
+        rateButtons.clear();
         viewDetailsButtons.clear();
 
-        for (String[] infos : commandes) {
+        //création de cards commandes
+        for (String[] infos : commandes){
             String id = infos[0];
             String date = infos[1];
             String adresse = infos[2];
@@ -586,13 +590,15 @@ public class ShoppingView extends JFrame{
             JPanel bottomButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
             bottomButtonPanel.setBackground(Color.WHITE);
 
-            JButton viewDetailsButton = new JButton("Voir détails de la facture");
+            //bouton details
+            JButton viewDetailsButton = new JButton("Voir détails");
             viewDetailsButton.setFont(new Font("Arial", Font.PLAIN, 12));
             viewDetailsButton.setBackground(new Color(0, 123, 255));
             viewDetailsButton.setForeground(Color.WHITE);
             viewDetailsButton.setFocusPainted(false);
             viewDetailsButton.setPreferredSize(new Dimension(180, 30));
 
+            //bouton noter
             JButton rateButton = new JButton("Noter");
             rateButton.setFont(new Font("Arial", Font.PLAIN, 12));
             rateButton.setBackground(new Color(40, 167, 69));
@@ -600,16 +606,13 @@ public class ShoppingView extends JFrame{
             rateButton.setFocusPainted(false);
             rateButton.setPreferredSize(new Dimension(100, 30));
 
+            //gestion des boutons pour controleur
             viewDetailsButton.setName(id);
             rateButton.setName(id);
-
-            // Stocker les boutons pour que le contrôleur les utilise après
             viewDetailsButtons.add(viewDetailsButton);
             rateButtons.add(rateButton);
-
             bottomButtonPanel.add(viewDetailsButton);
             bottomButtonPanel.add(rateButton);
-
             cardPanel.add(bottomButtonPanel, BorderLayout.SOUTH);
             commandesPanel.add(cardPanel);
         }
@@ -635,7 +638,7 @@ public class ShoppingView extends JFrame{
     }
 
 
-    public JPanel createAdminPagePanel() {
+    public JPanel createAdminPagePanel(){
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
@@ -643,13 +646,13 @@ public class ShoppingView extends JFrame{
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         panel.add(titleLabel, BorderLayout.NORTH);
 
-        // Initialize the admin table with all fields
+        //table articles
         String[] columnNames = {"ID", "Nom", "Marque", "Prix Unitaire", "Prix Vrac", "Seuil Vrac", "Stock", "Disponible","lien image", "Modifier"};
         adminTable = new JTable(new DefaultTableModel(columnNames, 0));
         JScrollPane scrollPane = new JScrollPane(adminTable);
         panel.add(scrollPane, BorderLayout.CENTER);
 
-        // Initialize the save button
+        //bouton modifier
         saveButton = new JButton("Enregistrer les modifications");
         saveButton.setFont(new Font("Arial", Font.BOLD, 16));
         saveButton.setBackground(new Color(34, 139, 34));
@@ -657,6 +660,7 @@ public class ShoppingView extends JFrame{
         saveButton.setFocusPainted(false);
         saveButton.setPreferredSize(new Dimension(250, 40));
 
+        //bouton ajouter
         ajouterButton = new JButton("Ajouter un article");
         ajouterButton.setFont(new Font("Arial", Font.BOLD, 16));
         ajouterButton.setBackground(new Color(70, 130, 180));
@@ -664,6 +668,7 @@ public class ShoppingView extends JFrame{
         ajouterButton.setFocusPainted(false);
         ajouterButton.setPreferredSize(new Dimension(150, 40));
 
+        //bouton supprimer
         supprimerButton = new JButton("Supprimer un article");
         supprimerButton.setFont(new Font("Arial", Font.BOLD, 16));
         supprimerButton.setBackground(new Color(220, 53, 69));
@@ -681,24 +686,24 @@ public class ShoppingView extends JFrame{
     }
 
 
-    public void updateHomePageView(List<Map<String, String>> articles, ActionListener ajouterPanierListener) {
+    public void updateHomePageView(List<Map<String, String>> articles, ActionListener ajouterPanierListener){
         homePagePanel.removeAll();
 
-        // Navbar
-        JPanel navbar = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        navbar.setBackground(new Color(66, 133, 244));
+        //bandeau bienvenue
+        JPanel bandeau = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        bandeau.setBackground(new Color(66, 133, 244));
         JLabel navbarLabel = new JLabel("Bienvenue sur Pokéshop ! Code PROMO spécial d'ouverture : WELCOME10");
         navbarLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
         navbarLabel.setForeground(Color.WHITE);
-        navbar.add(navbarLabel);
+        bandeau.add(navbarLabel);
 
-        // Main container
+        //container articles
         JPanel mainContainer = new JPanel();
         mainContainer.setLayout(new BoxLayout(mainContainer, BoxLayout.Y_AXIS));
         mainContainer.setBackground(Color.WHITE);
         mainContainer.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
 
-        // Regrouper par marque
+        //regrouper par 'marque'
         Map<String, List<Map<String, String>>> articlesParMarque = new LinkedHashMap<>();
         for (Map<String, String> article : articles) {
             String marque = article.getOrDefault("marque", "Autres");
@@ -706,21 +711,22 @@ public class ShoppingView extends JFrame{
             articlesParMarque.get(marque).add(article);
         }
 
-        // Parcours des marques
+        //remplissage
         for (String marque : articlesParMarque.keySet()) {
             JPanel sectionPanel = new JPanel();
             sectionPanel.setLayout(new BoxLayout(sectionPanel, BoxLayout.Y_AXIS));
             sectionPanel.setBackground(Color.WHITE);
 
+            //creation ligne
             JLabel marqueLabel = new JLabel(marque.toUpperCase());
             marqueLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
             marqueLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 5, 0));
             sectionPanel.add(marqueLabel);
-
             JPanel ligneArticles = new JPanel();
             ligneArticles.setLayout(new BoxLayout(ligneArticles, BoxLayout.X_AXIS));
             ligneArticles.setBackground(Color.WHITE);
 
+            //remplissage ligne
             for (Map<String, String> article : articlesParMarque.get(marque)) {
                 JPanel card = new JPanel();
                 card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
@@ -733,7 +739,7 @@ public class ShoppingView extends JFrame{
                 card.setBackground(new Color(245, 245, 250));
                 card.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-                // Nom (top)
+                //nom
                 JLabel nomLabel = new JLabel(article.get("nom"));
                 nomLabel.setFont(new Font("SansSerif", Font.BOLD, 15));
                 nomLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -742,7 +748,7 @@ public class ShoppingView extends JFrame{
                 card.add(nomLabel);
                 card.add(Box.createVerticalStrut(10));
 
-                // Image
+                //image
                 String imageURL = article.get("articleImageURL");
                 if (imageURL != null && !imageURL.isEmpty()) {
                     try {
@@ -769,14 +775,13 @@ public class ShoppingView extends JFrame{
 
                 card.add(Box.createVerticalStrut(10));
 
-                // Infos
-                // Infos
+                //prix normal
                 JLabel prixLabel = new JLabel("Prix: " + article.get("prixUnitaire"));
                 prixLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
                 prixLabel.setForeground(new Color(34, 139, 34));
                 prixLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-// Prix vrac reformatté
+                //prix vrac
                 String seuil = article.get("seuilVrac");
                 String prixVrac = article.get("prixVrac");
                 JLabel prixVracLabel = new JLabel("Prix vrac ("+seuil+"+) : " + prixVrac);
@@ -788,8 +793,8 @@ public class ShoppingView extends JFrame{
                 card.add(prixVracLabel);
                 card.add(Box.createVerticalStrut(10));
 
-// Bouton
-                JButton ajouterButton = new JButton("Ajouter un article");
+                //bouton panier
+                JButton ajouterButton = new JButton("Ajouter au panier");
                 ajouterButton.setFocusPainted(false);
                 ajouterButton.setBackground(new Color(66, 133, 244));
                 ajouterButton.setForeground(Color.WHITE);
@@ -804,9 +809,9 @@ public class ShoppingView extends JFrame{
                 ligneArticles.add(Box.createHorizontalStrut(10));
             }
 
+            //scroll
             JScrollPane ligneScroll = new JScrollPane(ligneArticles);
             ligneScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-            ligneScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
             ligneScroll.getHorizontalScrollBar().setPreferredSize(new Dimension(0, 0));
             ligneScroll.setBorder(BorderFactory.createEmptyBorder());
             ligneScroll.setPreferredSize(new Dimension(0, 420)); // hauteur plus grande pour scroll correct
@@ -821,7 +826,7 @@ public class ShoppingView extends JFrame{
         pageScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         homePagePanel.setLayout(new BorderLayout());
-        homePagePanel.add(navbar, BorderLayout.NORTH);
+        homePagePanel.add(bandeau, BorderLayout.NORTH);
         homePagePanel.add(pageScroll, BorderLayout.CENTER);
 
         homePagePanel.revalidate();
@@ -829,9 +834,7 @@ public class ShoppingView extends JFrame{
     }
 
 
-
-
-    public void afficherPageCompte(String nom, String email, String tel, String adresse, List<String[]> historique) {
+    public void afficherPageCompte(String nom, String email, String tel, String adresse, List<String[]> historique){
         if (updateAccountPagePanel != null) {
             mainPanel.remove(updateAccountPagePanel);
         }
@@ -841,32 +844,32 @@ public class ShoppingView extends JFrame{
         cardLayout.show(mainPanel, "UpdateAccount");
     }
 
-    public void updatePanierPageView(List<Map<String, String>> articles, ActionListener plusListener, ActionListener minusListener) {
+    public void updatePanierPageView(List<Map<String, String>> articles, ActionListener plusListener, ActionListener minusListener){
         double totalPrix = 0.0;
-        panierPagePanel.removeAll(); // Clear the existing panel
+        panierPagePanel.removeAll();
 
+        //container
         JPanel mainContainer = new JPanel();
-        GridLayout gridLayout = new GridLayout(0, 2, 20, 20);
-        mainContainer.setLayout(gridLayout);
+        mainContainer.setLayout(new GridLayout(0, 2, 20, 20));
         mainContainer.setBackground(Color.WHITE);
         mainContainer.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
 
-
-        for (Map<String, String> articleData : articles) {
+        //articles
+        for (Map<String, String> articleData : articles){
             JPanel card = new JPanel(new BorderLayout());
             card.setPreferredSize(new Dimension(400, 300));
             card.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
             card.setBackground(Color.WHITE);
 
-            // Panel image
+            //panel image
             JPanel imageContainer = new JPanel(new BorderLayout());
             imageContainer.setBackground(Color.WHITE);
 
-            // Panel info
+            //panel info
             JPanel infoContainer = new JPanel();
             infoContainer.setBackground(Color.WHITE);
 
-            // Calcul du prix
+            //TODO: mauvaise gestion prix total?
             try {
                 String prixRaw = articleData.get("prixUnitaire");
                 String quantiteRaw = articleData.get("quantite");
@@ -880,7 +883,7 @@ public class ShoppingView extends JFrame{
                 System.out.println("Erreur calcul du total : " + e.getMessage());
             }
 
-            // Gestion de l'image
+            //image
             String imageURL = articleData.get("imageUrl");
             if (imageURL != null && !imageURL.isEmpty()) {
                 try {
@@ -897,8 +900,7 @@ public class ShoppingView extends JFrame{
                 }
             }
 
-
-            // Panel des informations
+            //informations
             infoContainer.setLayout(new BoxLayout(infoContainer, BoxLayout.Y_AXIS));
             infoContainer.setBackground(Color.WHITE);
             infoContainer.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
@@ -984,7 +986,7 @@ public class ShoppingView extends JFrame{
             prixTotalPanel.setBackground(Color.WHITE);
             prixTotalPanel.add(prixTotalLabel);
 
-            // Set Action Commands and Listeners
+            //definition listeners pour controleur
             String articleId = articleData.get("id");
             plusBtn.setActionCommand(articleId);
             minusBtn.setActionCommand(articleId);
@@ -1012,13 +1014,7 @@ public class ShoppingView extends JFrame{
             splitPane.setBackground(Color.WHITE);
 
             card.add(splitPane, BorderLayout.CENTER);
-            card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 300));
-
-            JPanel wrapper = new JPanel();
-            wrapper.setLayout(new BoxLayout(wrapper, BoxLayout.Y_AXIS));
-            wrapper.setBackground(Color.WHITE);
-            wrapper.add(card, BorderLayout.NORTH);
-            mainContainer.add(wrapper);
+            mainContainer.add(card);
         }
 
         JScrollPane scrollPane = new JScrollPane(mainContainer);
@@ -1047,42 +1043,25 @@ public class ShoppingView extends JFrame{
 
         panierPagePanel.add(bottomPanel, BorderLayout.SOUTH);
 
-        // 🎯 Ajoute le listener sur le SCROLLPANE, pas ailleurs
-        scrollPane.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                int largeur = scrollPane.getViewport().getWidth();
-                //System.out.println("largeur = " + largeur);
-                if (largeur < 900) {
-                    gridLayout.setColumns(1);
-                } else {
-                    gridLayout.setColumns(2);
-                }
-                mainContainer.revalidate();
-                mainContainer.repaint();
-            }
-        });
-
         // Ajoute le panel dans le container qui contient les articles
-        //mainContainer.add(Box.createVerticalStrut(20));
-
+        mainContainer.add(Box.createVerticalStrut(20));
 
         panierPagePanel.revalidate();
         panierPagePanel.repaint();
     }
 
-    // Fonction pour ajouter un effet de survol (hover) sur les boutons
-    private void addHoverEffect(JButton button) {
-        button.addMouseListener(new MouseAdapter() {
+    //effet de hover sur les boutons
+    private void addHoverEffect(JButton button){
+        button.addMouseListener(new MouseAdapter(){
             @Override
-            public void mouseEntered(MouseEvent e) {
-                button.setBackground(new Color(0, 123, 255)); // Change la couleur au survol
+            public void mouseEntered(MouseEvent e){
+                button.setBackground(new Color(0, 123, 255)); // Change la couleur
                 button.setCursor(new Cursor(Cursor.HAND_CURSOR)); // Curseur main
             }
 
             @Override
-            public void mouseExited(MouseEvent e) {
-                button.setBackground(new Color(23, 162, 184)); // Remet la couleur originale (bleu clair)
+            public void mouseExited(MouseEvent e){
+                button.setBackground(new Color(23, 162, 184)); // Remet la couleur originale
                 button.setCursor(new Cursor(Cursor.DEFAULT_CURSOR)); // Curseur normal
             }
         });
@@ -1125,14 +1104,6 @@ public class ShoppingView extends JFrame{
 
     public JButton getLogoutButton() { return logoutButton; }
 
-    public JPanel getPanierPagePanel() { return panierPagePanel; }
-
-    public JPanel getListPanel() { return listPanel; }
-
-    public JPanel getMainPanel() { return mainPanel; }
-
-    public JPanel getHomePagePanel() { return homePagePanel; }
-
     public JButton getSearchButton() { return searchButton; }
 
     public String getSearchText() { return searchField.getText(); }
@@ -1148,10 +1119,6 @@ public class ShoppingView extends JFrame{
     public JTable getAdminTable() { return adminTable; }
 
     public JButton getSaveButton() { return saveButton; }
-
-    public JButton getPlusBtn(){return plusBtn;}
-
-    public JButton getMinusBtn(){return minusBtn;}
 
     public JButton getSupprimerButton() { return supprimerButton; }
 
