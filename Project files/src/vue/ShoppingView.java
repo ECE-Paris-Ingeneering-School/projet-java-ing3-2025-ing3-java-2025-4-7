@@ -16,52 +16,93 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 
-public class ShoppingView extends JFrame {
+public class ShoppingView extends JFrame{
+    //Frame principal
     private JFrame frame;
     private JPanel mainPanel;
     private CardLayout cardLayout;
-    private JTable adminTable;
-    private JButton homeButton, accountButton, panierButton, loginButton, registerButton, searchButton, submitLoginButton, submitRegisterButton, logoutButton, commanderButton, ajouterButton, adminButton, saveButton, plusBtn,minusBtn, supprimerButton;
-    private JTextField searchField, emailField, registerEmailField, registerPrenomField, registerNomField;
-    private JPasswordField passwordField, registerPasswordField, registerConfirmPasswordField;
 
-    private JPanel homePagePanel, accountPagePanel, panierPagePanel, loginPagePanel, registerPagePanel, commandePagePanel, updateAccountPagePanel, adminPagePanel;
-    private JPanel listPanel; // Class-level field for listPanel
-    private Map<String, JLabel> quantiteLabels;
+    // Boutons
+    private JButton homeButton;
+    private JButton accountButton;
+    private JButton panierButton;
+    private JButton loginButton;
+    private JButton registerButton;
+    private JButton searchButton;
+    private JButton submitLoginButton;
+    private JButton submitRegisterButton;
+    private JButton logoutButton;
+    private JButton commanderButton;
+    private JButton ajouterButton;
+    private JButton adminButton;
+    private JButton saveButton;
+    private JButton plusBtn;
+    private JButton minusBtn;
+    private JButton supprimerButton;
+
+    // Champs texte et password
+    private JTextField searchField;
+    private JTextField emailField;
+    private JTextField registerEmailField;
+    private JTextField registerPrenomField;
+    private JTextField registerNomField;
+    private JPasswordField passwordField;
+    private JPasswordField registerPasswordField;
+    private JPasswordField registerConfirmPasswordField;
+
+    // Panneaux
+    private JPanel homePagePanel;
+    private JPanel accountPagePanel;
+    private JPanel panierPagePanel;
+    private JPanel loginPagePanel;
+    private JPanel registerPagePanel;
+    private JPanel commandePagePanel;
+    private JPanel updateAccountPagePanel;
+    private JPanel adminPagePanel;
+    private JPanel listPanel; // Panneau pour la liste du panier
+
+    // Labels
     private JLabel registerErrorMessageLabel;
     private JLabel loginErrorMessageLabel;
+    private Map<String, JLabel> quantiteLabels = new HashMap<>();
 
+    // Table admin
+    private JTable adminTable;
+
+    // Listes de boutons pour actions
     private List<JButton> rateButtons = new ArrayList<>();
     private List<JButton> viewDetailsButtons = new ArrayList<>();
 
-    public ShoppingView() {
+
+    // Constructeur
+    public ShoppingView(){
         frame = new JFrame("PokeShop App");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 600);
 
-        // Ajout de l'icône
-        try {
+        //Icone de l'app
+        try{
             ImageIcon icon = new ImageIcon("../image/pokeball.png");
             frame.setIconImage(icon.getImage());
-        } catch (Exception e) {
-            System.err.println("Erreur de chargement de l'icône: " + e.getMessage());
+        } catch (Exception e){
+            System.err.println("Vue - Erreur de chargement de l'icône : " + e.getMessage());
         }
 
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
 
-        quantiteLabels = new HashMap<>();
-
+        //panneaux de l'app
         homePagePanel = createHomePagePanel();
         accountPagePanel = createAccountPagePanel();
         panierPagePanel = createPanierPagePanel();
         loginPagePanel = createLoginPagePanel();
         registerPagePanel = createRegisterPagePanel();
         commandePagePanel = createCommandePagePanel();
-        updateAccountPagePanel = null;
+        updateAccountPagePanel = null; // Sera créé dynamiquement plus tard
         adminPagePanel = createAdminPagePanel();
 
-        if (logoutButton == null) {
+        //bouton logout (pb disparition compte)
+        if (logoutButton == null){
             logoutButton = new JButton("Se déconnecter");
             logoutButton.setFont(new Font("Arial", Font.BOLD, 14));
             logoutButton.setBackground(new Color(220, 53, 69));
@@ -70,7 +111,7 @@ public class ShoppingView extends JFrame {
             logoutButton.setPreferredSize(new Dimension(150, 40));
         }
 
-
+        //ajout des pannels au cardLayout
         mainPanel.add(homePagePanel, "HomePage");
         mainPanel.add(accountPagePanel, "Account");
         mainPanel.add(panierPagePanel, "Panier");
@@ -79,7 +120,7 @@ public class ShoppingView extends JFrame {
         mainPanel.add(commandePagePanel, "Commande");
         mainPanel.add(adminPagePanel, "AdminPage");
 
-
+        //création du main pannel
         JPanel globalPanel = new JPanel(new BorderLayout());
         globalPanel.add(createHeaderPanel(), BorderLayout.NORTH);
         globalPanel.add(mainPanel, BorderLayout.CENTER);
@@ -88,50 +129,41 @@ public class ShoppingView extends JFrame {
         frame.setLocationRelativeTo(null);
     }
 
-    private JPanel createHeaderPanel() {
+    private JPanel createHeaderPanel(){
         JPanel header = new JPanel(new BorderLayout());
         header.setBackground(new Color(38, 74, 193));  // Change la couleur de fond en bleu pour un style plus moderne
 
-        // Panel à gauche (logo)
+        //logo a gauche
         JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         leftPanel.setOpaque(false);
-
-        // Chargement et redimensionnement de l'image (logo)
         ImageIcon originalIcon = new ImageIcon("Project files/src/image/logoAPP.png");
-        if (originalIcon.getImageLoadStatus() != MediaTracker.COMPLETE) {
-            System.out.println("Erreur : l'image n'a pas pu être chargée !");
-        } else {
-            System.out.println("Image chargée avec succès !");
+        if (originalIcon.getImageLoadStatus() != MediaTracker.COMPLETE){
+            System.out.println("Vue - logo site n'a pas pu être chargée !");
         }
 
-        // Redimensionner l'image
         int newWidth = 120;
         int newHeight = 50;
         Image resizedImage = originalIcon.getImage().getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
         ImageIcon resizedIcon = new ImageIcon(resizedImage);
 
-        // Bouton Accueil avec l'image
         homeButton = new JButton(resizedIcon);
         homeButton.setToolTipText("Accueil");
         homeButton.setBorderPainted(false);
         homeButton.setContentAreaFilled(false);
         homeButton.setFocusPainted(false);
         homeButton.setOpaque(false);
-
         leftPanel.add(homeButton);
 
-        // Panel du centre (recherche)
+        //barre de recherche et bouton
         JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         centerPanel.setOpaque(false);
 
-        // Barre de recherche stylisée
         searchField = new JTextField(15);
         searchField.setFont(new Font("Arial", Font.PLAIN, 14));
         searchField.setPreferredSize(new Dimension(250, 30));
         searchField.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));  // Ajouter une bordure
         searchField.setBackground(Color.WHITE);
 
-        // Bouton de recherche
         searchButton = new JButton("\uD83D\uDD0D");
         searchButton.setFont(new Font("Arial", Font.PLAIN, 16));
         searchButton.setPreferredSize(new Dimension(40, 30));
@@ -141,19 +173,17 @@ public class ShoppingView extends JFrame {
         searchButton.setOpaque(true);
         searchButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 
-        // Ajouter au panel central
         centerPanel.add(searchField);
         centerPanel.add(searchButton);
 
-        // Panel à droite (compte, panier, admin)
+        //boutons compte, panier, admin
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         rightPanel.setOpaque(false);
 
-        // Bouton Mon compte
+        //compte
         ImageIcon compteIcon = new ImageIcon("Project files/src/image/utilisateur.png");
         Image resizedCompteImage = compteIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
         ImageIcon resizedCompteIcon = new ImageIcon(resizedCompteImage);
-
         accountButton = new JButton(resizedCompteIcon);
         accountButton.setToolTipText("Mon compte");
         accountButton.setBorderPainted(false);
@@ -161,11 +191,10 @@ public class ShoppingView extends JFrame {
         accountButton.setFocusPainted(false);
         accountButton.setOpaque(false);
 
-        // Bouton Panier
+        //panier
         ImageIcon panierIcon = new ImageIcon("Project files/src/image/panier/panier.png");
         Image resizedPanierImage = panierIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
         ImageIcon resizedPanierIcon = new ImageIcon(resizedPanierImage);
-
         panierButton = new JButton(resizedPanierIcon);
         panierButton.setToolTipText("Panier");
         panierButton.setBorderPainted(false);
@@ -173,11 +202,10 @@ public class ShoppingView extends JFrame {
         panierButton.setFocusPainted(false);
         panierButton.setOpaque(false);
 
-        // Bouton Admin
+        //admin
         ImageIcon adminIcon = new ImageIcon("Project files/src/image/boutonadmin1.png");
         Image resizedAdminImage = adminIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
         ImageIcon resizedAdminIcon = new ImageIcon(resizedAdminImage);
-
         adminButton = new JButton(resizedAdminIcon);
         adminButton.setToolTipText("Admin");
         adminButton.setBorderPainted(false);
@@ -185,17 +213,15 @@ public class ShoppingView extends JFrame {
         adminButton.setFocusPainted(false);
         adminButton.setOpaque(false);
 
-        // Ajouter les boutons au panel de droite
         rightPanel.add(accountButton);
         rightPanel.add(panierButton);
         rightPanel.add(adminButton);
 
-        // Ajouter tous les panels dans le header
         header.add(leftPanel, BorderLayout.WEST);
         header.add(centerPanel, BorderLayout.CENTER);
         header.add(rightPanel, BorderLayout.EAST);
 
-        // Ajouter des effets de survol (hover) pour les boutons
+        //Hover pour esthétique
         addHoverEffect(homeButton);
         addHoverEffect(accountButton);
         addHoverEffect(panierButton);
@@ -206,19 +232,21 @@ public class ShoppingView extends JFrame {
     }
 
 
-
-    private JPanel createHomePagePanel() {
+    private JPanel createHomePagePanel(){
         JPanel panel = new JPanel(new BorderLayout());
-        JLabel label = new JLabel("Bienvenue sur notre Pokéshop !", SwingConstants.CENTER);
+        JLabel label = new JLabel("Bienvenue sur Pokéshop !", SwingConstants.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 24));
         panel.add(label, BorderLayout.CENTER);
         return panel;
     }
 
-    private JPanel createAccountPagePanel() {
+
+    private JPanel createAccountPagePanel(){
+        //pannel
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
 
+        //conteneur
         JPanel container = new JPanel(new GridBagLayout());
         container.setBackground(Color.WHITE);
         container.setBorder(BorderFactory.createCompoundBorder(
@@ -226,55 +254,60 @@ public class ShoppingView extends JFrame {
                 BorderFactory.createEmptyBorder(30, 30, 30, 30)
         ));
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(20, 20, 20, 20);
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
+        //grille
+        GridBagConstraints grille = new GridBagConstraints();
+        grille.insets = new Insets(20, 20, 20, 20);
+        grille.gridx = 0;
+        grille.gridy = 0;
+        grille.gridwidth = 2;
 
+        //titre
         JLabel label = new JLabel("Mon Compte", SwingConstants.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 26));
-        container.add(label, gbc);
+        container.add(label, grille);
 
         // Bouton Se connecter
-        gbc.gridwidth = 1;
-        gbc.gridy++;
-        gbc.gridx = 0;
+        grille.gridwidth = 1;
+        grille.gridy++;
+        grille.gridx = 0;
         loginButton = new JButton("Se connecter");
         loginButton.setPreferredSize(new Dimension(160, 45));
         loginButton.setFont(new Font("Arial", Font.BOLD, 16));
-        loginButton.setBackground(new Color(70, 130, 180)); // Bleu doux
+        loginButton.setBackground(new Color(70, 130, 180));
         loginButton.setForeground(Color.WHITE);
         loginButton.setFocusPainted(false);
         loginButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-        container.add(loginButton, gbc);
+        container.add(loginButton, grille);
 
         // Bouton S'inscrire
-        gbc.gridx = 1;
+        grille.gridx = 1;
         registerButton = new JButton("S'inscrire");
         registerButton.setPreferredSize(new Dimension(160, 45));
         registerButton.setFont(new Font("Arial", Font.BOLD, 16));
-        registerButton.setBackground(new Color(34, 139, 34)); // Vert doux
+        registerButton.setBackground(new Color(70, 130, 180));
         registerButton.setForeground(Color.WHITE);
         registerButton.setFocusPainted(false);
         registerButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-        container.add(registerButton, gbc);
+        container.add(registerButton, grille);
 
         panel.add(container);
         return panel;
     }
 
 
-    private JPanel createPanierPagePanel() {
+    private JPanel createPanierPagePanel(){
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
+        //liste articles
         listPanel = new JPanel(); // Initialize listPanel
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
 
+        //scroll
         JScrollPane scrollPane = new JScrollPane(listPanel);
         panel.add(scrollPane, BorderLayout.CENTER);
 
+        //bouton commander
         commanderButton = new JButton("Commander");
         commanderButton.setFont(new Font("Arial", Font.BOLD, 16));
         commanderButton.setBackground(new Color(38, 74, 193));
@@ -291,10 +324,11 @@ public class ShoppingView extends JFrame {
     }
 
 
-    public JPanel createLoginPagePanel() {
+    public JPanel createLoginPagePanel(){
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
 
+        //conteneur
         JPanel formContainer = new JPanel();
         formContainer.setLayout(new GridBagLayout());
         formContainer.setBackground(Color.WHITE);
@@ -303,52 +337,51 @@ public class ShoppingView extends JFrame {
                 BorderFactory.createEmptyBorder(30, 30, 30, 30)
         ));
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
+        //grille
+        GridBagConstraints grille = new GridBagConstraints();
+        grille.insets = new Insets(10, 10, 10, 10);
+        grille.fill = GridBagConstraints.HORIZONTAL;
+        grille.gridx = 0;
+        grille.gridy = 0;
+        grille.gridwidth = 2;
 
-        // Titre de la page
+        //titre
         JLabel titleLabel = new JLabel("Connexion", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 26));
-        formContainer.add(titleLabel, gbc);
+        formContainer.add(titleLabel, grille);
 
-        // Champs Email
-        gbc.gridwidth = 1;
-        gbc.gridy++;
-        formContainer.add(new JLabel("Email :"), gbc);
-        gbc.gridx = 1;
+        //champs du form
+        grille.gridwidth = 1;
+        grille.gridy++;
+        formContainer.add(new JLabel("Email :"), grille);
+        grille.gridx = 1;
         emailField = new JTextField(20);
-        formContainer.add(emailField, gbc);
+        formContainer.add(emailField, grille);
 
-        // Champs Mot de passe
-        gbc.gridx = 0;
-        gbc.gridy++;
-        formContainer.add(new JLabel("Mot de passe :"), gbc);
-        gbc.gridx = 1;
+        grille.gridx = 0;
+        grille.gridy++;
+        formContainer.add(new JLabel("Mot de passe :"), grille);
+        grille.gridx = 1;
         passwordField = new JPasswordField(20);
-        formContainer.add(passwordField, gbc);
+        formContainer.add(passwordField, grille);
 
-        // Message d'erreur
-        gbc.gridx = 0;
-        gbc.gridy++;
-        gbc.gridwidth = 2;
-        loginErrorMessageLabel = new JLabel("", SwingConstants.CENTER); // Initialisation du label d'erreur
+        //label si erreur
+        grille.gridx = 0;
+        grille.gridy++;
+        grille.gridwidth = 2;
+        loginErrorMessageLabel = new JLabel("", SwingConstants.CENTER);
         loginErrorMessageLabel.setForeground(Color.RED);
         loginErrorMessageLabel.setFont(new Font("Arial", Font.ITALIC, 12));
-        formContainer.add(loginErrorMessageLabel, gbc);
+        formContainer.add(loginErrorMessageLabel, grille);
 
-        // Bouton de connexion
-        gbc.gridy++;
+        grille.gridy++;
         submitLoginButton = new JButton("Se connecter");
         submitLoginButton.setFont(new Font("Arial", Font.BOLD, 16));
         submitLoginButton.setBackground(new Color(70, 130, 180)); // Bleu doux
         submitLoginButton.setForeground(Color.WHITE);
         submitLoginButton.setFocusPainted(false);
         submitLoginButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-        formContainer.add(submitLoginButton, gbc);
+        formContainer.add(submitLoginButton, grille);
 
         // Ajouter le formulaire au panel principal
         panel.add(formContainer);
@@ -357,12 +390,11 @@ public class ShoppingView extends JFrame {
     }
 
 
-
-
-    public JPanel createRegisterPagePanel() {
+    public JPanel createRegisterPagePanel(){
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
 
+        //container
         JPanel formContainer = new JPanel();
         formContainer.setLayout(new GridBagLayout());
         formContainer.setBackground(Color.WHITE);
@@ -371,6 +403,7 @@ public class ShoppingView extends JFrame {
                 BorderFactory.createEmptyBorder(30, 30, 30, 30)
         ));
 
+        //grille
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -378,20 +411,20 @@ public class ShoppingView extends JFrame {
         gbc.gridy = 0;
         gbc.gridwidth = 2;
 
+        //titre
         JLabel titleLabel = new JLabel("Inscription", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 26));
         formContainer.add(titleLabel, gbc);
 
+        //form
         gbc.gridwidth = 1;
         gbc.gridy++;
 
-        // Prénom
         formContainer.add(new JLabel("Prénom :"), gbc);
         gbc.gridx = 1;
         registerPrenomField = new JTextField(20);
         formContainer.add(registerPrenomField, gbc);
 
-        // Nom
         gbc.gridx = 0;
         gbc.gridy++;
         formContainer.add(new JLabel("Nom :"), gbc);
@@ -399,7 +432,6 @@ public class ShoppingView extends JFrame {
         registerNomField = new JTextField(20);
         formContainer.add(registerNomField, gbc);
 
-        // Email
         gbc.gridx = 0;
         gbc.gridy++;
         formContainer.add(new JLabel("Email :"), gbc);
@@ -407,7 +439,6 @@ public class ShoppingView extends JFrame {
         registerEmailField = new JTextField(20);
         formContainer.add(registerEmailField, gbc);
 
-        // Mot de passe
         gbc.gridx = 0;
         gbc.gridy++;
         formContainer.add(new JLabel("Mot de passe :"), gbc);
@@ -415,7 +446,6 @@ public class ShoppingView extends JFrame {
         registerPasswordField = new JPasswordField(20);
         formContainer.add(registerPasswordField, gbc);
 
-        // Confirmation mot de passe
         gbc.gridx = 0;
         gbc.gridy++;
         formContainer.add(new JLabel("Confirmer le mot de passe :"), gbc);
@@ -423,7 +453,7 @@ public class ShoppingView extends JFrame {
         registerConfirmPasswordField = new JPasswordField(20);
         formContainer.add(registerConfirmPasswordField, gbc);
 
-        // Message d'erreur
+        //label si erreur
         gbc.gridx = 0;
         gbc.gridy++;
         gbc.gridwidth = 2;
@@ -447,8 +477,7 @@ public class ShoppingView extends JFrame {
     }
 
 
-
-    private JPanel createCommandePagePanel() {
+    private JPanel createCommandePagePanel(){
         JPanel panel = new JPanel(new BorderLayout());
 
         JLabel label = new JLabel("Finalisez votre commande", SwingConstants.CENTER);
