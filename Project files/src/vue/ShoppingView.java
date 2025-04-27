@@ -166,9 +166,16 @@ public class ShoppingView extends JFrame{
         searchField.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));  // Ajouter une bordure
         searchField.setBackground(Color.WHITE);
 
-        searchButton = new JButton("\uD83D\uDD0D");
+        ImageIcon searchIconOriginal = new ImageIcon("Project files/src/image/searchButton.png");
+        if (originalIcon.getImageLoadStatus() != MediaTracker.COMPLETE){
+            System.out.println("Vue - logo de recherche n'a pas pu être chargée");
+        }
+        Image searchResizedImage = searchIconOriginal.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+        ImageIcon searchIcon = new ImageIcon(searchResizedImage);
+
+        searchButton = new JButton(searchIcon);
         searchButton.setFont(new Font("Arial", Font.PLAIN, 16));
-        searchButton.setPreferredSize(new Dimension(40, 30));
+        searchButton.setPreferredSize(new Dimension(30, 30));
         searchButton.setFocusPainted(false);
         searchButton.setBackground(new Color(40, 167, 69));
         searchButton.setForeground(Color.WHITE);
