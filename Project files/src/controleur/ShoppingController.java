@@ -15,15 +15,11 @@ import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.io.File;
 import java.io.PrintWriter;
-import java.time.LocalDate;
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.File;
 import java.io.IOException;
-import javax.swing.*;
-import java.awt.*;
 
-public class ShoppingController {
+public class ShoppingController{
     private ShoppingView view;
     private Utilisateur utilisateurConnecte;
     private UtilisateurDAOImpl utilisateurDAO;
@@ -32,7 +28,7 @@ public class ShoppingController {
     private DaoFactory daoFactory;
     private PromoDAOImpl promoDAO;
 
-    public ShoppingController(ShoppingView view) {
+    public ShoppingController(ShoppingView view){
         this.view = view;
         this.utilisateurConnecte = null;
         this.daoFactory = DaoFactory.getInstance("projetshoppingjava", "root", "");
@@ -45,9 +41,12 @@ public class ShoppingController {
         afficherAccueil();
     }
 
-    private void initializeListeners() {
+    //listeners des boutons etc..
+    private void initializeListeners(){
+        //retour accueil
         view.getHomeButton().addActionListener(e -> {afficherAccueil();});
 
+        //page compte
         view.getAccountButton().addActionListener(e -> {
             if (utilisateurConnecte != null) {
                 view.showPage("UpdateAccount");
@@ -56,15 +55,18 @@ public class ShoppingController {
             }
         });
 
+        //page panier
         view.getPanierButton().addActionListener(e -> afficherPanier());
 
+        //gestion compte
         view.getLoginButton().addActionListener(e -> view.showPage("Login"));
         view.getRegisterButton().addActionListener(e -> view.showPage("Register"));
-
         view.getSubmitLoginButton().addActionListener(e -> handleLogin());
         view.getSubmitRegisterButton().addActionListener(e -> handleRegister());
         view.getAccountButton().addActionListener(e -> afficherCompte());
+        view.getLogoutButton().addActionListener(e -> handleLogout());
 
+        //barre de recherche
         view.getSearchButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -72,8 +74,11 @@ public class ShoppingController {
                 filterArticles(searchText);  // Filtrer les articles en fonction du texte de recherche
             }
         });
-        view.getLogoutButton().addActionListener(e -> handleLogout());
+
+        //commande
         view.getCommanderButton().addActionListener(e -> handleCommanderButton());
+
+        //admin
         view.getAdminButton().addActionListener(e -> afficherPageAdmin());
         view.getSaveButton().addActionListener(e -> {
             JTable table = view.getAdminTable();
@@ -108,13 +113,12 @@ public class ShoppingController {
         view.getSupprimerButton().addActionListener(e -> handleSupprimerArticle());
     }
 
-    private void handleLogin() {
+    private void handleLogin(){
         String email = view.getEmailField().getText().trim();
         String password = new String(view.getPasswordField().getPassword()).trim();
 
-        // Obtention du label d'erreur spécifique à la connexion
+        //label erreur
         JLabel loginErrorMessageLabel = (JLabel) view.getLoginErrorMessageLabel();
-
         if (email.isEmpty() || password.isEmpty()) {
             loginErrorMessageLabel.setText("Veuillez remplir tous les champs.");
             return;
@@ -128,8 +132,7 @@ public class ShoppingController {
                 // Une fois l'utilisateur authentifié, afficher ses informations
                 loginErrorMessageLabel.setText(""); // Nettoyer le message d'erreur
 
-                // Redirection vers la page "Mon Compte"
-                afficherAccueil();
+                afficherCompte();
             } else {
                 loginErrorMessageLabel.setText("Email ou mot de passe incorrect.");
             }
@@ -139,7 +142,6 @@ public class ShoppingController {
     }
 
 
-
     private void handleRegister() {
         String prenom = view.getRegisterPrenomField().getText().trim();
         String nom = view.getRegisterNomField().getText().trim();
@@ -147,6 +149,7 @@ public class ShoppingController {
         String mdp = new String(view.getRegisterPasswordField().getPassword());
         String confirmMdp = new String(view.getRegisterConfirmPasswordField().getPassword());
 
+        //blindage
         if (prenom.isEmpty() || nom.isEmpty() || email.isEmpty() || mdp.isEmpty() || confirmMdp.isEmpty()) {
             view.getRegisterErrorMessageLabel().setText("Tous les champs sont obligatoires.");
             return;
@@ -168,14 +171,14 @@ public class ShoppingController {
         }
 
         try {
-            // ✅ Vérification si email déjà utilisé
+            //vérification si email déjà utilisé
             Utilisateur existingUser = utilisateurDAO.chercherParEmail(email);
             if (existingUser != null) {
                 view.getRegisterErrorMessageLabel().setText("Cet email est déjà utilisé.");
                 return;
             }
 
-            utilisateurConnecte = new Utilisateur(email, mdp, nom, prenom, "adresse", 1234567890, false);
+            utilisateurConnecte = new Utilisateur(email, mdp, nom, prenom, "non renseignée", 0000000000, false);
             boolean success = utilisateurDAO.ajouter(utilisateurConnecte);
             if (success) {
                 view.getRegisterErrorMessageLabel().setText(""); // Nettoyer les erreurs
@@ -189,7 +192,7 @@ public class ShoppingController {
     }
 
 
-    private void filterArticles(String searchText) {
+    private void filterArticles(String searchText){
         List<Article> articles = articleDAO.rechercherArticles(searchText);
 
         List<Map<String, String>> articlesFormates = new ArrayList<>();
@@ -215,10 +218,8 @@ public class ShoppingController {
     }
 
 
-
     private void afficherAccueil() {
-        // Check if the connected user is an admin
-        // Hide the admin button
+        //si admin bouton admin
         if(utilisateurConnecte != null && utilisateurConnecte.getIsAdmin()) {
             view.getAdminButton().setVisible(true); // Show the admin button
             System.out.println("Admin Button Visible: " + view.getAdminButton().isVisible());
@@ -226,11 +227,9 @@ public class ShoppingController {
             view.getAdminButton().setVisible(false); // Hide the admin button
             System.out.println("Utilisateur non-admin");
         }
-        // Crée une instance de ArticleDAO pour récupérer tous les articles
+        //appel dao
         ArticleDAO articleDAO = new ArticleDAOImpl(daoFactory);
         List<Article> articles = articleDAO.getAll();  // Liste de tous les articles depuis la base de données
-
-        // Création d'une liste pour stocker les articles disponibles formatés
         List<Map<String, String>> articlesFormates = new ArrayList<>();
 
         // Parcours de chaque article pour vérifier sa disponibilité et son stock
@@ -254,20 +253,19 @@ public class ShoppingController {
 
         // Mise à jour de la vue avec les articles filtrés
         view.updateHomePageView(articlesFormates, e -> handleCommander(e.getActionCommand()));
-        view.showPage("HomePage");  // Affichage de la page d'accueil
+        view.showPage("HomePage");
     }
 
 
-
-    private void afficherCompte() {
-        if (utilisateurConnecte != null) {
-            // Récupérer les informations personnelles de l'utilisateur
+    private void afficherCompte(){
+        if (utilisateurConnecte != null){
+            //Récupérer les informations personnelles de l'utilisateur
             String userName = utilisateurConnecte.getNom();
             String userEmail = utilisateurConnecte.getEmail();
             String userTel = String.valueOf(utilisateurConnecte.getTelephone());
             String userAddress = utilisateurConnecte.getAdresse();
 
-            // Récupérer l'historique des commandes
+            //Récupérer l'historique des commandes
             List<Commande> commandes = commandeDAO.getCommandesParUtilisateur(utilisateurConnecte.getId());
 
             List<String[]> historiqueCommandes = new ArrayList<>();
@@ -284,7 +282,7 @@ public class ShoppingController {
 
             view.afficherPageCompte(userName, userEmail, userTel, userAddress, historiqueCommandes);
 
-            // 🔥 AJOUTER LES ACTIONLISTENERS ici (après création des boutons)
+            //listeners
             for (JButton rateButton : view.getRateButtons()) {
                 rateButton.addActionListener(e -> {
                     JButton clickedButton = (JButton) e.getSource();
@@ -337,28 +335,21 @@ public class ShoppingController {
                 });
             }
 
-
         } else {
             view.showPage("Login");
         }
     }
 
 
-
-
-
-    private void handleLogout() {
-        // Clear the connected user
+    private void handleLogout(){
         utilisateurConnecte = null;
 
-        // Show a confirmation message
         JOptionPane.showMessageDialog(null, "Vous êtes maintenant déconnecté.");
 
-        // Redirect to the home page
         afficherAccueil();
     }
 
-    private void handleCommander(String articleId) {
+    private void handleCommander(String articleId){
         if (utilisateurConnecte == null) {
             JOptionPane.showMessageDialog(null, "Veuillez vous connecter pour passer une commande.");
             view.showPage("Login");
@@ -366,7 +357,7 @@ public class ShoppingController {
         }
 
         try {
-            int quantity = 1; // Toujours +1 à chaque clic
+            int quantity = 1; //+1 à chaque clic
 
             // Récupérer les infos de l'article
             Article article = articleDAO.chercher(Integer.parseInt(articleId));
@@ -452,8 +443,6 @@ public class ShoppingController {
     }
 
 
-
-
     private void afficherPanier() {
         if (utilisateurConnecte == null) {
             JOptionPane.showMessageDialog(null, "Veuillez vous connecter pour accéder à votre panier.");
@@ -491,12 +480,8 @@ public class ShoppingController {
                 Article article = articleDAO.chercher(idArticle);
                 int quantite = Integer.parseInt(listeQuantite_Article[i]);
 
-//                // Determine the price to display based on the quantity
-//                double prixAffiche = (quantite >= article.getSeuilVrac()) ? article.getPrixVrac() : article.getPrixUnitaire();
-//                System.out.println(prixAffiche);
-
                 Map<String, String> data = new HashMap<>();
-                data.put("id", String.valueOf(idArticle)); // 🔥 essentiel pour les boutons
+                data.put("id", String.valueOf(idArticle));
                 data.put("nom", article.getNom());
                 data.put("marque", article.getMarque());
                 data.put("prixUnitaire", String.format("%.2f €", article.getPrixUnitaire()));
@@ -506,7 +491,6 @@ public class ShoppingController {
                 data.put("imageUrl", article.getImageUrl());
                 data.put("liste_id_article", commandeEnCours.getListeID_Article());
                 articlesPanier.add(data);
-
             }
 
             // Update the view with the articles
@@ -753,15 +737,16 @@ public class ShoppingController {
             File factureFile = new File(factureFilePath);
 
             try (PrintWriter writer = new PrintWriter(factureFile)) {
-                // Informations de base
+                //infos de base
                 writer.println("----- FACTURE -----");
                 writer.println("Numéro de commande : " + commande.getId());
                 writer.println("Date : " + commande.getDate());
                 writer.println("Client : " + utilisateurConnecte.getNom() + " " + utilisateurConnecte.getPrenom()); // Ajout prénom
                 writer.println("Adresse de livraison : " + commande.getAdresseLivraison());
                 writer.println("Statut : " + commande.getStatut());
-
                 writer.println();
+
+                //infos articles
                 writer.println("-- ARTICLES --");
 
                 List<Article> articles = commandeDAO.getArticlesParCommande(commande, articleDAO);
@@ -820,23 +805,12 @@ public class ShoppingController {
                 writer.println("Merci pour votre achat !");
             }
 
-            System.out.println("✅ Facture générée : " + factureFilePath);
+            System.out.println("Facture générée : " + factureFilePath);
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("❌ Erreur lors de la génération de la facture : " + e.getMessage());
+            System.out.println("Erreur lors de la génération de la facture : " + e.getMessage());
         }
     }
-
-
-
-
-
-
-
-
-
-
-
 
 
     private void afficherRatingForm() {
@@ -858,18 +832,17 @@ public class ShoppingController {
         if (result == JOptionPane.OK_OPTION) {
             int rating = ratingSlider.getValue();
             String comment = commentArea.getText().trim();
-
-            // Save the rating and comment (you can store it in the database)
             System.out.println("Note: " + rating);
             System.out.println("Commentaire: " + comment);
+            ///TODO: BDD ?
 
             JOptionPane.showMessageDialog(null, "Merci pour votre retour !");
         }
     }
 
-    // Add this method in ShoppingController
+
     private void handleAjouterArticle() {
-        // Create a panel for the form
+        //formulaire
         JPanel formPanel = new JPanel(new GridLayout(9, 2, 10, 10));
         formPanel.add(new JLabel("Nom:"));
         JTextField nomField = new JTextField();
@@ -903,12 +876,11 @@ public class ShoppingController {
         JTextField imageUrlField = new JTextField();
         formPanel.add(imageUrlField);
 
-        // Show the form in a dialog
         int result = JOptionPane.showConfirmDialog(null, formPanel, "Ajouter un Article", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
         if (result == JOptionPane.OK_OPTION) {
             try {
-                // Retrieve the input values
+                //recuperer les inputs
                 String nom = nomField.getText().trim();
                 String marque = marqueField.getText().trim();
                 double prixUnitaire = Double.parseDouble(prixUnitaireField.getText().trim());
@@ -918,10 +890,10 @@ public class ShoppingController {
                 boolean disponible = Boolean.parseBoolean(disponibleField.getText().trim());
                 String imageUrl = imageUrlField.getText().trim();
 
-                // Create a new Article object
+                //nouvel objet article
                 Article newArticle = new Article(0, nom, marque, prixUnitaire, prixVrac, seuilVrac, stock, disponible, imageUrl);
 
-                // Add the article to the database
+                //ajout bdd
                 articleDAO.ajouter(newArticle);
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(null, "Veuillez entrer des valeurs valides.");
@@ -930,9 +902,11 @@ public class ShoppingController {
             }
         }
     }
+
+
     private void afficherPageAdmin() {
         if (utilisateurConnecte != null && utilisateurConnecte.getIsAdmin()) {
-            // Load articles into the table
+            //recupere articles
             List<Article> articles = articleDAO.getAll();
             DefaultTableModel model = (DefaultTableModel) view.getAdminTable().getModel();
             model.setRowCount(0); // Clear existing rows
@@ -957,6 +931,8 @@ public class ShoppingController {
             JOptionPane.showMessageDialog(null, "Accès refusé. Vous n'êtes pas administrateur.");
         }
     }
+
+
     private double parseDouble(Object value) {
         if (value == null || value.toString().trim().isEmpty()) {
             return 0.0; // Default value for doubles
@@ -964,12 +940,14 @@ public class ShoppingController {
         return Double.parseDouble(value.toString());
     }
 
+
     private int parseInteger(Object value) {
         if (value == null || value.toString().trim().isEmpty()) {
             return 0; // Default value for integers
         }
         return Integer.parseInt(value.toString());
     }
+
 
     private void handleSupprimerArticle() {
         JTable table = view.getAdminTable();
