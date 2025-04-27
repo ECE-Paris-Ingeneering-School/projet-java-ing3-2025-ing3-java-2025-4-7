@@ -4,7 +4,7 @@ package vue;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
@@ -13,8 +13,6 @@ import java.util.LinkedHashMap;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import java.net.URL;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 
 public class ShoppingView extends JFrame{
@@ -846,32 +844,32 @@ public class ShoppingView extends JFrame{
         cardLayout.show(mainPanel, "UpdateAccount");
     }
 
-    public void updatePanierPageView(List<Map<String, String>> articles, ActionListener plusListener, ActionListener minusListener){
+    public void updatePanierPageView(List<Map<String, String>> articles, ActionListener plusListener, ActionListener minusListener) {
         double totalPrix = 0.0;
-        panierPagePanel.removeAll();
+        panierPagePanel.removeAll(); // Clear the existing panel
 
-        //container
         JPanel mainContainer = new JPanel();
-        mainContainer.setLayout(new GridLayout(0, 2, 20, 20));
+        GridLayout gridLayout = new GridLayout(0, 2, 20, 20);
+        mainContainer.setLayout(gridLayout);
         mainContainer.setBackground(Color.WHITE);
         mainContainer.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
 
-        //articles
-        for (Map<String, String> articleData : articles){
+
+        for (Map<String, String> articleData : articles) {
             JPanel card = new JPanel(new BorderLayout());
             card.setPreferredSize(new Dimension(400, 300));
             card.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
             card.setBackground(Color.WHITE);
 
-            //panel image
+            // Panel image
             JPanel imageContainer = new JPanel(new BorderLayout());
             imageContainer.setBackground(Color.WHITE);
 
-            //panel info
+            // Panel info
             JPanel infoContainer = new JPanel();
             infoContainer.setBackground(Color.WHITE);
 
-            //TODO: mauvaise gestion prix total?
+            // Calcul du prix
             try {
                 String prixRaw = articleData.get("prixUnitaire");
                 String quantiteRaw = articleData.get("quantite");
@@ -885,7 +883,7 @@ public class ShoppingView extends JFrame{
                 System.out.println("Erreur calcul du total : " + e.getMessage());
             }
 
-            //image
+            // Gestion de l'image
             String imageURL = articleData.get("imageUrl");
             if (imageURL != null && !imageURL.isEmpty()) {
                 try {
@@ -902,7 +900,8 @@ public class ShoppingView extends JFrame{
                 }
             }
 
-            //informations
+
+            // Panel des informations
             infoContainer.setLayout(new BoxLayout(infoContainer, BoxLayout.Y_AXIS));
             infoContainer.setBackground(Color.WHITE);
             infoContainer.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
@@ -988,7 +987,7 @@ public class ShoppingView extends JFrame{
             prixTotalPanel.setBackground(Color.WHITE);
             prixTotalPanel.add(prixTotalLabel);
 
-            //definition listeners pour controleur
+            // Set Action Commands and Listeners
             String articleId = articleData.get("id");
             plusBtn.setActionCommand(articleId);
             minusBtn.setActionCommand(articleId);
@@ -1016,7 +1015,13 @@ public class ShoppingView extends JFrame{
             splitPane.setBackground(Color.WHITE);
 
             card.add(splitPane, BorderLayout.CENTER);
-            mainContainer.add(card);
+            card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 300));
+
+            JPanel wrapper = new JPanel();
+            wrapper.setLayout(new BoxLayout(wrapper, BoxLayout.Y_AXIS));
+            wrapper.setBackground(Color.WHITE);
+            wrapper.add(card, BorderLayout.NORTH);
+            mainContainer.add(wrapper);
         }
 
         JScrollPane scrollPane = new JScrollPane(mainContainer);
@@ -1045,8 +1050,19 @@ public class ShoppingView extends JFrame{
 
         panierPagePanel.add(bottomPanel, BorderLayout.SOUTH);
 
-        // Ajoute le panel dans le container qui contient les articles
-        mainContainer.add(Box.createVerticalStrut(20));
+        scrollPane.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                int largeur = scrollPane.getViewport().getWidth();
+                if (largeur < 900) {
+                    gridLayout.setColumns(1);
+                } else {
+                    gridLayout.setColumns(2);
+                }
+                mainContainer.revalidate();
+                mainContainer.repaint();
+            }
+        });
 
         panierPagePanel.revalidate();
         panierPagePanel.repaint();
