@@ -100,7 +100,7 @@ CREATE TABLE IF NOT EXISTS `promo` (
 --
 INSERT INTO `promo` (`promoID`, `code`, `reduction`, `actif`) VALUES
                                                                                                                 (1, 'WELCOME10', 0.10, true),
-                                                                                                                (2, 'neuil', 0.5, true);
+                                                                                                                (2, 'PROMO5', 0.5, true);
 
 --
 -- Déchargement des données de la table `Utilisateur`
@@ -108,23 +108,11 @@ INSERT INTO `promo` (`promoID`, `code`, `reduction`, `actif`) VALUES
 
 
 INSERT INTO `utilisateurs` (`utilisateurID`, `utilisateurPrenom`, `utilisateurNom`,`utilisateurMail`,`utilisateurMDP`,`utilisateurAdresse`,`utilisateurTel`,`utilisateurIsAdmin` ) VALUES
-                                                                                                                                                                                       (1, 'Jade', 'Parrilla', 'jade.parrilla', 'Jade1234', '1 rue de la paix, 75000 Paris', '0606060606', 0),
-                                                                                                                                                                                       (2, 'Theo', 'Melly', 'theo.melly', 'Theo1234', '2 rue de la paix, 75000 Paris', '0707070707', 0),
-                                                                                                                                                                                       (3, 'Nicolas', 'Duzan', 'nicolas.duzan', 'Nicolas1234', '3 rue de la paix, 75000 Paris', '0808080808', 1),
-                                                                                                                                                                                       (4, 'Matheo', 'Leon', 'matheo.leon', 'Matheo1234', '4 rue de la paix, 75000 Paris', '0909090909', 1);
+                                                                                                                                                                                       (1, 'Jade', 'Parrilla', 'jade.parrilla@edu.ece.fr', 'Jade1234', '1 rue de la paix, 75000 Paris', '0612345678', 0),
+                                                                                                                                                                                       (2, 'Theo', 'Melly', 'theo.melly@edu.ece.fr', 'Theo1234', '2 rue de la paix, 75000 Paris', '0612345678', 0),
+                                                                                                                                                                                       (3, 'Nicolas', 'Duzan', 'nicolas.duzan@edu.ece.fr', 'Nicolas1234', '3 rue de la paix, 75000 Paris', '0612345678', 1),
+                                                                                                                                                                                       (4, 'Matheo', 'Leon', 'matheo.leon@edu.ece.fr', 'Matheo1234', '4 rue de la paix, 75000 Paris', '0612345678', 1);
 
-
---
--- Déchargement des données de la table `commande_totale`
---
-
-# INSERT INTO `commandes` (`commandeID`, `utilisateurID`, `commandeDate`,`Liste_Id_articles`,`Liste_Quantite_articles`,`commandeStatut`,`commandePrix`, commandeAdresse) VALUES
-#                                                                                                                                                     (1, 1, '2023-11-11', '0-1-2','0-4-2','commande passée', 0, '3 rue du Loup'),
-#                                                                                                                                                     (2, 2, '2023-11-12', '0-1','0-4','commande passée', 0, '35 boulevard Raspail'),
-#                                                                                                                                                     (3, 3, '2023-11-13', '0-1-2','0-4-2','commande passée', 0, '3 avenue du General Leclerc'),
-#                                                                                                                                                     (4, 1, '2023-11-14', '0-1','0-4','commande passée', 0, '3 rue du Loup'),
-#                                                                                                                                                     (5, 2, '2023-11-15', '0-1','0-4','commande passée', 0, '35 boulevard Raspail'),
-#                                                                                                                                                     (6, 3, '2023-11-16', '0-1','0-4','commande passée', 0, '3 avenue du General Leclerc');
 
 --
 -- Déchargement des données de la table `articles`
@@ -165,7 +153,14 @@ INSERT INTO `articles` (`articleID`, `articleNom`, `articleMarque`, `articlePrix
                                                                                                                                                                                                   (27, 'Ho-Oh V', 'Tempête Argentée', 4, 3, 6, 12, true, 'https://pokecardex.b-cdn.net/assets/images/sets/SIT/140.jpg?'),
                                                                                                                                                                                                   (28, 'Regidraco V', 'Tempête Argentée', 40, 37, 3, 10, true, 'https://pokecardex.b-cdn.net/assets/images/sets/SIT/184.jpg?'),
                                                                                                                                                                                                   (29, 'Altaria', 'Tempête Argentée', 20, 18, 5, 7, true, 'https://pokecardex.b-cdn.net/assets/images/sets/SIT/226.jpg?'),
-                                                                                                                                                                                                  (30, 'Rayquaza VMAX', 'Tempête Argentée', 30, 28, 3, 13, true, 'https://pokecardex.b-cdn.net/assets/images/sets/SIT/235.jpg?');
+                                                                                                                                                                                                  (30, 'Rayquaza VMAX', 'Tempête Argentée', 30, 28, 3, 13, true, 'https://pokecardex.b-cdn.net/assets/images/sets/SIT/235.jpg?'),
+
+                                                                                                                                                                                                  (31, 'Rayquaza VMAX', 'Évolution Céleste', 90, 85, 3, 12, true, 'https://pokecardex.b-cdn.net/assets/images/sets/EVS/218.jpg?'),
+                                                                                                                                                                                                  (32, 'Flamoutan VSTAR', 'Zénith Suprême', 10, 9, 4, 8, true, 'https://pokecardex.b-cdn.net/assets/images/sets/CRZ/197.jpg?'),
+                                                                                                                                                                                                  (33, 'Ectoplasma VMAX', 'Poing de Fusion', 100, 95, 2, 15, true, 'https://pokecardex.b-cdn.net/assets/images/sets/FST/271.jpg?'),
+                                                                                                                                                                                                  (34, 'Phylalli EX', 'Évolution Prismatique', 80, 75, 3, 5, true, 'https://pokecardex.b-cdn.net/assets/images/sets/PRE/144.jpg?'),
+                                                                                                                                                                                                  (35, 'Alakazam EX', 'Destinées de Paldea', 15, 13, 4, 10, true, 'https://pokecardex.b-cdn.net/assets/images/sets/PAF/215.jpg?'),
+                                                                                                                                                                                                  (36, 'Serena', 'Tempête Argentée', 16, 15, 3, 6, true, 'https://pokecardex.b-cdn.net/assets/images/sets/SIT/193.jpg?');
 
 COMMIT;
 
