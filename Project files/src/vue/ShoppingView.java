@@ -238,6 +238,7 @@ public class ShoppingView extends JFrame{
         menuDeroulant.add(option2);
         menuDeroulant.add(option3);
 
+        // Affichage du menu
         adminButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // Afficher le menu sous le bouton
