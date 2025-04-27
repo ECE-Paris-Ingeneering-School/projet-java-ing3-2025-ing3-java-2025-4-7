@@ -79,7 +79,7 @@ public class ShoppingController{
         view.getCommanderButton().addActionListener(e -> handleCommanderButton());
 
         //admin
-        view.getOption1().addActionListener(e -> afficherPageAdminGestionArticles());
+        view.getAdminButton().addActionListener(e -> afficherPageAdminGestionArticles());
         view.getSaveButton().addActionListener(e -> {
             JTable table = view.getAdminArticleTable();
             DefaultTableModel model = (DefaultTableModel) table.getModel();
