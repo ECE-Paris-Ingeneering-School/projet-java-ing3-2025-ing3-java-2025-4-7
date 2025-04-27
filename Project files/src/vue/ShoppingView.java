@@ -733,14 +733,17 @@ public class ShoppingView extends JFrame{
             JPanel sectionPanel = new JPanel();
             sectionPanel.setLayout(new BoxLayout(sectionPanel, BoxLayout.Y_AXIS));
             sectionPanel.setBackground(Color.WHITE);
+            sectionPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-            //creation ligne
-
+            /// creation ligne
             // Création de la partie titre
-            JLabel marqueLabel = new JLabel(marque.toUpperCase());
+            JLabel marqueLabel = new JLabel("     "+marque.toUpperCase());
             marqueLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
             marqueLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 5, 0));
-            sectionPanel.add(marqueLabel);
+            JPanel wrapperTitre = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            wrapperTitre.setBackground(Color.WHITE);
+            wrapperTitre.add(marqueLabel);
+            sectionPanel.add(wrapperTitre, BorderLayout.WEST);
 
             // création de la partie avec tous les articles
             JPanel articlesPanel = new JPanel();
