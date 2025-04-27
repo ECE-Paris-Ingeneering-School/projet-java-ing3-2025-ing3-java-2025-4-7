@@ -695,7 +695,17 @@ public class ShoppingView extends JFrame{
         JPanel mainContainer = new JPanel();
         mainContainer.setLayout(new BoxLayout(mainContainer, BoxLayout.Y_AXIS));
         mainContainer.setBackground(Color.WHITE);
-        mainContainer.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
+        mainContainer.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 5));
+
+        mainContainer.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                int largeur = mainContainer.getWidth();
+                System.out.println("largeur = " + largeur);
+                //mainContainer.revalidate();
+                //mainContainer.repaint();
+            }
+        });
 
         //regrouper par 'marque'
         Map<String, List<Map<String, String>>> articlesParMarque = new LinkedHashMap<>();
