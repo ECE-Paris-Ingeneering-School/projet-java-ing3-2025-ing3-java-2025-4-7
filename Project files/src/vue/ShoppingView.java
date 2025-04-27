@@ -40,6 +40,8 @@ public class ShoppingView extends JFrame{
     private JButton plusBtn;
     private JButton minusBtn;
     private JButton supprimerButton;
+    private JButton saveUserButton;
+    private JButton deleteUserButton;
 
     // Champs texte et password
     private JTextField searchField;
@@ -68,7 +70,7 @@ public class ShoppingView extends JFrame{
     private Map<String, JLabel> quantiteLabels = new HashMap<>();
 
     // Table admin
-    private JTable adminTable;
+    private JTable adminTable, adminUserTable;
 
     // Listes de boutons pour actions
     private List<JButton> rateButtons = new ArrayList<>();
@@ -653,22 +655,38 @@ public class ShoppingView extends JFrame{
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        JLabel titleLabel = new JLabel("Gestion des Articles", SwingConstants.CENTER);
+        JLabel titleLabel = new JLabel("Gestion Administrative", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         panel.add(titleLabel, BorderLayout.NORTH);
 
-        //table articles
-        String[] columnNames = {"ID", "Nom", "Marque", "Prix Unitaire", "Prix Vrac", "Seuil Vrac", "Stock", "Disponible","lien image", "Modifier"};
-        adminTable = new JTable(new DefaultTableModel(columnNames, 0));
-        JScrollPane scrollPane = new JScrollPane(adminTable);
-        panel.add(scrollPane, BorderLayout.CENTER);
+        // Tabbed pane for articles and users
+        JTabbedPane tabbedPane = new JTabbedPane();
 
+        // Table for articles
+        String[] articleColumnNames = {"ID", "Nom", "Marque", "Prix Unitaire", "Prix Vrac", "Seuil Vrac", "Stock", "Disponible", "Lien Image", "Modifier"};
+        adminTable = new JTable(new DefaultTableModel(articleColumnNames, 0));
+        JScrollPane articleScrollPane = new JScrollPane(adminTable);
+        tabbedPane.addTab("Articles", articleScrollPane);
+
+        // Table for users
+        String[] userColumnNames = {"ID", "MDP", "Email", "Prénom", "Nom", "Adresse", "Téléphone", "Admin", "Modifier"};
+        adminUserTable = new JTable(new DefaultTableModel(userColumnNames, 0));
+        JScrollPane userScrollPane = new JScrollPane(adminUserTable);
+        tabbedPane.addTab("Utilisateurs", userScrollPane);
+
+        panel.add(tabbedPane, BorderLayout.CENTER);
+        // Scroll pane for the tabbed pane
+        JScrollPane scrollPane = new JScrollPane(tabbedPane);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        panel.add(scrollPane, BorderLayout.CENTER);
         // Ajustement de la vitesse de défilement avec la souris
         JScrollBar vertical = scrollPane.getVerticalScrollBar();
         vertical.setUnitIncrement(20);
 
         //bouton modifier
-        saveButton = new JButton("Enregistrer les modifications");
+        saveButton = new JButton("Enregistrer les modifications articles");
         saveButton.setFont(new Font("Arial", Font.BOLD, 16));
         saveButton.setBackground(new Color(34, 139, 34));
         saveButton.setForeground(Color.WHITE);
@@ -691,10 +709,28 @@ public class ShoppingView extends JFrame{
         supprimerButton.setFocusPainted(false);
         supprimerButton.setPreferredSize(new Dimension(200, 40));
 
+        //bouton enregistrer utilisateur
+        saveUserButton = new JButton("Enregistrer les modifications users");
+        saveUserButton.setFont(new Font("Arial", Font.BOLD, 16));
+        saveUserButton.setBackground(new Color(34, 139, 34));
+        saveUserButton.setForeground(Color.WHITE);
+        saveUserButton.setFocusPainted(false);
+        saveUserButton.setPreferredSize(new Dimension(250, 40));
+
+        //bouton supprimer un utilisateur
+        deleteUserButton = new JButton("Supprimer un utilisateur");
+        deleteUserButton.setFont(new Font("Arial", Font.BOLD, 16));
+        deleteUserButton.setBackground(new Color(220, 53, 69));
+        deleteUserButton.setForeground(Color.WHITE);
+        deleteUserButton.setFocusPainted(false);
+        deleteUserButton.setPreferredSize(new Dimension(200, 40));
+
         JPanel bottomPanel = new JPanel();
         bottomPanel.add(saveButton);
         bottomPanel.add(ajouterButton);
         bottomPanel.add(supprimerButton);
+        bottomPanel.add(saveUserButton);
+        bottomPanel.add(deleteUserButton);
         panel.add(bottomPanel, BorderLayout.SOUTH);
 
         return panel;
@@ -1186,8 +1222,6 @@ public class ShoppingView extends JFrame{
 
     public JButton getAdminButton(){return adminButton;}
 
-    public JTable getAdminTable() { return adminTable; }
-
     public JButton getSaveButton() { return saveButton; }
 
     public JButton getSupprimerButton() { return supprimerButton; }
@@ -1195,5 +1229,23 @@ public class ShoppingView extends JFrame{
     public List<JButton> getRateButtons() { return rateButtons; }
 
     public List<JButton> getViewDetailsButtons() { return viewDetailsButtons; }
+
+    // In ShoppingView.java
+
+    public JTable getAdminArticleTable() {
+        return adminTable; // Assuming `adminTable` is already initialized for articles
+    }
+
+    public JTable getAdminUserTable() {
+        if (adminUserTable == null) {
+            // Initialize the admin user table if it doesn't exist
+            String[] columnNames = {"ID", "Nom", "Email", "Téléphone", "Adresse", "Admin"};
+            adminUserTable = new JTable(new DefaultTableModel(columnNames, 0));
+        }
+        return adminUserTable;
+    }
+
+    public JButton getSaveUserButton() { return saveUserButton; }
+    public JButton getDeleteUserButton() { return deleteUserButton; }
 
 }

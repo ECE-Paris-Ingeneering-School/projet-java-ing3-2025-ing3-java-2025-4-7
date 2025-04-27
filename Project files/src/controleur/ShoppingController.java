@@ -81,7 +81,7 @@ public class ShoppingController{
         //admin
         view.getAdminButton().addActionListener(e -> afficherPageAdmin());
         view.getSaveButton().addActionListener(e -> {
-            JTable table = view.getAdminTable();
+            JTable table = view.getAdminArticleTable();
             DefaultTableModel model = (DefaultTableModel) table.getModel();
 
             for (int i = 0; i < model.getRowCount(); i++) {
@@ -111,6 +111,10 @@ public class ShoppingController{
         view.getAjouterButton().addActionListener(e -> handleAjouterArticle());
 
         view.getSupprimerButton().addActionListener(e -> handleSupprimerArticle());
+
+        view.getSaveUserButton().addActionListener(e -> handleSaveUsers());
+
+        view.getDeleteUserButton().addActionListener(e -> handleDeleteUsers());
     }
 
     private void handleLogin(){
@@ -906,13 +910,13 @@ public class ShoppingController{
 
     private void afficherPageAdmin() {
         if (utilisateurConnecte != null && utilisateurConnecte.getIsAdmin()) {
-            //recupere articles
+            // Load articles into the admin table
             List<Article> articles = articleDAO.getAll();
-            DefaultTableModel model = (DefaultTableModel) view.getAdminTable().getModel();
-            model.setRowCount(0); // Clear existing rows
+            DefaultTableModel articleModel = (DefaultTableModel) view.getAdminArticleTable().getModel();
+            articleModel.setRowCount(0); // Clear existing rows
 
             for (Article article : articles) {
-                model.addRow(new Object[]{
+                articleModel.addRow(new Object[]{
                         article.getId(),
                         article.getNom(),
                         article.getMarque(),
@@ -926,12 +930,83 @@ public class ShoppingController{
                 });
             }
 
+            // Load users into the admin user table
+            List<Utilisateur> utilisateurs = utilisateurDAO.getAll();
+            DefaultTableModel userModel = (DefaultTableModel) view.getAdminUserTable().getModel();
+            userModel.setRowCount(0); // Clear existing rows
+
+            for (Utilisateur utilisateur : utilisateurs) {
+                userModel.addRow(new Object[]{
+                        utilisateur.getId(),
+                        utilisateur.getPrenom(),
+                        utilisateur.getNom(),
+                        utilisateur.getEmail(),
+                        utilisateur.getMotDePasse(),
+                        utilisateur.getAdresse(),
+                        utilisateur.getTelephone(),
+                        utilisateur.getIsAdmin(),
+                        "Modifier"
+                });
+            }
+
             view.showPage("AdminPage");
         } else {
             JOptionPane.showMessageDialog(null, "Accès refusé. Vous n'êtes pas administrateur.");
         }
     }
 
+    private void handleSaveUsers() {
+        JTable userTable = view.getAdminUserTable();
+        DefaultTableModel userModel = (DefaultTableModel) userTable.getModel();
+
+        for (int i = 0; i < userModel.getRowCount(); i++) {
+            try {
+                int id = parseInteger(userModel.getValueAt(i, 0));
+                String mdp = userModel.getValueAt(i, 1).toString();
+                String email = userModel.getValueAt(i, 2).toString();
+                String prenom = userModel.getValueAt(i, 3).toString();
+                String nom = userModel.getValueAt(i, 4).toString();
+                String adresse = userModel.getValueAt(i, 5).toString();
+                int telephone = parseInteger(userModel.getValueAt(i, 6));
+                boolean isAdmin = Boolean.parseBoolean(userModel.getValueAt(i, 7).toString());
+
+                // Update user in the database
+                utilisateurDAO.modifier(
+                        new Utilisateur(id, email, mdp, nom, prenom, adresse, telephone, isAdmin),
+                        email, mdp, nom, prenom, adresse, telephone, isAdmin
+                );
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(view, "Erreur lors de l'enregistrement de l'utilisateur à la ligne " + (i + 1));
+            }
+        }
+
+        JOptionPane.showMessageDialog(view, "Modifications enregistrées avec succès !");
+    }
+
+    private void handleDeleteUsers()
+    {
+        JTable userTable = view.getAdminUserTable();
+        int selectedRow = userTable.getSelectedRow();
+
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(null, "Veuillez sélectionner un utilisateur à supprimer.");
+            return;
+        }
+
+        int userId = parseInteger(userTable.getValueAt(selectedRow, 0));
+        int confirmation = JOptionPane.showConfirmDialog(null, "Êtes-vous sûr de vouloir supprimer cet utilisateur ?", "Confirmation", JOptionPane.YES_NO_OPTION);
+
+        if (confirmation == JOptionPane.YES_OPTION) {
+            try {
+                utilisateurDAO.supprimer(userId);
+                ((DefaultTableModel) userTable.getModel()).removeRow(selectedRow);
+                JOptionPane.showMessageDialog(null, "Utilisateur supprimé avec succès !");
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "Erreur lors de la suppression : " + ex.getMessage());
+            }
+        }
+    }
 
     private double parseDouble(Object value) {
         if (value == null || value.toString().trim().isEmpty()) {
@@ -950,7 +1025,7 @@ public class ShoppingController{
 
 
     private void handleSupprimerArticle() {
-        JTable table = view.getAdminTable();
+        JTable table = view.getAdminArticleTable();
         int selectedRow = table.getSelectedRow();
 
         if (selectedRow == -1) {
@@ -973,3 +1048,4 @@ public class ShoppingController{
         }
     }
 }
+
