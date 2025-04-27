@@ -1,9 +1,0 @@
------ FACTURE -----
-Numéro de commande : 9
-Date : 2025-04-26
-Client : Melly
-Adresse de livraison : RUE DU CACA, CACALAND, 69069, CACA
-Statut : commande passée
-Total à payer : 345,60 €
---------------------
-Merci pour votre achat !
