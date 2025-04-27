@@ -281,6 +281,9 @@ public class ShoppingController{
 
             List<String[]> historiqueCommandes = new ArrayList<>();
             for (Commande commande : commandes) {
+                if(!"en cours".equals(commande.getStatut())) {
+                    continue; // Ignore les commandes en cours
+                }
                 String[] infos = new String[]{
                         String.valueOf(commande.getId()),
                         commande.getDate().toString(),
