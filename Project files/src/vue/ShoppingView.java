@@ -4,14 +4,11 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.*;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import java.net.URL;
+import java.util.List;
 
 
 public class ShoppingView extends JFrame{
@@ -79,12 +76,13 @@ public class ShoppingView extends JFrame{
         frame.setSize(800, 600);
 
         //Icone de l'app
-        try{
-            ImageIcon icon = new ImageIcon("../image/pokeball.png");
+        try {
+            ImageIcon icon = new ImageIcon(Objects.requireNonNull(getClass().getResource("../image/pokeball.png")));
             frame.setIconImage(icon.getImage());
-        } catch (Exception e){
-            System.err.println("Vue - Erreur de chargement de l'icône : " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Erreur de chargement de l'icône: " + e.getMessage());
         }
+
 
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
