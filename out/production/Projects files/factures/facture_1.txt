@@ -2,13 +2,14 @@
 Numéro de commande : 1
 Date : 2025-04-27
 Client : Leon Matheo
-Adresse de livraison : 1, 1, 1, 1
+Adresse de livraison : azfafa, azedqdq, 8555, aefafa
 Statut : commande passée
 
 -- ARTICLES --
-x4 Léviator VMAX : 5,00 €
+x3 Nymphali VMAX : 5,00 €
+x3 Dracolosse V : 10,00 €
 
-Total avant réduction : 20,00 €
-Total à payer : 20,00 €
+Total avant réduction : 45,00 €
+Total à payer : 45,00 €
 --------------------
 Merci pour votre achat !

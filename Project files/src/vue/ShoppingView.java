@@ -683,6 +683,22 @@ public class ShoppingView extends JFrame{
         JScrollPane promoScrollPane = new JScrollPane(adminPromoTable);
         tabbedPane.addTab("Promotions", promoScrollPane);
 
+        // Statistics
+        JLabel statsLabel = new JLabel("Statistiques :");
+        statsLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        JPanel statsPanel = new JPanel();
+        statsPanel.setLayout(new BoxLayout(statsPanel, BoxLayout.Y_AXIS));
+        statsPanel.add(statsLabel);
+        statsPanel.add(new JLabel("Nombre total d'articles : 100"));
+        statsPanel.add(new JLabel("Nombre total d'utilisateurs : 50"));
+        statsPanel.add(new JLabel("Nombre total de commandes : 200"));
+        statsPanel.add(new JLabel("Nombre total de promotions : 10"));
+        statsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        statsPanel.setBackground(Color.WHITE);
+        statsPanel.setPreferredSize(new Dimension(200, 200));
+        statsPanel.setBorder(BorderFactory.createTitledBorder("Statistiques"));
+        tabbedPane.addTab("Stats", statsPanel);
+
 
 
         tabbedPane.addChangeListener(e -> {
@@ -715,6 +731,16 @@ public class ShoppingView extends JFrame{
                 savePromoButton.setVisible(true);
                 ajouterPromoButton.setVisible(true);
                 deletePromoButton.setVisible(true);
+            }
+            else if( selectedIndex == 3) { // Stats tab
+                saveButton.setVisible(false);
+                ajouterButton.setVisible(false);
+                supprimerButton.setVisible(false);
+                saveUserButton.setVisible(false);
+                deleteUserButton.setVisible(false);
+                savePromoButton.setVisible(false);
+                ajouterPromoButton.setVisible(false);
+                deletePromoButton.setVisible(false);
             }
         });
 
@@ -1232,6 +1258,32 @@ public class ShoppingView extends JFrame{
 
         panierPagePanel.revalidate();
         panierPagePanel.repaint();
+    }
+
+    public void updateStatisticsView(Map<String, String> statistics) {
+        JPanel statsPanel = new JPanel();
+        statsPanel.setLayout(new BoxLayout(statsPanel, BoxLayout.Y_AXIS));
+        statsPanel.setBackground(Color.WHITE);
+
+        for (Map.Entry<String, String> entry : statistics.entrySet()) {
+            JLabel statLabel = new JLabel(entry.getKey() + ": " + entry.getValue());
+            statLabel.setFont(new Font("Arial", Font.BOLD, 14));
+            statsPanel.add(statLabel);
+        }
+
+        // Check if the component is a JTabbedPane before casting
+        Component component = adminPagePanel.getComponent(0);
+        if (component instanceof JTabbedPane) {
+            JTabbedPane adminTabbedPane = (JTabbedPane) component;
+            int statsTabIndex = adminTabbedPane.indexOfTab("Stats");
+            if (statsTabIndex != -1) {
+                adminTabbedPane.setComponentAt(statsTabIndex, statsPanel);
+            } else {
+                System.out.println("Stats tab not found.");
+            }
+        } else {
+            System.out.println("Expected a JTabbedPane but found: " + component.getClass().getName());
+        }
     }
 
     //effet de hover sur les boutons

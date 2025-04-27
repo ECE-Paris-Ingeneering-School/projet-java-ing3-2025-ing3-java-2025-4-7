@@ -934,6 +934,7 @@ public class ShoppingController{
 
 
     private void afficherPageAdminGestionArticles() {
+        updateOrderStatistics();
         if (utilisateurConnecte != null && utilisateurConnecte.getIsAdmin()) {
             // Load articles into the admin table
             List<Article> articles = articleDAO.getAll();
@@ -993,6 +994,11 @@ public class ShoppingController{
         } else {
             JOptionPane.showMessageDialog(null, "Accès refusé. Vous n'êtes pas administrateur.");
         }
+    }
+
+    public void updateOrderStatistics() {
+        Map<String, String> statistics = commandeDAO.fetchOrderStatistics();
+        view.updateStatisticsView(statistics);
     }
 
     private void handleSaveUsers() {

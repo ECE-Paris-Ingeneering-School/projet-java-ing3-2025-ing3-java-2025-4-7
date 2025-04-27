@@ -5,7 +5,9 @@ import modele.Commande;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CommandeDAOImpl implements CommandeDAO {
     private final DaoFactory daoFactory;
@@ -200,6 +202,43 @@ public class CommandeDAOImpl implements CommandeDAO {
         }
 
         return articles;
+    }
+
+    // Corrected fetchOrderStatistics method
+    public Map<String, String> fetchOrderStatistics() {
+        Map<String, String> statistics = new HashMap<>();
+        try (Connection connexion = daoFactory.getConnection()) {
+            // Query for total orders
+            String totalOrdersQuery = "SELECT COUNT(*) AS totalOrders FROM commandes";
+            try (PreparedStatement stmt = connexion.prepareStatement(totalOrdersQuery);
+                 ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    statistics.put("Total Orders", rs.getString("totalOrders"));
+                }
+            }
+
+            // Query for total revenue
+            String totalRevenueQuery = "SELECT SUM(commandePrix) AS totalRevenue FROM commandes";
+            try (PreparedStatement stmt = connexion.prepareStatement(totalRevenueQuery);
+                 ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    statistics.put("Total Revenue", rs.getString("totalRevenue") + " €");
+                }
+            }
+
+            // Query for average order value
+            String avgOrderValueQuery = "SELECT AVG(commandePrix) AS avgOrderValue FROM commandes";
+            try (PreparedStatement stmt = connexion.prepareStatement(avgOrderValueQuery);
+                 ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    statistics.put("Average Order Value", rs.getString("avgOrderValue") + " €");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Erreur lors de la récupération des statistiques des commandes.");
+        }
+        return statistics;
     }
 
 
