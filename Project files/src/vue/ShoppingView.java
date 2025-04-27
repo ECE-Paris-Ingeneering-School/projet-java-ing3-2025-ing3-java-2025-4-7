@@ -707,6 +707,11 @@ public class ShoppingView extends JFrame{
             articlesParMarque.get(marque).add(article);
         }
 
+        JScrollPane pageScroll = new JScrollPane(mainContainer);
+        pageScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        pageScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        pageScroll.setBorder(BorderFactory.createEmptyBorder());
+
         //remplissage
         for (String marque : articlesParMarque.keySet()) {
             JPanel sectionPanel = new JPanel();
@@ -725,7 +730,7 @@ public class ShoppingView extends JFrame{
             JPanel articlesPanel = new JPanel();
             GridLayout gridLayout = new GridLayout(0, 3, 10, 10);
             articlesPanel.setLayout(gridLayout);
-            articlesPanel.setBackground(Color.YELLOW);
+            articlesPanel.setBackground(Color.WHITE);
 
 
             //remplissage ligne
@@ -827,17 +832,10 @@ public class ShoppingView extends JFrame{
                 articlesPanel.add(wrapper);
             }
 
-            JScrollPane scrollPane = new JScrollPane(mainContainer);
-            scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-            scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-            scrollPane.setBorder(BorderFactory.createEmptyBorder());
-
-            panierPagePanel.add(scrollPane, BorderLayout.CENTER);
-
-            scrollPane.addComponentListener(new ComponentAdapter() {
+            pageScroll.addComponentListener(new ComponentAdapter() {
                 @Override
                 public void componentResized(ComponentEvent e) {
-                    int largeur = (scrollPane.getViewport().getWidth())/230;
+                    int largeur = (pageScroll.getViewport().getWidth())/230;
                     //System.out.println("largeur = " + largeur + " nb cartes : " + (largeur)/230);
                     gridLayout.setColumns(largeur);
                     articlesPanel.revalidate();
@@ -850,9 +848,6 @@ public class ShoppingView extends JFrame{
             mainContainer.add(sectionPanel);
         }
 
-        JScrollPane pageScroll = new JScrollPane(mainContainer);
-        pageScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        pageScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         homePagePanel.setLayout(new BorderLayout());
         homePagePanel.add(bandeau, BorderLayout.NORTH);
