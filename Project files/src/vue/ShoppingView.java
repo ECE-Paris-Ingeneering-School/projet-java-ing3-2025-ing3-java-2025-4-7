@@ -240,6 +240,17 @@ public class ShoppingView extends JFrame{
         return panel;
     }
 
+    public JButton boutonUtilisateur (String nom){
+        JButton bouton = new JButton(nom);
+        bouton.setPreferredSize(new Dimension(160, 45));
+        bouton.setFont(new Font("Arial", Font.BOLD, 16));
+        bouton.setBackground(new Color(70, 130, 180));
+        bouton.setForeground(Color.WHITE);
+        bouton.setFocusPainted(false);
+        bouton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+
+        return bouton;
+    }
 
     private JPanel createAccountPagePanel(){
         //pannel
@@ -270,24 +281,12 @@ public class ShoppingView extends JFrame{
         grille.gridwidth = 1;
         grille.gridy++;
         grille.gridx = 0;
-        loginButton = new JButton("Se connecter");
-        loginButton.setPreferredSize(new Dimension(160, 45));
-        loginButton.setFont(new Font("Arial", Font.BOLD, 16));
-        loginButton.setBackground(new Color(70, 130, 180));
-        loginButton.setForeground(Color.WHITE);
-        loginButton.setFocusPainted(false);
-        loginButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        loginButton = boutonUtilisateur("Se connecter");
         container.add(loginButton, grille);
 
         // Bouton S'inscrire
         grille.gridx = 1;
-        registerButton = new JButton("S'inscrire");
-        registerButton.setPreferredSize(new Dimension(160, 45));
-        registerButton.setFont(new Font("Arial", Font.BOLD, 16));
-        registerButton.setBackground(new Color(70, 130, 180));
-        registerButton.setForeground(Color.WHITE);
-        registerButton.setFocusPainted(false);
-        registerButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        registerButton = boutonUtilisateur("S'inscrire");
         container.add(registerButton, grille);
 
         panel.add(container);
@@ -375,12 +374,7 @@ public class ShoppingView extends JFrame{
         formContainer.add(loginErrorMessageLabel, grille);
 
         grille.gridy++;
-        submitLoginButton = new JButton("Se connecter");
-        submitLoginButton.setFont(new Font("Arial", Font.BOLD, 16));
-        submitLoginButton.setBackground(new Color(70, 130, 180)); // Bleu doux
-        submitLoginButton.setForeground(Color.WHITE);
-        submitLoginButton.setFocusPainted(false);
-        submitLoginButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        submitLoginButton = boutonUtilisateur("Se connecter");
         formContainer.add(submitLoginButton, grille);
 
         // Ajouter le formulaire au panel principal
@@ -844,6 +838,24 @@ public class ShoppingView extends JFrame{
         cardLayout.show(mainPanel, "UpdateAccount");
     }
 
+    public JPanel infoArticlePanier (JLabel label){
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
+        panel.setBackground(Color.WHITE);
+        panel.add(label);
+        return panel;
+    }
+
+    public JButton boutonsPanier (ImageIcon icon){
+        Image resizedImage = icon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
+        ImageIcon resizedIcon = new ImageIcon(resizedImage);
+
+        JButton bouton = new JButton(resizedIcon);
+        bouton.setBorderPainted(false);
+        bouton.setContentAreaFilled(false);
+        bouton.setFocusPainted(false);
+        return bouton;
+    }
+
     public void updatePanierPageView(List<Map<String, String>> articles, ActionListener plusListener, ActionListener minusListener) {
         double totalPrix = 0.0;
         panierPagePanel.removeAll(); // Clear the existing panel
@@ -919,25 +931,11 @@ public class ShoppingView extends JFrame{
 
             // Bouton pour ajouter des articles
             ImageIcon plusIcon = new ImageIcon("Project files/src/image/panier/panierAjouter.png");
-            Image resizedPlusImage = plusIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
-            ImageIcon resizedPlusIcon = new ImageIcon(resizedPlusImage);
-
-            JButton plusBtn = new JButton(resizedPlusIcon);
-            plusBtn.setToolTipText("Ajouter un élément du panier");
-            plusBtn.setBorderPainted(false);
-            plusBtn.setContentAreaFilled(false);
-            plusBtn.setFocusPainted(false);
+            JButton plusBtn = boutonsPanier(plusIcon);
 
             // Bouton pou retirer des articles
             ImageIcon minIcon = new ImageIcon("Project files/src/image/panier/panierSupprimer.png");
-            Image resizedMinImage = minIcon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
-            ImageIcon resizedMinIcon = new ImageIcon(resizedMinImage);
-
-            JButton minusBtn = new JButton(resizedMinIcon);
-            minusBtn.setToolTipText("Supprimer un élément du panier");
-            minusBtn.setBorderPainted(false);
-            minusBtn.setContentAreaFilled(false);
-            minusBtn.setFocusPainted(false);
+            JButton minusBtn = boutonsPanier(minIcon);
 
             // Dimensions des boutons + et -
             plusBtn.setPreferredSize(new Dimension(60, 60));
@@ -971,21 +969,10 @@ public class ShoppingView extends JFrame{
             quantitePanel.setBackground(Color.WHITE);
             quantitePanel.add(quantiteLabel);
 
-            JPanel prixUnitairePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
-            prixUnitairePanel.setBackground(Color.WHITE);
-            prixUnitairePanel.add(prixUnitaireLabel);
-
-            JPanel prixVracPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
-            prixVracPanel.setBackground(Color.WHITE);
-            prixVracPanel.add(prixVracLabel);
-
-            JPanel prixSeuilPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
-            prixSeuilPanel.setBackground(Color.WHITE);
-            prixSeuilPanel.add(prixSeuilLabel);
-
-            JPanel prixTotalPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
-            prixTotalPanel.setBackground(Color.WHITE);
-            prixTotalPanel.add(prixTotalLabel);
+            JPanel prixUnitairePanel = infoArticlePanier(prixUnitaireLabel);
+            JPanel prixVracPanel = infoArticlePanier(prixVracLabel);
+            JPanel prixSeuilPanel = infoArticlePanier(prixSeuilLabel);
+            JPanel prixTotalPanel = infoArticlePanier(prixTotalLabel);
 
             // Set Action Commands and Listeners
             String articleId = articleData.get("id");
