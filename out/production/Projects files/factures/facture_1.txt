@@ -1,0 +1,14 @@
+----- FACTURE -----
+Numéro de commande : 1
+Date : 2025-04-27
+Client : Leon Matheo
+Adresse de livraison : 1, 1, 1, 1
+Statut : commande passée
+
+-- ARTICLES --
+x4 Léviator VMAX : 5,00 €
+
+Total avant réduction : 20,00 €
+Total à payer : 20,00 €
+--------------------
+Merci pour votre achat !
