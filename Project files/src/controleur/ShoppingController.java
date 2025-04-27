@@ -598,7 +598,7 @@ public class ShoppingController{
         }
 
         try {
-            // Retrieve the user's current order
+            // Récupération de la commande en cours
             List<Commande> commandes = commandeDAO.getCommandesParUtilisateur(utilisateurConnecte.getId());
             Commande commandeEnCours = null;
 
@@ -615,8 +615,8 @@ public class ShoppingController{
                 return;
             }
 
-            // Show payment + address input form
-            JPanel creditCardPanel = new JPanel(new GridLayout(9, 2, 10, 10));
+            // Formulaire de paiement et d'adresse
+            JPanel creditCardPanel = new JPanel(new GridLayout(10, 2, 10, 10)); // 10 lignes
             creditCardPanel.add(new JLabel("Nom sur la carte:"));
             JTextField cardNameField = new JTextField();
             creditCardPanel.add(cardNameField);
@@ -654,6 +654,11 @@ public class ShoppingController{
             JTextField paysField = new JTextField();
             creditCardPanel.add(paysField);
 
+            // Téléphone
+            creditCardPanel.add(new JLabel("Numéro de téléphone:"));
+            JTextField telephoneField = new JTextField();
+            creditCardPanel.add(telephoneField);
+
             int result = JOptionPane.showConfirmDialog(null, creditCardPanel, "Informations de paiement", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
             if (result != JOptionPane.OK_OPTION) {
@@ -661,39 +666,49 @@ public class ShoppingController{
                 return;
             }
 
-            // Validate credit card inputs
+            // Validation des champs paiement
             if (cardNameField.getText().trim().isEmpty() || cardNumberField.getText().trim().isEmpty() ||
                     expiryDateField.getText().trim().isEmpty() || cvvField.getText().trim().isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Veuillez remplir toutes les informations de paiement.");
                 return;
             }
 
-            // Validate address fields
+            // Validation des champs adresse
             if (adresseField.getText().trim().isEmpty() || villeField.getText().trim().isEmpty() ||
                     codePostalField.getText().trim().isEmpty() || paysField.getText().trim().isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Veuillez remplir toutes les informations d'adresse.");
                 return;
             }
 
-            // Récupérer et concaténer l’adresse complète
+            // Validation du téléphone
+            String telephoneInput = telephoneField.getText().trim();
+            if (telephoneInput.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Veuillez entrer votre numéro de téléphone.");
+                return;
+            }
+
+            int numeroTelephone;
+            numeroTelephone = Integer.parseInt(telephoneInput);
+
+            // Adresse complète
             String adresseComplete = adresseField.getText().trim() + ", " +
                     villeField.getText().trim() + ", " +
                     codePostalField.getText().trim() + ", " +
                     paysField.getText().trim();
 
-            // Appliquer la réduction si code promo valide
+            // Appliquer une éventuelle réduction
             String codePromo = promoCodeField.getText().trim().toUpperCase();
             double reduction = 0.0;
             if (!codePromo.isEmpty()) {
                 Promo promo = promoDAO.chercherParCode(codePromo);
                 if (promo != null && promo.isActive()) {
-                    reduction = promo.getReduction(); // valeur entre 0.0 et 1.0
+                    reduction = promo.getReduction();
                 } else {
                     JOptionPane.showMessageDialog(null, "Code promo invalide ou inactif.");
                 }
             }
 
-            double prixOriginal = commandeEnCours.getPrix(); // doit être correctement calculé avant
+            double prixOriginal = commandeEnCours.getPrix();
             double prixFinal = prixOriginal;
 
             if (reduction > 0.0) {
@@ -701,30 +716,30 @@ public class ShoppingController{
                 JOptionPane.showMessageDialog(null, "Code promo appliqué ! Nouveau total : " + String.format("%.2f €", prixFinal));
             }
 
-            System.out.println("Prix original : " + prixOriginal + " €");
-            System.out.println("Code promo saisi : " + codePromo);
-            System.out.println("Réduction : " + (reduction * 100) + "%");
-            System.out.println("Prix final après réduction : " + prixFinal + " €");
-
-            // Mettre à jour la commande actuelle
+            // Mise à jour de la commande
             commandeEnCours.setPrix(prixFinal);
             commandeEnCours.setStatut("commande passée");
             commandeEnCours.setAdresse(adresseComplete);
             commandeDAO.modifier(commandeEnCours);
 
-            // Créer une nouvelle commande vide "en cours"
+            // Mise à jour de l'utilisateur connecté
+            utilisateurConnecte.setAdresse(adresseComplete);
+            utilisateurConnecte.setTelephone(numeroTelephone); // ici c'est bien un int !
+
+            // Création d'une nouvelle commande vide
             LocalDate today = LocalDate.now();
             Commande nouvelleCommande = new Commande(
-                    0, // ID auto-généré
+                    0,
                     utilisateurConnecte.getId(),
                     today.toString(),
                     "en cours",
                     0.0,
                     "",
                     "",
-                    utilisateurConnecte.getAdresse() // adresse par défaut pour la nouvelle commande vide
+                    utilisateurConnecte.getAdresse()
             );
             commandeDAO.ajouter(nouvelleCommande);
+
             generateFacture(commandeEnCours);
 
             JOptionPane.showMessageDialog(null, "Votre commande a été passée avec succès !");
@@ -734,6 +749,8 @@ public class ShoppingController{
             JOptionPane.showMessageDialog(null, "Erreur technique : " + ex.getMessage());
         }
     }
+
+
 
     private void generateFacture(Commande commande) {
         try {
