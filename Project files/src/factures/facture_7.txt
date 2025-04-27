@@ -1,0 +1,13 @@
+----- FACTURE -----
+Numéro de commande : 7
+Date : 2025-04-26
+Client : Leon
+Adresse de livraison : 93 rue zojfnziu, zrijvhz_uv, 92100, bzifhz
+Statut : commande passée
+
+-- ARTICLES --
+x8 Résolution d Amaryllis 45,00 €
+
+Total à payer : 320,00 €
+--------------------
+Merci pour votre achat !
