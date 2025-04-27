@@ -79,7 +79,7 @@ public class ShoppingController{
         view.getCommanderButton().addActionListener(e -> handleCommanderButton());
 
         //admin
-        view.getAdminButton().addActionListener(e -> afficherPageAdmin());
+        view.getOption1().addActionListener(e -> afficherPageAdminGestionArticles());
         view.getSaveButton().addActionListener(e -> {
             JTable table = view.getAdminArticleTable();
             DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -908,7 +908,7 @@ public class ShoppingController{
     }
 
 
-    private void afficherPageAdmin() {
+    private void afficherPageAdminGestionArticles() {
         if (utilisateurConnecte != null && utilisateurConnecte.getIsAdmin()) {
             // Load articles into the admin table
             List<Article> articles = articleDAO.getAll();
