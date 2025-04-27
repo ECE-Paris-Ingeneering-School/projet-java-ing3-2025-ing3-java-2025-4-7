@@ -951,19 +951,19 @@ public class ShoppingView extends JFrame{
 
             double prixAffiche = (initialQuantity >= seuilVrac) ? priceVrac : priceUnit;
 
-            final JLabel quantiteLabel = new JLabel("    Quantité: " + initialQuantity);
+            final JLabel quantiteLabel = new JLabel("    Quantité : " + initialQuantity);
             quantiteLabel.setFont(new Font("SansSerif", Font.PLAIN, 15));
 
-            final JLabel prixUnitaireLabel = new JLabel("    Prix unitaire: " + String.format("%.2f €", priceUnit));
+            final JLabel prixUnitaireLabel = new JLabel("    Prix unitaire : " + String.format("%.2f €", priceUnit));
             prixUnitaireLabel.setFont(new Font("SansSerif", Font.PLAIN, 15));
 
-            final JLabel prixVracLabel = new JLabel("    Prix vrac: " + String.format("%.2f €", priceVrac));
+            final JLabel prixVracLabel = new JLabel("    Prix vrac : " + String.format("%.2f €", priceVrac));
             prixVracLabel.setFont(new Font("SansSerif", Font.PLAIN, 15));
 
-            final JLabel prixSeuilLabel = new JLabel("    Seuil vrac: " + seuilVrac);
+            final JLabel prixSeuilLabel = new JLabel("    Seuil vrac : " + seuilVrac);
             prixSeuilLabel.setFont(new Font("SansSerif", Font.PLAIN, 15));
 
-            final JLabel prixTotalLabel = new JLabel("    Prix total: " + String.format("%.2f €", prixAffiche * initialQuantity));
+            final JLabel prixTotalLabel = new JLabel("    Prix total : " + String.format("%.2f €", prixAffiche * initialQuantity));
             prixTotalLabel.setFont(new Font("SansSerif", Font.BOLD, 17));
             prixTotalLabel.setForeground(new Color(48, 80, 207));
 
