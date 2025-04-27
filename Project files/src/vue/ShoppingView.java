@@ -133,6 +133,7 @@ public class ShoppingView extends JFrame{
     private JPanel createHeaderPanel(){
         JPanel header = new JPanel(new BorderLayout());
         header.setBackground(new Color(38, 74, 193));  // Change la couleur de fond en bleu pour un style plus moderne
+        header.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 
         //logo a gauche
         JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
