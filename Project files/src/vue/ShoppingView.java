@@ -13,6 +13,8 @@ import java.util.LinkedHashMap;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import java.net.URL;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 
 
 public class ShoppingView extends JFrame{
@@ -697,16 +699,6 @@ public class ShoppingView extends JFrame{
         mainContainer.setBackground(Color.WHITE);
         mainContainer.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 5));
 
-        mainContainer.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                int largeur = mainContainer.getWidth();
-                System.out.println("largeur = " + largeur);
-                //mainContainer.revalidate();
-                //mainContainer.repaint();
-            }
-        });
-
         //regrouper par 'marque'
         Map<String, List<Map<String, String>>> articlesParMarque = new LinkedHashMap<>();
         for (Map<String, String> article : articles) {
@@ -722,13 +714,19 @@ public class ShoppingView extends JFrame{
             sectionPanel.setBackground(Color.WHITE);
 
             //creation ligne
+
+            // Création de la partie titre
             JLabel marqueLabel = new JLabel(marque.toUpperCase());
             marqueLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
             marqueLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 5, 0));
             sectionPanel.add(marqueLabel);
-            JPanel ligneArticles = new JPanel();
-            ligneArticles.setLayout(new BoxLayout(ligneArticles, BoxLayout.X_AXIS));
-            ligneArticles.setBackground(Color.WHITE);
+
+            // création de la partie avec tous les articles
+            JPanel articlesPanel = new JPanel();
+            GridLayout gridLayout = new GridLayout(0, 3, 10, 10);
+            articlesPanel.setLayout(gridLayout);
+            articlesPanel.setBackground(Color.YELLOW);
+
 
             //remplissage ligne
             for (Map<String, String> article : articlesParMarque.get(marque)) {
@@ -753,17 +751,19 @@ public class ShoppingView extends JFrame{
                 card.add(Box.createVerticalStrut(10));
 
                 //image
+                JPanel imageContainer = new JPanel();
                 String imageURL = article.get("articleImageURL");
                 if (imageURL != null && !imageURL.isEmpty()) {
                     try {
                         URL url = new URL(imageURL);
-                        ImageIcon icon = new ImageIcon(url);
-                        if (icon.getImageLoadStatus() == MediaTracker.COMPLETE) {
-                            Image scaled = icon.getImage().getScaledInstance(180, 240, Image.SCALE_SMOOTH);
+                        BufferedImage originalImage = ImageIO.read(url);
+
+                        if (originalImage != null) {
+                            // Redimensionnement de l'image
+                            Image scaled = originalImage.getScaledInstance(180, 240, Image.SCALE_SMOOTH);
+
                             JLabel imageLabel = new JLabel(new ImageIcon(scaled));
                             imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-                            JPanel imageContainer = new JPanel();
                             imageContainer.setPreferredSize(new Dimension(180, 240));
                             imageContainer.setMaximumSize(new Dimension(180, 240));
                             imageContainer.setBackground(Color.WHITE);
@@ -772,8 +772,20 @@ public class ShoppingView extends JFrame{
                             card.add(imageContainer);
                         }
                     } catch (Exception e) {
-                        System.out.println("Erreur chargement image: " + e.getMessage());
-                        card.setBackground(Color.RED);
+                        System.out.println("Erreur de chargement: " + e.getClass().getSimpleName() + " - " + e.getMessage());
+
+                        ImageIcon erreurIconOriginal = new ImageIcon("Project files/src/image/erreurChargementImage.png");
+                        Image imageOriginal = new ImageIcon(erreurIconOriginal.getImage()).getImage();
+                        Image imageRedimmensionne = imageOriginal.getScaledInstance(180, 200, Image.SCALE_SMOOTH);
+
+                        ImageIcon erreurIcon = new ImageIcon(imageRedimmensionne);
+                        JLabel imageLabel = new JLabel(erreurIcon);
+                        imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                        imageContainer.setPreferredSize(new Dimension(180, 240));
+                        imageContainer.setMaximumSize(new Dimension(180, 240));
+                        imageContainer.setBackground(Color.WHITE);
+                        imageContainer.add(imageLabel);
+                        card.add(imageContainer);
                     }
                 }
 
@@ -809,18 +821,31 @@ public class ShoppingView extends JFrame{
                 ajouterButton.addActionListener(ajouterPanierListener);
 
                 card.add(ajouterButton);
-                ligneArticles.add(card);
-                ligneArticles.add(Box.createHorizontalStrut(10));
+                JPanel wrapper = new JPanel();
+                wrapper.setBackground(Color.WHITE);
+                wrapper.add(card);
+                articlesPanel.add(wrapper);
             }
 
-            //scroll
-            JScrollPane ligneScroll = new JScrollPane(ligneArticles);
-            ligneScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-            ligneScroll.getHorizontalScrollBar().setPreferredSize(new Dimension(0, 0));
-            ligneScroll.setBorder(BorderFactory.createEmptyBorder());
-            ligneScroll.setPreferredSize(new Dimension(0, 420)); // hauteur plus grande pour scroll correct
+            JScrollPane scrollPane = new JScrollPane(mainContainer);
+            scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+            scrollPane.setBorder(BorderFactory.createEmptyBorder());
 
-            sectionPanel.add(ligneScroll);
+            panierPagePanel.add(scrollPane, BorderLayout.CENTER);
+
+            scrollPane.addComponentListener(new ComponentAdapter() {
+                @Override
+                public void componentResized(ComponentEvent e) {
+                    int largeur = (scrollPane.getViewport().getWidth())/230;
+                    //System.out.println("largeur = " + largeur + " nb cartes : " + (largeur)/230);
+                    gridLayout.setColumns(largeur);
+                    articlesPanel.revalidate();
+                    articlesPanel.repaint();
+                }
+            });
+
+            sectionPanel.add(articlesPanel);
             sectionPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
             mainContainer.add(sectionPanel);
         }
